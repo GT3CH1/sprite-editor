@@ -13,3 +13,9 @@ SpriteEditorVC::~SpriteEditorVC()
 	delete ui;
 }
 
+
+void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
+{
+    ui->currentFpsLabel->setText(QString::number(value));
+}
+

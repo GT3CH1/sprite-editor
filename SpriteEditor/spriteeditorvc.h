@@ -25,6 +25,9 @@ public:
 	~SpriteEditorVC();
 
 
+private slots:
+    void on_fpsSlider_valueChanged(int value);
+
 private:
 	Ui::SpriteEditorVC *ui;
 };

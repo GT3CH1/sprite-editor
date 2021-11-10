@@ -10,7 +10,6 @@ CONFIG += c++11
 
 SOURCES += \
     actionstate.cpp \
-    callbackOptionsTester.cpp \
     callbackoptions.cpp \
     main.cpp \
     spriteeditorvc.cpp
