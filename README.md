@@ -19,6 +19,7 @@ Branches shall be named similary to the task they are created.  For example, the
 - Member variables will be commented with a small in-line comment describing their use.
 - Classess will have a short doc-style comment with the author(s) name, date created, and a short description of what that class does (Even if painstakingly obvious). This will be done in the CPP file, and not the header file.
 - TODO's will have to have the username of the programmer listed, IE `TODO(gcpease): Fix really bad bug`
+- In header files, private will be before public.
 
 ## Commit Conventions
 - When commiting, please add a tag infront specifying what commit number this change is out of how many you think it will
@@ -48,6 +49,6 @@ giant green "Compare & pull request" button. Please appropriately title your pul
 ## Other important information
   - Do not push directly to main. At all, please.
   - Please run this command: `git config --global core.autocrlf true` it will prevent line endings screwing everything.
-  
+    - If you do not run this command, please set your line-ending style to Unix in QT preferences.
 ## Using WSL
   - WSL is a VERY powerful tool. One of my favorite things to do is to absolutey press the tab key to autocomplete.
