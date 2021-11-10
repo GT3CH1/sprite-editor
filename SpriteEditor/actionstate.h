@@ -7,11 +7,11 @@
 class ActionState
 {
 public:
-	const int ToolState;
-	const QColor ToolColor;
-	const int MouseXGridCoord;
-	const int MouseYGridCoord;
-	const QImage& ActiveLayer;
+	const int TOOL_SIZE;
+	const QColor TOOL_COLOR;
+	const int MOUSE_X_GRID_COORD;
+	const int MOUSE_Y_GRID_COORD;
+	const QImage& ACTIVE_LAYER;
 	ActionState(const int state, const QColor color, const int x,
 				const int y, const QImage& layer);
 };
