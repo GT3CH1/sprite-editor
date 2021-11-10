@@ -17,6 +17,7 @@ SOURCES += \
 HEADERS += \
     actionstate.h \
     callbackoptions.h \
+    spriteeditormodel.h \
     spriteeditorvc.h
 
 FORMS += \
