@@ -15,6 +15,7 @@ Branches shall be named similary to the task they are created.  For example, the
   `git checkout <branch-name>`
   
 ## Other important information
-  Do not push directly to main. At all, please.
-
+  - Do not push directly to main. At all, please.
+  - Please run this command: `git config --global core.autocrlf true` it will prevent line endings screwing everything.
+  
 
