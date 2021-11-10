@@ -1,9 +1,9 @@
-/*
- * A struct that holds the size of a tool, the color of a tool, the x and y
- * coordinate of the mouse and the active layer.
+/**
+ * Kenzie Evans
+ * 11/10/21
  *
- * Author: Kenzie Evans
- * Date Created: 11/10/21
+ * @brief A struct that holds the size of a tool, the color of a tool, the x and y
+ * coordinate of the mouse and the active layer.
 */
 
 #include "actionstate.h"

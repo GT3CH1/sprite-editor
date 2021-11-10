@@ -12,7 +12,7 @@ public:
 	const int MOUSE_X_GRID_COORD;
 	const int MOUSE_Y_GRID_COORD;
 	const QImage& ACTIVE_LAYER;
-	ActionState(const int state, const QColor color, const int x,
+	ActionState(const int size, const QColor color, const int x,
 				const int y, const QImage& layer);
 };
 
