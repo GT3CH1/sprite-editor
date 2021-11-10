@@ -1,5 +1,6 @@
 #ifndef SPRITEEDITORMODEL_H
 #define SPRITEEDITORMODEL_H
+#include <QObject>
 #include <QColor>
 #include <QPainter>
 #include <QImage>
@@ -10,14 +11,16 @@
 using std::vector;
 using std::string;
 
-class SpriteEditorModel{
+class SpriteEditorModel : public QObject{
+
+Q_OBJECT
 
 public:
 	enum ToolType {Pen, Brush, SoftEraser, HardEraser, ColorPicker};
 
 private:
-	const int IMAGE_WIDTH;
-	const int IMAGE_HEIGHT;
+	int imageWidth;
+	int imageHeight;
 	int toolSize;
 	QColor activeColor;
 	// map<ToolType, iTool> Tools; Waiting for itool.h from TODO(kenzie and william):
@@ -30,7 +33,7 @@ private:
 	void setColorsOfActiveFrame(QColor[], int xCoord, int yCoord);
 
 public:
-	SpriteEditorModel(int imageWidth, int imageHeight);
+	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};
 	QImage getFramefromIndex(int index);
 	int getFrameCount();
 

@@ -12,6 +12,7 @@ SOURCES += \
     actionstate.cpp \
     callbackoptions.cpp \
     main.cpp \
+    spriteeditormodel.cpp \
     spriteeditorvc.cpp
 
 HEADERS += \
