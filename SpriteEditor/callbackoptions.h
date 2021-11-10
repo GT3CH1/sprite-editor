@@ -6,10 +6,10 @@
 struct CallbackOptions
 {
 public:
-	CallbackOptions(void (*_setPixelColors)(QColor**, unsigned int xCoord, unsigned int yCoord),
+	CallbackOptions(void (*_setPixelColors)(QColor**, unsigned int width, unsigned int height, unsigned int xCoord, unsigned int yCoord),
 					void (*_setPixelColor)(QColor, unsigned int xCoord, unsigned int yCoord));
 	//https://stackoverflow.com/questions/10003270/gcc-array-type-has-incomplete-element-type
-	void (*setPixelColors)(QColor**, unsigned int xCoord, unsigned int yCoord);
+	void (*setPixelColors)(QColor**, uint width, uint height, unsigned int xCoord, unsigned int yCoord);
 	void (*setPixelColor)(QColor, unsigned int xCoord, unsigned int yCoord);
 };
 
