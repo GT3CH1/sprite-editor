@@ -10,12 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     actionstate.cpp \
-    callbackOptionsTester.cpp \
     callbackoptions.cpp \
     main.cpp \
+    renderarea.cpp \
     spriteeditorvc.cpp
 
 HEADERS += \
+    renderarea.h \
     actionstate.h \
     callbackoptions.h \
     spriteeditorvc.h
