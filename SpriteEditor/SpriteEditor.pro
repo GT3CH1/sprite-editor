@@ -13,11 +13,16 @@ SOURCES += \
     callbackOptionsTester.cpp \
     callbackoptions.cpp \
     main.cpp \
+    pixelbrush.cpp \
+    pixeleraser.cpp \
     spriteeditorvc.cpp
 
 HEADERS += \
     actionstate.h \
     callbackoptions.h \
+    itool.h \
+    pixelbrush.h \
+    pixeleraser.h \
     spriteeditorvc.h
 
 FORMS += \
