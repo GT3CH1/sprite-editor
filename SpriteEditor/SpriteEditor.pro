@@ -16,6 +16,7 @@ SOURCES += \
     main.cpp \
     pixelbrush.cpp \
     pixeleraser.cpp \
+    pointer2darray.cpp \
     spriteeditorvc.cpp
 
 HEADERS += \
@@ -24,6 +25,7 @@ HEADERS += \
     itool.h \
     pixelbrush.h \
     pixeleraser.h \
+    pointer2darray.h \
     spriteeditorvc.h
 
 FORMS += \
