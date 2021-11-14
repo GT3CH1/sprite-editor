@@ -24,7 +24,7 @@ Pointer2DArray<T>::Pointer2DArray(unsigned int width, unsigned int height)
 
 	array = (T**)malloc(width * sizeof(T*));
 
-	for (int i = 0; i < width; i++)
+	for (unsigned int i = 0; i < width; i++)
 		array[i] = (T*)malloc(height * sizeof(T));
 }
 
@@ -39,10 +39,10 @@ Pointer2DArray<T>::Pointer2DArray(const Pointer2DArray<T>& other)
 
 	array = (T**)malloc(width * sizeof(T*));
 
-	for (int i = 0; i < width; i++)
+	for (unsigned int i = 0; i < width; i++)
 	{
 		array[i] = (T*) malloc(height * sizeof(T));
-		for (int j = 0; j < height; j++)
+		for (unsigned int j = 0; j < height; j++)
 			array[i][j] = other[i][j];
 	}
 }
@@ -64,7 +64,7 @@ template<typename T>
  */
 Pointer2DArray<T>::~Pointer2DArray()
 {
-	for (int i = 0; i < width; i++)
+	for (unsigned int i = 0; i < width; i++)
 		free(array[i]);
 	free(array);
 }
@@ -76,7 +76,7 @@ template<typename T>
  * @param index index of the column to get.
  * @return pointer of Ts from 0 to height.
  */
-T* const Pointer2DArray<T>::operator[](unsigned int index)
+T* Pointer2DArray<T>::operator[](unsigned int index) const
 {
 	return array[index];
 }
@@ -86,7 +86,7 @@ template<typename T>
  * @brief Gets the width of this 2D array.
  * @return the width.
  */
-unsigned int const Pointer2DArray<T>::getWidth()
+unsigned int Pointer2DArray<T>::getWidth() const
 {
 	return width;
 }
@@ -96,7 +96,7 @@ template<typename T>
  * @brief Gets the height of this 2D array.
  * @return the height.
  */
-unsigned int const Pointer2DArray<T>::getHeight()
+unsigned int Pointer2DArray<T>::getHeight() const
 {
 	return height;
 }

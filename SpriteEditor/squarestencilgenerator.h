@@ -3,7 +3,6 @@
 
 #include "istencilgenerator.h"
 
-
 class SquareStencilGenerator : public IStencilGenerator
 {
 public:

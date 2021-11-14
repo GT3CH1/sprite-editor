@@ -2,6 +2,7 @@
 #define ISTENCILGENERATOR_H
 
 #include "pointer2darray.h"
+#include "pointer2darray.cpp"
 
 /**
  * Kenzie Evans
