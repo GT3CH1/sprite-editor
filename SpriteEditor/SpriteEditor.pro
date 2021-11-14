@@ -22,7 +22,6 @@ HEADERS += \
     spriteeditorvc.h \
     squarestencilgenerator.h
     renderarea.cpp \
-    spriteeditorvc.cpp
 
 HEADERS += \
     renderarea.h \
