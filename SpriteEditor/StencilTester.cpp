@@ -88,6 +88,5 @@ int testPointerArray() {
 		std::cout << std::endl;
 	}
 
-
 	return 1;
 }
