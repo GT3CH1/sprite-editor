@@ -11,15 +11,24 @@ CONFIG += c++11
 SOURCES += \
     StencilTester.cpp \
     actionstate.cpp \
-    callbackOptionsTester.cpp \
     callbackoptions.cpp \
     main.cpp \
     pixelbrush.cpp \
     pixeleraser.cpp \
     pointer2darray.cpp \
     spriteeditorvc.cpp
+    softcirclestencilgenerator.cpp \
+    spriteeditorvc.cpp \
+    squarestencilgenerator.cpp
 
 HEADERS += \
+    istencilgenerator.h \
+    softcirclestencilgenerator.h \
+    spriteeditorvc.h \
+    squarestencilgenerator.h
+
+HEADERS += \
+    renderarea.h \
     actionstate.h \
     callbackoptions.h \
     itool.h \
