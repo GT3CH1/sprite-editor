@@ -1,5 +1,4 @@
 #include "pointer2darray.h"
-#include <stdlib.h>
 #include <algorithm>
 
 /** Kenzie Evans
@@ -55,7 +54,8 @@ Pointer2DArray<T>& Pointer2DArray<T>::operator=(Pointer2DArray<T> otherCopy)
 {
 	width = otherCopy.width;
 	height = otherCopy.height;
-	swap(array, otherCopy.array);
+	std::swap(array, otherCopy.array);
+	return *this;
 }
 
 template<typename T>

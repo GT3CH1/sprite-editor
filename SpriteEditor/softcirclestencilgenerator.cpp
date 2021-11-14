@@ -15,9 +15,9 @@ Pointer2DArray<float> SoftCircleStencilGenerator::generate(unsigned int size)
 
 	float radius = (float)size/2;
 
-	for (int i = 0; i < size; i++)
+	for (unsigned int i = 0; i < size; i++)
 	{
-		for (int j = 0; j < size; j++)
+		for (unsigned int j = 0; j < size; j++)
 		{
 			float distance = sqrt(pow(i - radius, 2) + pow(j - radius, 2));
 			if (distance > radius)

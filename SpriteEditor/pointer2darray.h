@@ -9,7 +9,7 @@ private:
 	unsigned int width;
 	unsigned int height;
 	T** array;
-public:
+public:	
 	Pointer2DArray(unsigned int width, unsigned int height);
 	Pointer2DArray(const Pointer2DArray<T>& other);
 	Pointer2DArray<T>& operator=(Pointer2DArray<T> otherCopy);

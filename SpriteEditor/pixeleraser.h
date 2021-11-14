@@ -2,11 +2,12 @@
 #define PIXELERASER_H
 
 #include "pixelbrush.h"
+#include "istencilgenerator.h"
 
 class PixelEraser : public PixelBrush
 {
 public:
-//	PixelEraser(StencilGenerator generate);
+	PixelEraser(IStencilGenerator* generate);
 	virtual void apply(const ActionState& canvasState, const CallbackOptions& callbacks);
 };
 

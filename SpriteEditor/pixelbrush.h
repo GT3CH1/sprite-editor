@@ -7,16 +7,20 @@
 #define PIXELBRUSH_H
 
 #include "itool.h"
+#include "istencilgenerator.h"
 
 class PixelBrush : public ITool
 {
 public:
-//	PixelBrush(StencilGenerator generator);
+	PixelBrush(IStencilGenerator* generator);
+	PixelBrush(const PixelBrush& other);
+	PixelBrush& operator=(PixelBrush otherCopy);
+	~PixelBrush();
 	virtual void apply(const ActionState& canvasState, const CallbackOptions& callbacks);
 private:
-//	StencilGenerator stencilGenerator;
+	IStencilGenerator* stencilGenerator;
 protected:
-//	float[][] stencil;
+	Pointer2DArray<float> stencil;
 	void setStencilOnSizeChange(int newSize);
 };
 
