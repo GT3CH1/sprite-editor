@@ -16,10 +16,10 @@ SOURCES += \
     pixelbrush.cpp \
     pixeleraser.cpp \
     pointer2darray.cpp \
-    spriteeditorvc.cpp
+				spriteeditorvc.cpp \
     softcirclestencilgenerator.cpp \
-    spriteeditorvc.cpp \
-    squarestencilgenerator.cpp
+				spriteeditorvc.cpp \
+				squarestencilgenerator.cpp
 
 HEADERS += \
     istencilgenerator.h \
