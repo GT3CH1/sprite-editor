@@ -18,7 +18,6 @@ SOURCES += \
     pointer2darray.cpp \
 				spriteeditorvc.cpp \
     softcirclestencilgenerator.cpp \
-				spriteeditorvc.cpp \
 				squarestencilgenerator.cpp \
 				renderarea.cpp
 
@@ -35,8 +34,7 @@ HEADERS += \
     itool.h \
     pixelbrush.h \
     pixeleraser.h \
-    pointer2darray.h \
-    spriteeditorvc.h
+				pointer2darray.h
 
 FORMS += \
     spriteeditorvc.ui
