@@ -1,8 +1,3 @@
-/**
- * Kenzie Evans
- * 11/13/21
- * */
-
 #ifndef PIXELBRUSH_H
 #define PIXELBRUSH_H
 

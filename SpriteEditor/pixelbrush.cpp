@@ -1,20 +1,44 @@
+/**
+ * Kenzie Evans
+ * William Erignac
+ * 11/13/2021
+ *
+ * @brief The PixelBrush class creates a brush tool that applies the
+ * current action state and callback information to the active frame.
+ * It uses a stencil for a specific shape and then uses the colors to
+ * apply the new color to the frame.
+ */
+
 #include "itool.h"
 #include "pixelbrush.h"
 
+/**
+ * @brief Creates the PixelBrush object
+ * @param generator Pointer to the stencil needed for the tool
+ */
 PixelBrush::PixelBrush(IStencilGenerator* generator) : stencilGenerator(generator), stencil(0,0)
 {
 }
 
+/**
+ * @brief Destroys this objects pointer to the stencil generator
+ */
 PixelBrush::~PixelBrush()
 {
 	delete stencilGenerator;
 }
 
+/**
+ * @brief Creates a deep copy copy of another PixelBrush
+ */
 PixelBrush::PixelBrush(const PixelBrush& other) : stencil(other.stencil)
 {
 	*stencilGenerator = *other.stencilGenerator;
 }
 
+/**
+ * @brief Creates a deep copy of another PixelBrush
+ */
 PixelBrush& PixelBrush::operator=(PixelBrush otherCopy)
 {
 	std::swap(stencil, otherCopy.stencil);
@@ -22,6 +46,12 @@ PixelBrush& PixelBrush::operator=(PixelBrush otherCopy)
 	return *this;
 }
 
+/**
+ * @brief Applies the tool size to the stencil and the color to
+ * each pixel.
+ * @param canvasState Current ActionState of the frame
+ * @param callbacks Current callback information
+ */
 void PixelBrush::apply(const ActionState& canvasState, const CallbackOptions& callbacks)
 {
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
@@ -43,6 +73,12 @@ void PixelBrush::apply(const ActionState& canvasState, const CallbackOptions& ca
 	callbacks.setPixelColors(colors, x, y);
 }
 
+/**
+ * @brief Computes the new color using the two colors and the alpha color.
+ * @param newColor The new color
+ * @param lastColor The last color that was used
+ * @return
+ */
 QColor PixelBrush::computeColor(QColor newColor, QColor lastColor)
 {
 	float combinedAlpha = newColor.alphaF() + lastColor.alphaF()*(1 - newColor.alphaF());
@@ -53,6 +89,10 @@ QColor PixelBrush::computeColor(QColor newColor, QColor lastColor)
 	return combinedColor;
 }
 
+/**
+ * @brief Sets the size of the stencil.
+ * @param newSize Size of the brush
+ */
 void PixelBrush::setStencilOnSizeChange(unsigned int newSize)
 {
 	if (stencil.getHeight() != newSize)

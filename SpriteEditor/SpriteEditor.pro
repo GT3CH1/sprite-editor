@@ -9,17 +9,16 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    StencilTester.cpp \
     actionstate.cpp \
     callbackoptions.cpp \
     main.cpp \
     pixelbrush.cpp \
     pixeleraser.cpp \
     pointer2darray.cpp \
-				spriteeditorvc.cpp \
+    spriteeditorvc.cpp \
     softcirclestencilgenerator.cpp \
-				squarestencilgenerator.cpp \
-				renderarea.cpp
+    squarestencilgenerator.cpp \
+    renderarea.cpp
 
 HEADERS += \
     istencilgenerator.h \
