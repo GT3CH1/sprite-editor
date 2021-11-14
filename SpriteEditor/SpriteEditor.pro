@@ -21,7 +21,6 @@ HEADERS += \
     softcirclestencilgenerator.h \
     spriteeditorvc.h \
     squarestencilgenerator.h
-    renderarea.cpp \
 
 HEADERS += \
     renderarea.h \
