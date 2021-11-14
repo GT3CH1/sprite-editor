@@ -19,7 +19,8 @@ SOURCES += \
 				spriteeditorvc.cpp \
     softcirclestencilgenerator.cpp \
 				spriteeditorvc.cpp \
-				squarestencilgenerator.cpp
+				squarestencilgenerator.cpp \
+				renderarea.cpp
 
 HEADERS += \
     istencilgenerator.h \
