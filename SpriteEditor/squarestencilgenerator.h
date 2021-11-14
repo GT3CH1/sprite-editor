@@ -7,7 +7,7 @@
 class SquareStencilGenerator : public IStencilGenerator
 {
 public:
-	virtual void generate(int size, float** stencil);
+	virtual Pointer2DArray<float> generate(unsigned int size);
 };
 
 #endif // SQUARESTENCILGENERATOR_H

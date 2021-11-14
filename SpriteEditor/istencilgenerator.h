@@ -1,6 +1,8 @@
 #ifndef ISTENCILGENERATOR_H
 #define ISTENCILGENERATOR_H
 
+#include "pointer2darray.h"
+
 /**
  * Kenzie Evans
  * William Erignac
@@ -15,7 +17,7 @@ public:
 	 * @brief Fills the stencil parameter with weights representing this generator's shape.
 	 * @param size The size of the stencil to fill.
 	 */
-	virtual void generate(int size, float** stencil) = 0;
+	virtual Pointer2DArray<float> generate(unsigned int size) = 0;
 };
 
 #endif // ISTENCILGENERATOR_H
