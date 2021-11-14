@@ -12,6 +12,15 @@ SOURCES += \
     actionstate.cpp \
     callbackoptions.cpp \
     main.cpp \
+    softcirclestencilgenerator.cpp \
+    spriteeditorvc.cpp \
+    squarestencilgenerator.cpp
+
+HEADERS += \
+    istencilgenerator.h \
+    softcirclestencilgenerator.h \
+    spriteeditorvc.h \
+    squarestencilgenerator.h
     renderarea.cpp \
     spriteeditorvc.cpp
 
