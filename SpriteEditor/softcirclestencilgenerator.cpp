@@ -9,13 +9,15 @@
 #include "softcirclestencilgenerator.h"
 #include <math.h>
 
-void SoftCircleStencilGenerator::generate(int size, float** stencil)
+Pointer2DArray<float> SoftCircleStencilGenerator::generate(unsigned int size)
 {
+	Pointer2DArray<float> stencil(size, size);
+
 	float radius = (float)size/2;
 
-	for (int i = 0; i < size; i++)
+	for (unsigned int i = 0; i < size; i++)
 	{
-		for (int j = 0; j < size; j++)
+		for (unsigned int j = 0; j < size; j++)
 		{
 			float distance = sqrt(pow(i - radius, 2) + pow(j - radius, 2));
 			if (distance > radius)
@@ -24,4 +26,6 @@ void SoftCircleStencilGenerator::generate(int size, float** stencil)
 				stencil[i][j] = sqrt(1 - pow(distance / radius, 2));
 		}
 	}
+
+	return stencil;
 }

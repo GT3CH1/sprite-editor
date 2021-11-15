@@ -12,10 +12,13 @@ SOURCES += \
     actionstate.cpp \
     callbackoptions.cpp \
     main.cpp \
-    softcirclestencilgenerator.cpp \
+    pixelbrush.cpp \
+    pixeleraser.cpp \
+    pointer2darray.cpp \
     spriteeditorvc.cpp \
-				squarestencilgenerator.cpp \
-				renderarea.cpp
+    softcirclestencilgenerator.cpp \
+    squarestencilgenerator.cpp \
+    renderarea.cpp
 
 HEADERS += \
     istencilgenerator.h \
@@ -27,7 +30,10 @@ HEADERS += \
     renderarea.h \
     actionstate.h \
     callbackoptions.h \
-    spriteeditorvc.h
+    itool.h \
+    pixelbrush.h \
+    pixeleraser.h \
+    pointer2darray.h
 
 FORMS += \
     spriteeditorvc.ui

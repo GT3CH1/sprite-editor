@@ -7,9 +7,13 @@
 
 #include "squarestencilgenerator.h"
 
-void SquareStencilGenerator::generate(int size, float** stencil)
+Pointer2DArray<float> SquareStencilGenerator::generate(unsigned int size)
 {
-	for (int i = 0; i < size; i++)
-		for (int j = 0; j < size; j++)
+	Pointer2DArray<float> stencil(size, size);
+
+	for (unsigned int i = 0; i < size; i++)
+		for (unsigned int j = 0; j < size; j++)
 			stencil[i][j] = 1;
+
+	return stencil;
 }
