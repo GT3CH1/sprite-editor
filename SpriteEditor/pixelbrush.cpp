@@ -12,6 +12,7 @@
 #include "itool.h"
 #include "pixelbrush.h"
 #include <algorithm>
+#include <QPixmap>
 
 /**
  * @brief Creates the PixelBrush object
@@ -53,7 +54,7 @@ PixelBrush& PixelBrush::operator=(PixelBrush otherCopy)
  * @param canvasState Current ActionState of the frame
  * @param callbacks Current callback information
  */
-void PixelBrush::apply(const ActionState& canvasState, const CallbackOptions& callbacks)
+void PixelBrush::apply(ActionState& canvasState, const CallbackOptions& callbacks)
 {
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
 
@@ -67,8 +68,8 @@ void PixelBrush::apply(const ActionState& canvasState, const CallbackOptions& ca
 	int bottomRightX = canvasState.MOUSE_X_GRID_COORD + stencil.getWidth() / 2;
 	int bottomRightY = canvasState.MOUSE_Y_GRID_COORD + stencil.getHeight() / 2;
 
-	bottomRightX = std::clamp(bottomRightX, 0, canvasState.ACTIVE_LAYER.width());
-	bottomRightY = std::clamp(bottomRightY, 0, canvasState.ACTIVE_LAYER.height());
+	bottomRightX = std::clamp(bottomRightX, 0, canvasState.ACTIVE_FRAME.width());
+	bottomRightY = std::clamp(bottomRightY, 0, canvasState.ACTIVE_FRAME.height());
 
 	unsigned int x = 0;
 	unsigned int y = 0;
@@ -91,7 +92,7 @@ void PixelBrush::apply(const ActionState& canvasState, const CallbackOptions& ca
 		{
 			float stencilAlpha = stencil[i][j];
 			QColor newStencilColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), stencilAlpha * 255);
-			colors[i][j] = computeColor(newStencilColor, canvasState.ACTIVE_LAYER.pixelColor(i+x,j+y));
+			colors[i][j] = computeColor(newStencilColor, canvasState.ACTIVE_FRAME[i+x][j+y]);//.pixelColor(i+x,j+y));
 		}
 	}
 

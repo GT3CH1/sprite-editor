@@ -11,7 +11,7 @@ public:
 	PixelBrush(const PixelBrush& other);
 	PixelBrush& operator=(PixelBrush otherCopy);
 	virtual ~PixelBrush();
-	virtual void apply(const ActionState& canvasState, const CallbackOptions& callbacks);
+	virtual void apply(ActionState& canvasState, const CallbackOptions& callbacks);
 private:
 	IStencilGenerator* stencilGenerator;
 protected:

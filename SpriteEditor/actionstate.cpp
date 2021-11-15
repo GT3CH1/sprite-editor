@@ -9,7 +9,7 @@
 #include "actionstate.h"
 
 ActionState::ActionState(const int size, const QColor color, const int x,
-						 const int y, const QImage& layer)
-	: TOOL_SIZE(size), TOOL_COLOR(color), MOUSE_X_GRID_COORD(x), MOUSE_Y_GRID_COORD(y), ACTIVE_LAYER(layer)
+						 const int y, QPixmap frame)
+	: TOOL_SIZE(size), TOOL_COLOR(color), MOUSE_X_GRID_COORD(x), MOUSE_Y_GRID_COORD(y), ACTIVE_FRAME(frame)
 {	
 }

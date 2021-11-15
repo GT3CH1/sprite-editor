@@ -8,7 +8,7 @@ class PixelEraser : public PixelBrush
 {
 public:
 	PixelEraser(IStencilGenerator* generate);
-	virtual void apply(const ActionState& canvasState, const CallbackOptions& callbacks);
+	virtual void apply(ActionState& canvasState, const CallbackOptions& callbacks);
 };
 
 #endif // PIXELERASER_H

@@ -24,7 +24,7 @@ PixelEraser::PixelEraser(IStencilGenerator* generator) : PixelBrush(generator)
  * @param canvasState Current ActionState of the frame
  * @param callbacks Current callback information
  */
-void PixelEraser::apply(const ActionState& canvasState, const CallbackOptions& callbacks)
+void PixelEraser::apply(ActionState& canvasState, const CallbackOptions& callbacks)
 {
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
 	/* Out-of-bounds culling (getting rid of parts of the
@@ -37,8 +37,8 @@ void PixelEraser::apply(const ActionState& canvasState, const CallbackOptions& c
 	int bottomRightX = canvasState.MOUSE_X_GRID_COORD + stencil.getWidth() / 2;
 	int bottomRightY = canvasState.MOUSE_Y_GRID_COORD + stencil.getHeight() / 2;
 
-	bottomRightX = std::clamp(bottomRightX, 0, canvasState.ACTIVE_LAYER.width());
-	bottomRightY = std::clamp(bottomRightY, 0, canvasState.ACTIVE_LAYER.height());
+	bottomRightX = std::clamp(bottomRightX, 0, canvasState.ACTIVE_FRAME.width());
+	bottomRightY = std::clamp(bottomRightY, 0, canvasState.ACTIVE_FRAME.height());
 
 	unsigned int x = 0;
 	unsigned int y = 0;
@@ -59,7 +59,7 @@ void PixelEraser::apply(const ActionState& canvasState, const CallbackOptions& c
 	{
 		for (unsigned int j = 0; j < colors.getHeight(); j++)
 		{
-			QColor oldColor = canvasState.ACTIVE_LAYER.pixelColor(x + i, y + j);
+			QColor oldColor = canvasState.ACTIVE_FRAME[x + i][y + j];
 			float newAlpha = oldColor.alphaF()*(1 - stencil[i][j]);
 			QColor newColor(oldColor.red(), oldColor.green(), oldColor.blue(), newAlpha*255);
 			colors[i][j] = newColor;
