@@ -2,19 +2,32 @@
 #define RENDERAREA_H
 
 #include <QLabel>
+#include <QMouseEvent>
+#include <QPainter>
 
 class RenderArea : public QLabel
 {
 	Q_OBJECT
 
 private:
-	QImage* toRender;
+	QPixmap toRender;
+
+	// How big our pixel is
+	int pixelSize = 16;
+	// How big our canvas size is.
+	int canvasSize = 0;
+	// Whether or not the grid is going to shown.
+	bool gridShown = true;
+
+	int getNumColsAndRows();
+	void drawGrid();
 private slots:
-	void mousePressEvent(QMouseEvent*);
+	void mousePressEvent(QMouseEvent* event);
 public:
-	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
+	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 512);
 public slots:
-	void setImage(QImage*);
+	void setImage(QPixmap mapToRender);
+	void setGridShown(bool gridShown);
 signals:
 	void clicked();
 };
