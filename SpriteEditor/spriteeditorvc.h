@@ -21,12 +21,6 @@ class SpriteEditorVC : public QMainWindow
 public:
 	SpriteEditorVC(QWidget *parent = nullptr);
 	~SpriteEditorVC();
-	QAction *saveAction;
-	QAction *openAction;
-	QAction *closeAction;
-	QAction *helpAction;
-	QMenu *fileMenu;
-	QMenu *helpMenu;
 
 public slots:
 	void showColorDialog();
@@ -38,5 +32,12 @@ private:
 	QColorDialog colorDialog;
 	void setButtonColor(QPushButton* button, QString hex);
 	void createMenu();
+	QAction *saveAction;
+	QAction *openAction;
+	QAction *closeAction;
+	QAction *helpAction;
+	QAction *newFileAction;
+	QMenu *fileMenu;
+	QMenu *helpMenu;
 };
 #endif // SPRITEEDITORVC_H

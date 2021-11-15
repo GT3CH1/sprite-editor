@@ -6,11 +6,12 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	, ui(new Ui::SpriteEditorVC)
 {
 	ui->setupUi(this);
-    this->setStyleSheet(QString("QMainWindow { background-color:white}"));
+	this->setStyleSheet(QString("QMainWindow { background-color:white}"));
     // Set up FPS slider.
     ui->fpsSlider->setTickInterval(10);
     ui->fpsSlider->setSingleStep(10);
     ui->fpsSlider->setMaximum(60);
+
 	setButtonColor(ui->primaryColorButton1,QColorDialog::standardColor(9).name(QColor::HexArgb));
 	setButtonColor(ui->primaryColorButton2,QColorDialog::standardColor(21).name(QColor::HexArgb));
 	setButtonColor(ui->primaryColorButton3,QColorDialog::standardColor(45).name(QColor::HexArgb));
@@ -47,6 +48,7 @@ SpriteEditorVC::~SpriteEditorVC()
 void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 {
     ui->fpsLabel->setText(QString::number(value));
+	//TODO: Remove this testing code.
 	setButtonColor(ui->customColorButton1,QColorDialog::customColor(0).name(QColor::HexArgb));
 	setButtonColor(ui->customColorButton2,QColorDialog::customColor(1).name(QColor::HexArgb));
 	setButtonColor(ui->customColorButton3,QColorDialog::customColor(2).name(QColor::HexArgb));
@@ -57,9 +59,14 @@ void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 	setButtonColor(ui->customColorButton8,QColorDialog::customColor(7).name(QColor::HexArgb));
 }
 
+/**
+ * @brief Sets the given button color (via background-color) to the given hex value.
+ * @param button - The button to change the color of.
+ * @param hex - The hexadecimal string to change color to.
+ */
 void SpriteEditorVC::setButtonColor(QPushButton *button, QString hex)
 {
-	button->setStyleSheet(QString("QPushButton {background-color:%1;border:1px solid lightgray; border-radius:5px;};").arg(hex));
+	button->setStyleSheet(QString("QPushButton {background-color:%1;border:1px solid lightgray; border-radius:5px} QPushButton:hover{border: 1px solid gray;}").arg(hex));
 }
 
 
@@ -69,18 +76,23 @@ void SpriteEditorVC::createMenu(){
 	saveAction = new QAction(QIcon::fromTheme(":/res/save.svg"), tr("&Save..."), this);
 	openAction = new QAction(QIcon::fromTheme(":/res/open.svg"), tr("&Open..."), this);
 	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
-	saveAction->setStatusTip(tr("Open an existing file"));
+	newFileAction = new QAction(QIcon(":/res/new.svg"), tr("&New..."), this);
+	saveAction->setStatusTip(tr("Save this file"));
 	openAction->setStatusTip(tr("Open an existing file"));
-	closeAction->setStatusTip(tr("Open an existing file"));
+	closeAction->setStatusTip(tr("Close project"));
+	newFileAction->setStatusTip(tr("Create a new file"));
 
 	//TODO(GCPEASE): Attach this to the real signal and slots
 	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::showColorDialog);
 	connect(openAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
 	connect(closeAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
+	connect(newFileAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
 
 	fileMenu = menuBar()->addMenu(tr("&File"));
+	fileMenu->addAction(newFileAction);
 	fileMenu->addAction(saveAction);
 	fileMenu->addAction(openAction);
+	fileMenu->addSeparator();
 	fileMenu->addAction(closeAction);
 }
 
