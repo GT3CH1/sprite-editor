@@ -13,6 +13,7 @@ SOURCES += \
     callbackoptions.cpp \
     main.cpp \
     spriteeditormodel.cpp \
+    spriteeditorvc.cpp \
     pixelbrush.cpp \
     pixeleraser.cpp \
     pointer2darray.cpp \
@@ -29,13 +30,15 @@ HEADERS += \
     renderarea.h \
     actionstate.h \
     callbackoptions.h \
+<<<<<<< HEAD
     spriteeditormodel.h \
-    spriteeditorvc.h \
+    spriteeditorvc.h
+=======
     itool.h \
     pixelbrush.h \
     pixeleraser.h \
     pointer2darray.h
-
+>>>>>>> main
 
 FORMS += \
     spriteeditorvc.ui
