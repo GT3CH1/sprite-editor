@@ -52,3 +52,6 @@ giant green "Compare & pull request" button. Please appropriately title your pul
     - If you do not run this command, please set your line-ending style to Unix in QT preferences.
 ## Using WSL
   - WSL is a VERY powerful tool. One of my favorite things to do is to absolutey press the tab key to autocomplete.
+
+# Licensing
+- [Font Awesome](https://fontawesome.com/license)

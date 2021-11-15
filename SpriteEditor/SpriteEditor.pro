@@ -24,9 +24,7 @@ HEADERS += \
     istencilgenerator.h \
     softcirclestencilgenerator.h \
     spriteeditorvc.h \
-    squarestencilgenerator.h
-
-HEADERS += \
+    squarestencilgenerator.h \
     renderarea.h \
     actionstate.h \
     callbackoptions.h \
@@ -42,3 +40,12 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    paint-brush.svg \
+    pen.svg \
+    res/paint-brush.svg \
+    res/pen.svg
+
+RESOURCES += \
+    resources.qrc
