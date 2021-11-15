@@ -13,7 +13,7 @@
 struct CallbackOptions
 {
 public:
-	CallbackOptions(void (*_setPixelColors)(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord),
+	CallbackOptions(void (*_paintPixelColors)(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord),
 					void (*_setPixelColor)(QColor, unsigned int xCoord, unsigned int yCoord));
 
 	//https://stackoverflow.com/questions/10003270/gcc-array-type-has-incomplete-element-type
@@ -25,7 +25,7 @@ public:
 	 * @param yCoord the  displacement of the pixels to be set in the y direction
 	 * (y coordinate of upper left pixel in 2D array).
 	 */
-	void (*setPixelColors)(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord);
+	void (*paintPixelColors)(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord);
 
 	/**
 	 * @param QColor the color to set the given pixel.
