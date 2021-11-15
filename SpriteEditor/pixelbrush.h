@@ -17,7 +17,6 @@ private:
 protected:
 	Pointer2DArray<float> stencil;
 	void setStencilOnSizeChange(unsigned int newSize);
-	QColor computeColor(QColor newColor, QColor lastColor);
 };
 
 #endif // PIXELBRUSH_H

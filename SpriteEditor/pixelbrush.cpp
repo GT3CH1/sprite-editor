@@ -90,29 +90,13 @@ void PixelBrush::apply(ActionState& canvasState, const CallbackOptions& callback
 	{
 		for (unsigned int j = y - upperLeftY; j < colors.getHeight(); j++)
 		{
-			float stencilAlpha = stencil[i][j];
+			float stencilAlpha = stencil[i + upperLeftX][j + upperLeftY];
 			QColor newStencilColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), stencilAlpha * 255);
-			colors[i][j] = computeColor(newStencilColor, canvasState.ACTIVE_FRAME[i+x][j+y]);//.pixelColor(i+x,j+y));
+			colors[i][j] = newStencilColor;
 		}
 	}
 
-	callbacks.setPixelColors(colors, x, y);
-}
-
-/**
- * @brief Computes the new color using the two colors and the alpha color.
- * @param newColor The new color
- * @param lastColor The last color that was used
- * @return
- */
-QColor PixelBrush::computeColor(QColor newColor, QColor lastColor)
-{
-	float combinedAlpha = newColor.alphaF() + lastColor.alphaF()*(1 - newColor.alphaF());
-	float combinedR = (newColor.redF()*newColor.alphaF() + lastColor.redF()*lastColor.alphaF()*(1 - newColor.alphaF()))/combinedAlpha;
-	float combinedG = (newColor.greenF()*newColor.alphaF() + lastColor.greenF()*lastColor.alphaF()*(1 - newColor.alphaF()))/combinedAlpha;
-	float combinedB = (newColor.blueF()*newColor.alphaF() + lastColor.blueF()*lastColor.alphaF()*(1 - newColor.alphaF()))/combinedAlpha;
-	QColor combinedColor(combinedR*255, combinedG*255, combinedB*255, combinedAlpha*255);
-	return combinedColor;
+	callbacks.paintPixelColors(colors, x, y);
 }
 
 /**
