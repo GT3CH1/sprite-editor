@@ -50,13 +50,14 @@ void RenderArea::setImage(QPixmap newMapToRender)
  */
 void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
+	//TODO(gcpease): Remove this code and place in model.
 	QPainter paint(&toRender);
-	paint.setPen(QColor(0, 0, 0, 255));
 	int col = evt->position().x()/pixelSize;
 	int row = evt->position().y()/pixelSize;
 	paint.fillRect(col*pixelSize,row*pixelSize,pixelSize,pixelSize,Qt::blue);
 	paint.end();
 	setImage(toRender);
+	emit clicked();
 }
 
 /**
