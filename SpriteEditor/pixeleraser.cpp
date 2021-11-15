@@ -27,10 +27,33 @@ PixelEraser::PixelEraser(IStencilGenerator* generator) : PixelBrush(generator)
 void PixelEraser::apply(const ActionState& canvasState, const CallbackOptions& callbacks)
 {
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
-	Pointer2DArray<QColor> colors (stencil.getWidth(), stencil.getHeight());
+	/* Out-of-bounds culling (getting rid of parts of the
+	 * brush that are outside the bounds of the canvas).
+	 * TODO(werignac-utah): Replace this with a helper method.
+	 */
+	int upperLeftX = canvasState.MOUSE_X_GRID_COORD - stencil.getWidth() / 2;
+	int upperLeftY = canvasState.MOUSE_Y_GRID_COORD - stencil.getHeight() / 2;
 
-	unsigned int x = canvasState.MOUSE_X_GRID_COORD - stencil.getWidth() / 2;
-	unsigned int y = canvasState.MOUSE_Y_GRID_COORD - stencil.getHeight() / 2;
+	int bottomRightX = canvasState.MOUSE_X_GRID_COORD + stencil.getWidth() / 2;
+	int bottomRightY = canvasState.MOUSE_Y_GRID_COORD + stencil.getHeight() / 2;
+
+	bottomRightX = std::clamp(bottomRightX, 0, canvasState.ACTIVE_LAYER.width());
+	bottomRightY = std::clamp(bottomRightY, 0, canvasState.ACTIVE_LAYER.height());
+
+	unsigned int x = 0;
+	unsigned int y = 0;
+	unsigned int affectedWidth = 0;
+	unsigned int affectedHeight = 0;
+
+	if (upperLeftX > 0)
+		x = upperLeftX;
+	if (upperLeftY > 0)
+		y = upperLeftY;
+
+	affectedWidth = bottomRightX - upperLeftX;
+	affectedHeight = bottomRightY - upperLeftY;
+
+	Pointer2DArray<QColor> colors (affectedWidth, affectedHeight);
 
 	for (unsigned int i = 0; i < colors.getWidth(); i++)
 	{
