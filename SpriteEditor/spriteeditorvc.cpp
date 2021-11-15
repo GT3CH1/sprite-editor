@@ -85,3 +85,28 @@ void SpriteEditorVC::loadPressed()
 		emit load(path.toStdString(), name);
 	}
 }
+
+/**
+ * @brief Triggers when any key is pressed and emits any
+ * relevant signals.
+ * @param event
+ */
+void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
+{
+	switch (event->key())
+	{
+	// Decrease tool size
+	case Qt::Key_BracketLeft:
+		emit decrementBrushSize();
+		emit decrementToolSize();
+		break;
+	// Increase tool size
+	case Qt::Key_BracketRight:
+		emit incrementBrushSize();
+		emit incrementToolSize();
+		break;
+	default:
+		// do nothing
+		break;
+	}
+}

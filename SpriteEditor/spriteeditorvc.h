@@ -27,6 +27,7 @@ public:
 
 private slots:
     void on_fpsSlider_valueChanged(int value);
+	void keyPressEvent(QKeyEvent*);
 	void savePressed();
 	void loadPressed();
 
