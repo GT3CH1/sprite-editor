@@ -17,7 +17,7 @@ class ITool
 {
 public:
 	virtual void apply(const ActionState& canvasState, const CallbackOptions& callbacks) = 0;
-	virtual ~ITool() = 0;
+	virtual ~ITool(){}
 };
 
 #endif // ITOOL_H
