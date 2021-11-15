@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/paint-brush.svg</file>
+        <file>res/pen.svg</file>
+        <file>res/eraser.svg</file>
+    </qresource>
+</RCC>
