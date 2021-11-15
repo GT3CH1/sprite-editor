@@ -35,7 +35,7 @@ private:
 	Ui::SpriteEditorVC *ui;
 	int indexOfActiveFrame;
 	int indexOfPlayback;
-	float fps;
+	int fps = 0;
 	QTimer playbackUpdater;
 	QString path = QDir::homePath();
 

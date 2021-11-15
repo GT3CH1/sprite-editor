@@ -20,12 +20,30 @@ SpriteEditorVC::~SpriteEditorVC()
 }
 
 /**
- * @brief Updates the FPS label
+ * @brief Updates the FPS label and controls the animation
+ * playback timer
  * @param value
  */
 void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 {
     ui->fpsLabel->setText(QString::number(value));
+	fps = value;
+
+	if (fps == 0 && playbackUpdater.isActive())
+	{
+		playbackUpdater.stop();
+	}
+	else if (fps != 0)
+	{
+		if (!playbackUpdater.isActive())
+		{
+			playbackUpdater.start(1000 / fps);
+		}
+		else
+		{
+			playbackUpdater.setInterval(1000 / fps);
+		}
+	}
 }
 
 /**
