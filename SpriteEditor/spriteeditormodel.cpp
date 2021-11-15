@@ -2,6 +2,7 @@
  * spriteeditormodel handles tools and the sprite itself as well as all modifications of the sprite
  */
 #include "spriteeditormodel.h"
+#include "actionstate.h"
 
 /**
  * @brief SpriteEditorModel::getFramefromIndex
@@ -37,6 +38,7 @@ void SpriteEditorModel::setActiveColor(QColor newColor)
  */
 void SpriteEditorModel::incrementBrushSize()
 {
+	toolSize++;
 	// TODO(ALEX): need to work with kenzie and william once tools are more done
 }
 
@@ -45,6 +47,7 @@ void SpriteEditorModel::incrementBrushSize()
  */
 void SpriteEditorModel::decrementBrushSize()
 {
+	toolSize--;
 	// TODO(ALEX): need to work with kenzie and william once tools are more done
 }
 
