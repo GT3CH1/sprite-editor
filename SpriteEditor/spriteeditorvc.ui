@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>636</height>
+    <height>648</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -563,33 +563,34 @@
       <x>630</x>
       <y>20</y>
       <width>151</width>
-      <height>127</height>
+      <height>231</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="playbackLayout">
-     <item row="0" column="0" colspan="2">
-      <widget class="QLabel" name="animationPlaybackLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item row="1" column="0">
+      <widget class="QSlider" name="fpsSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
        </property>
-       <property name="text">
-        <string>Animation Playback</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
+       <property name="tickInterval">
+        <number>10</number>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="0" column="0" colspan="2">
+      <widget class="QWidget" name="QRenderArea" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>80</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
       <widget class="QLabel" name="fpsLabel">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -608,29 +609,6 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QSlider" name="fpsSlider">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-       <property name="tickInterval">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QWidget" name="QRenderArea" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>80</height>
-        </size>
        </property>
       </widget>
      </item>
@@ -658,10 +636,27 @@
      </size>
     </property>
    </widget>
+   <widget class="QWidget" name="menuWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>49</x>
+      <y>0</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
    <zorder>mainCanvas</zorder>
    <zorder>frameDisplay</zorder>
    <zorder>layoutWidget1</zorder>
    <zorder>layoutWidget</zorder>
+   <zorder>menuWidget</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

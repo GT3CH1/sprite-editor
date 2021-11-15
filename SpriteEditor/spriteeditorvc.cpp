@@ -11,7 +11,28 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
     ui->fpsSlider->setTickInterval(10);
     ui->fpsSlider->setSingleStep(10);
     ui->fpsSlider->setMaximum(60);
-	qDebug() << ui->primaryColorButton1->styleSheet();
+	setButtonColor(ui->primaryColorButton1,QColorDialog::standardColor(9).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton2,QColorDialog::standardColor(21).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton3,QColorDialog::standardColor(45).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton4,QColorDialog::standardColor(36).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton5,QColorDialog::standardColor(7).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton6,QColorDialog::standardColor(5).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton7,QColorDialog::standardColor(0).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton8,QColorDialog::standardColor(47).name(QColor::HexArgb));
+
+	setButtonColor(ui->customColorButton1,QColorDialog::customColor(0).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton2,QColorDialog::customColor(1).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton3,QColorDialog::customColor(2).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton4,QColorDialog::customColor(3).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton5,QColorDialog::customColor(4).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton6,QColorDialog::customColor(5).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton7,QColorDialog::customColor(6).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton8,QColorDialog::customColor(7).name(QColor::HexArgb));
+
+	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
+	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
+	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
+	createMenu();
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -26,5 +47,44 @@ SpriteEditorVC::~SpriteEditorVC()
 void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 {
     ui->fpsLabel->setText(QString::number(value));
+	setButtonColor(ui->customColorButton1,QColorDialog::customColor(0).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton2,QColorDialog::customColor(1).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton3,QColorDialog::customColor(2).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton4,QColorDialog::customColor(3).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton5,QColorDialog::customColor(4).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton6,QColorDialog::customColor(5).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton7,QColorDialog::customColor(6).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton8,QColorDialog::customColor(7).name(QColor::HexArgb));
 }
 
+void SpriteEditorVC::setButtonColor(QPushButton *button, QString hex)
+{
+	button->setStyleSheet(QString("QPushButton {background-color:%1;border:1px solid lightgray; border-radius:5px;};").arg(hex));
+}
+
+
+
+void SpriteEditorVC::createMenu(){
+
+	saveAction = new QAction(QIcon::fromTheme(":/res/save.svg"), tr("&Save..."), this);
+	openAction = new QAction(QIcon::fromTheme(":/res/open.svg"), tr("&Open..."), this);
+	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
+	saveAction->setStatusTip(tr("Open an existing file"));
+	openAction->setStatusTip(tr("Open an existing file"));
+	closeAction->setStatusTip(tr("Open an existing file"));
+
+	//TODO(GCPEASE): Attach this to the real signal and slots
+	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::showColorDialog);
+	connect(openAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
+	connect(closeAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
+
+	fileMenu = menuBar()->addMenu(tr("&File"));
+	fileMenu->addAction(saveAction);
+	fileMenu->addAction(openAction);
+	fileMenu->addAction(closeAction);
+}
+
+
+void SpriteEditorVC::showColorDialog(){
+	colorDialog.show();
+}

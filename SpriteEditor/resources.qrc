@@ -3,5 +3,8 @@
         <file>res/paint-brush.svg</file>
         <file>res/pen.svg</file>
         <file>res/eraser.svg</file>
+        <file>res/close.svg</file>
+        <file>res/open.svg</file>
+        <file>res/save.svg</file>
     </qresource>
 </RCC>
