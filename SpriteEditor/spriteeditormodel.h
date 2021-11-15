@@ -6,8 +6,7 @@
 #include <QImage>
 #include <vector>
 #include <string>
-#include <QMap>
-#include "itool.h"
+// #include "itool.h" Waiting for itool.h from TODO(kenzie and william):
 
 using std::vector;
 using std::string;
@@ -24,7 +23,7 @@ private:
 	int imageHeight;
 	int toolSize;
 	QColor activeColor;
-	QMap<ToolType, ITool> Tools;
+	// map<ToolType, iTool> Tools; Waiting for itool.h from TODO(kenzie and william):
 	ToolType activeTool;
 	vector<QImage> frames;
 	int activeFrameIndex;
