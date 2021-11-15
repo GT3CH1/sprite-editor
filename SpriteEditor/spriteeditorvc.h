@@ -6,8 +6,9 @@
 #include <QPushButton>
 #include <QSlider>
 #include <QLabel>
-
-// TODO(gcpease): Add QRenderArea include
+#include <QTimer>
+#include <QDir>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SpriteEditorVC; }
@@ -24,11 +25,30 @@ public:
 	SpriteEditorVC(QWidget *parent = nullptr);
 	~SpriteEditorVC();
 
-
 private slots:
     void on_fpsSlider_valueChanged(int value);
+	void savePressed();
+	void loadPressed();
 
 private:
+	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
 	Ui::SpriteEditorVC *ui;
+	int indexOfActiveFrame;
+	int indexOfPlayback;
+	float fps;
+	QTimer playbackUpdater;
+	QString path = QDir::homePath();
+
+signals:
+	void switchActiveFrame(int);
+	void incrementToolSize();
+	void decrementToolSize();
+	void setActiveColor(QColor);
+	void incrementBrushSize();
+	void decrementBrushSize();
+	void changeActiveFrame(int);
+	void deleteFrame(int);
+	void save(std::string, std::string);
+	void load(std::string, std::string);
 };
 #endif // SPRITEEDITORVC_H
