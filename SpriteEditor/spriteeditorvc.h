@@ -24,14 +24,13 @@ public:
 
 public slots:
 	void showColorDialog();
+	void updateCustomButtonColors();
 private slots:
     void on_fpsSlider_valueChanged(int value);
 
 private:
 	Ui::SpriteEditorVC *ui;
-	QColorDialog colorDialog;
-	void setButtonColor(QPushButton* button, QString hex);
-	void createMenu();
+	QColorDialog *colorDialog;
 	QAction *saveAction;
 	QAction *openAction;
 	QAction *closeAction;
@@ -39,5 +38,8 @@ private:
 	QAction *newFileAction;
 	QMenu *fileMenu;
 	QMenu *helpMenu;
+	void setButtonColor(QPushButton* button, QString hex);
+	void createMenu();
+	void setupButtonColors();
 };
 #endif // SPRITEEDITORVC_H
