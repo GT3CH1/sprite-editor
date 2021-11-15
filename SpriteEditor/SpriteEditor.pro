@@ -24,16 +24,14 @@ HEADERS += \
     istencilgenerator.h \
     softcirclestencilgenerator.h \
     spriteeditorvc.h \
-    squarestencilgenerator.h
-
-HEADERS += \
+    squarestencilgenerator.h \
     renderarea.h \
     actionstate.h \
     callbackoptions.h \
     itool.h \
     pixelbrush.h \
     pixeleraser.h \
-				pointer2darray.h
+		pointer2darray.h
 
 FORMS += \
     spriteeditorvc.ui
