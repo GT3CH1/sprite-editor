@@ -52,8 +52,8 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
 	//TODO(gcpease): Remove this code and place in model.
 	QPainter paint(&toRender);
-	int col = evt->position().x()/pixelSize;
-	int row = evt->position().y()/pixelSize;
+	int col = evt->pos().x()/pixelSize;
+	int row = evt->pos().y()/pixelSize;
 	paint.fillRect(col*pixelSize,row*pixelSize,pixelSize,pixelSize,Qt::blue);
 	paint.end();
 	setImage(toRender);
