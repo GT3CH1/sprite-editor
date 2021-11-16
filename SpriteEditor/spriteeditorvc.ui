@@ -42,7 +42,7 @@
      <rect>
       <x>10</x>
       <y>30</y>
-      <width>71</width>
+      <width>83</width>
       <height>511</height>
      </rect>
     </property>
@@ -642,6 +642,12 @@
       <width>512</width>
       <height>512</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="minimumSize">
      <size>

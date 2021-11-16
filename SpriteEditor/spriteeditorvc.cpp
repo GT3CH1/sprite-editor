@@ -16,6 +16,8 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	model = new SpriteEditorModel();
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
 	connect(colorDialog,&QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
+	connect(this,&SpriteEditorVC::colorChanged,this->model,&SpriteEditorModel::setActiveColor);
+
 	// Sets up the getting when a color button is clicked.
 	connect(ui->primaryColorButton1,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->primaryColorButton2,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
@@ -25,6 +27,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->primaryColorButton6,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->primaryColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->primaryColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+
 	connect(ui->customColorButton1,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton2,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton3,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
@@ -34,7 +37,6 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->customColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 
-	connect(this,&SpriteEditorVC::colorChanged,this->model,&SpriteEditorModel::setActiveColor);
 	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
@@ -115,14 +117,14 @@ void SpriteEditorVC::createMenu()
  */
 void SpriteEditorVC::setupButtonColors()
 {
-	setButtonColor(ui->primaryColorButton1,QColorDialog::standardColor(9).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton2,QColorDialog::standardColor(21).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton3,QColorDialog::standardColor(45).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton4,QColorDialog::standardColor(36).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton5,QColorDialog::standardColor(7).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton6,QColorDialog::standardColor(5).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton7,QColorDialog::standardColor(0).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton8,QColorDialog::standardColor(47).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton1,colorDialog->standardColor(9).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton2,colorDialog->standardColor(21).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton3,colorDialog->standardColor(45).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton4,colorDialog->standardColor(36).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton5,colorDialog->standardColor(7).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton6,colorDialog->standardColor(5).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton7,colorDialog->standardColor(0).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton8,colorDialog->standardColor(47).name(QColor::HexArgb));
 	updateCustomButtonColors();
 }
 
@@ -131,14 +133,14 @@ void SpriteEditorVC::setupButtonColors()
  */
 void SpriteEditorVC::updateCustomButtonColors()
 {
-	setButtonColor(ui->customColorButton1,QColorDialog::customColor(0).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton2,QColorDialog::customColor(1).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton3,QColorDialog::customColor(2).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton4,QColorDialog::customColor(3).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton5,QColorDialog::customColor(4).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton6,QColorDialog::customColor(5).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton7,QColorDialog::customColor(6).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton8,QColorDialog::customColor(7).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton1,colorDialog->customColor(0).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton2,colorDialog->customColor(1).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton3,colorDialog->customColor(2).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton4,colorDialog->customColor(3).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton5,colorDialog->customColor(4).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton6,colorDialog->customColor(5).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton7,colorDialog->customColor(6).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton8,colorDialog->customColor(7).name(QColor::HexArgb));
 }
 
 
@@ -147,6 +149,7 @@ void SpriteEditorVC::updateCustomButtonColors()
  */
 void SpriteEditorVC::showColorDialog()
 {
+	colorDialog->setOption(QColorDialog::ShowAlphaChannel);
 	colorDialog->show();
 }
 

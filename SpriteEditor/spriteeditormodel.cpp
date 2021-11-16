@@ -5,6 +5,7 @@
 #include "spriteeditormodel.h"
 #include "actionstate.h"
 #include "itool.h"
+#include "pointer2darray.h"
 
 /**
  * @brief SpriteEditorModel::SpriteEditorModel

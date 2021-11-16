@@ -38,8 +38,9 @@ int RenderArea::getNumColsAndRows(){
  */
 void RenderArea::setImage(QPixmap newMapToRender)
 {
-	toRender = newMapToRender;;
-	setPixmap(toRender);
+	QPixmap newMap(newMapToRender.scaled(512,512,Qt::KeepAspectRatio));
+	setPixmap(newMap);
+	toRender = newMap;
 	update();
 	repaint();
 }
@@ -50,15 +51,15 @@ void RenderArea::setImage(QPixmap newMapToRender)
  */
 void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
-	//TODO(gcpease): Remove this code and place in model.
-	QPainter paint(&toRender);
-	paint.setPen(QColor(0, 0, 0, 255));
-	int col = evt->pos().x()/pixelSize;
-	int row = evt->pos().y()/pixelSize;
-	paint.fillRect(col*pixelSize,row*pixelSize,pixelSize,pixelSize,Qt::blue);
-	paint.end();
-	setImage(toRender);
-	emit clicked();
+		//TODO(gcpease): Remove this code and place in model.
+		QPainter paint(&toRender);
+		int col = evt->pos().x()/64;
+		int row = evt->pos().y()/64;
+		qDebug() << col << " " << row;
+		paint.fillRect(col,row,pixelSize,pixelSize,Qt::blue);
+		paint.end();
+		setImage(toRender);
+		emit clicked();
 }
 
 /**
@@ -73,7 +74,7 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 		QPainter paint(&toRender);
 		int col = evt->pos().x()/pixelSize;
 		int row = evt->pos().y()/pixelSize;
-		paint.fillRect(col*pixelSize,row*pixelSize,pixelSize,pixelSize,Qt::blue);
+		paint.fillRect(col*512,row*512,pixelSize,pixelSize,Qt::blue);
 		paint.end();
 		setImage(toRender);
 		emit clicked();
