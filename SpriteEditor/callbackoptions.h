@@ -2,6 +2,7 @@
 #define CALLBACKOPTIONS_H
 
 #include <QColor>
+#include <functional>
 #include "pointer2darray.h"
 
 /**
@@ -13,10 +14,7 @@
 struct CallbackOptions
 {
 public:
-	CallbackOptions(void (*_setPixelColors)(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord),
-					void (*_setPixelColor)(QColor, unsigned int xCoord, unsigned int yCoord));
-
-	//https://stackoverflow.com/questions/10003270/gcc-array-type-has-incomplete-element-type
+	CallbackOptions(std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)>);
 
 	/**
 	 * @param colors A rectangular, 2D array of colors.
@@ -24,15 +22,7 @@ public:
 	 * (x coordinate of upper left pixel in 2D array).
 	 * @param yCoord the  displacement of the pixels to be set in the y direction
 	 * (y coordinate of upper left pixel in 2D array).
-	 */
-	void (*setPixelColors)(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord);
-
-	/**
-	 * @param QColor the color to set the given pixel.
-	 * @param width the x coordinate of the pixel.
-	 * @param height the y coordinate of the pixel.
-	 */
-	void (*setPixelColor)(QColor, unsigned int xCoord, unsigned int yCoord);
+	 */	
+	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> setPixelColors;
 };
-
 #endif // CALLBACKOPTIONS_H

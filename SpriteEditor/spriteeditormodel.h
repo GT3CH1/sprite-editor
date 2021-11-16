@@ -17,14 +17,14 @@ class SpriteEditorModel : public QObject{
 Q_OBJECT
 
 public:
-	enum ToolType {Pen, Brush, SoftEraser, HardEraser, ColorPicker};
+	enum class ToolType {Pen, Brush, SoftEraser, HardEraser, ColorPicker};
 
 private:
 	int imageWidth;
 	int imageHeight;
 	int toolSize;
 	QColor activeColor;
-	QMap<ToolType, ITool> Tools;
+	QMap<ToolType, ITool*> Tools;
 	ToolType activeTool;
 	vector<QImage> frames;
 	int activeFrameIndex;
@@ -32,6 +32,7 @@ private:
 
 	void setColorOfActiveFrame(QColor, int xCoord, int yCoord);
 	void setColorsOfActiveFrame(QColor[], int xCoord, int yCoord);
+	void setPixelColors(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord);
 
 public:
 	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};
@@ -50,6 +51,7 @@ public slots:
 	void save(string filePath, string fileName);
 	void load(string filePath, string fileName);
 	void setActiveTool(ToolType newTool);
+	void drawing(float x, float y);
 };
 
 

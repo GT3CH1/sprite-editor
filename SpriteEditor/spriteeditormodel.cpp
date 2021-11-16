@@ -1,8 +1,10 @@
 /* Alex Richins 11/10/21
  * spriteeditormodel handles tools and the sprite itself as well as all modifications of the sprite
  */
+#include <functional>
 #include "spriteeditormodel.h"
 #include "actionstate.h"
+#include "itool.h"
 
 /**
  * @brief SpriteEditorModel::getFramefromIndex
@@ -39,7 +41,6 @@ void SpriteEditorModel::setActiveColor(QColor newColor)
 void SpriteEditorModel::incrementBrushSize()
 {
 	toolSize++;
-	// TODO(ALEX): need to work with kenzie and william once tools are more done
 }
 
 /**
@@ -48,7 +49,6 @@ void SpriteEditorModel::incrementBrushSize()
 void SpriteEditorModel::decrementBrushSize()
 {
 	toolSize--;
-	// TODO(ALEX): need to work with kenzie and william once tools are more done
 }
 
 /**
@@ -127,3 +127,22 @@ void SpriteEditorModel::setColorsOfActiveFrame(QColor newColors[], int xCoord, i
 {
 	//TODO(ALEX): talk to william and kenzie more about tool interaction
 }
+
+
+
+/**
+ * @brief SpriteEditorModel::drawing
+ * @param x 0-1 for mouse position on drawing grid
+ * @param y 0-1 for mouse position on drawing grid
+ */
+void SpriteEditorModel::drawing(float x, float y){
+	ActionState toolActionState(toolSize, activeColor, x*imageWidth, y*imageHeight, frames[activeFrameIndex]);
+	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> setPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setPixelColors(colors, xCoord, yCoord); };
+	CallbackOptions callBack(setPixelColorsCallback);
+	Tools[activeTool]->apply(toolActionState, callBack);
+}
+
+void SpriteEditorModel::setPixelColors(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord){
+
+}
+
