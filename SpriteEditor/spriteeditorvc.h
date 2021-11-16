@@ -9,6 +9,7 @@
 #include <QColorDialog>
 #include <QMenuBar>
 #include <QAction>
+#include "spriteeditormodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SpriteEditorVC; }
@@ -25,6 +26,7 @@ public:
 public slots:
 	void showColorDialog();
 	void updateCustomButtonColors();
+	void colorButtonClicked();
 private slots:
     void on_fpsSlider_valueChanged(int value);
 
@@ -41,5 +43,10 @@ private:
 	void setButtonColor(QPushButton* button, QString hex);
 	void createMenu();
 	void setupButtonColors();
+	constexpr unsigned int hash(const char* str, int h = 0);
+	SpriteEditorModel *model;
+
+signals:
+	void colorChanged(QColor color);
 };
 #endif // SPRITEEDITORVC_H

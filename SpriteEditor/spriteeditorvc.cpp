@@ -13,8 +13,29 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
     ui->fpsSlider->setSingleStep(10);
     ui->fpsSlider->setMaximum(60);
 	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
+	model = new SpriteEditorModel();
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
 	connect(colorDialog,&QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
+	// Sets up the getting when a color button is clicked.
+	connect(ui->primaryColorButton1,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton2,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton3,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton4,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton5,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton6,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton1,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton2,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton3,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton4,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton5,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton6,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+
+	connect(this,&SpriteEditorVC::colorChanged,this->model,&SpriteEditorModel::setActiveColor);
+
 	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
 	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
 	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
@@ -116,7 +137,52 @@ void SpriteEditorVC::updateCustomButtonColors()
 }
 
 
+/**
+ * @brief Shows the color picker.
+ */
 void SpriteEditorVC::showColorDialog()
 {
 	colorDialog->show();
+}
+
+/**
+ * @brief Handles setting the new color when one of the color buttons is clicked.
+ */
+void SpriteEditorVC::colorButtonClicked(){
+	// Please, c++. Let us use switch on strings. This is absurd.
+	QColor c;
+	std::string name(sender()->objectName().toStdString());
+	if(name == "primaryColorButton1")
+		c = QColorDialog::standardColor(9);
+	else if(name == "primaryColorButton2")
+		c = QColorDialog::standardColor(21);
+	else if (name == "primaryColorButton3")
+		c = QColorDialog::standardColor(45);
+	else if (name == "primaryColorButton4")
+		c = QColorDialog::standardColor(36);
+	else if (name == "primaryColorButton5")
+		c = QColorDialog::standardColor(7);
+	else if (name == "primaryColorButton6")
+		c = QColorDialog::standardColor(5);
+	else if (name == "primaryColorButton7")
+		c = QColorDialog::standardColor(0);
+	else if (name == "primaryColorButton8")
+		c = QColorDialog::standardColor(47);
+	else if (name == "customColorButton1")
+		c = QColorDialog::customColor(0);
+	else if (name == "customColorButton2")
+		c = QColorDialog::customColor(1);
+	else if (name == "customColorButton3")
+		c = QColorDialog::customColor(2);
+	else if (name == "customColorButton4")
+		c = QColorDialog::customColor(3);
+	else if (name == "customColorButton5")
+		c = QColorDialog::customColor(4);
+	else if (name == "customColorButton6")
+		c = QColorDialog::customColor(5);
+	else if (name == "customColorButton7")
+		c = QColorDialog::customColor(6);
+	else if (name == "customColorButton8")
+		c = QColorDialog::customColor(7);
+	emit colorChanged(c);
 }
