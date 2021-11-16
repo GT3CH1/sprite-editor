@@ -10,6 +10,9 @@
 #include <QMenuBar>
 #include <QAction>
 #include "spriteeditormodel.h"
+#include <QTimer>
+#include <QDir>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SpriteEditorVC; }
@@ -28,10 +31,24 @@ public slots:
 	void updateCustomButtonColors();
 	void colorButtonClicked();
 	void toolChanged();
+
 private slots:
-    void on_fpsSlider_valueChanged(int value);
+	void updatePreview();
+	void on_fpsSlider_valueChanged(int);
+	void keyPressEvent(QKeyEvent*);
+	void savePressed();
+	void loadPressed();
 
 private:
+	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
+	const int FPS_INTERVAL = 10;
+	const int FPS_MAX = 60;
+	const int FPS_STEP = 10;
+	int indexOfActiveFrame = 0;
+	int indexOfPlayback = 0;
+	int fps = 0;
+	QTimer playbackUpdater;
+	QString path = QDir::homePath();
 	Ui::SpriteEditorVC *ui;
 	QColorDialog *colorDialog;
 	QAction *saveAction;
@@ -50,5 +67,13 @@ private:
 signals:
 	void colorChanged(QColor color);
 	void updateTool(SpriteEditorModel::ToolType toolType);
+	void changeActiveColor(QPushButton*);
+	void incrementToolSize();
+	void decrementToolSize();
+	void setActiveColor(QColor);
+	void changeActiveFrame(int);
+	void deleteFrame(int);
+	void save(std::string, std::string);
+	void load(std::string, std::string);
 };
 #endif // SPRITEEDITORVC_H

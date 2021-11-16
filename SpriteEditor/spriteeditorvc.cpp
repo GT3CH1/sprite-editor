@@ -9,9 +9,6 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	this->setStyleSheet(QString("QMainWindow { background-color:white}"));
     // Set up FPS slider.
 	colorDialog = new QColorDialog();
-    ui->fpsSlider->setTickInterval(10);
-    ui->fpsSlider->setSingleStep(10);
-    ui->fpsSlider->setMaximum(60);
 	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
 	model = new SpriteEditorModel();
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
@@ -48,6 +45,10 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
 	createMenu();
 	setupButtonColors();
+	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
+	ui->fpsSlider->setSingleStep(FPS_STEP);
+	ui->fpsSlider->setMaximum(FPS_MAX);
+	QObject::connect(&this->playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePreview);
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -64,13 +65,133 @@ SpriteEditorVC::~SpriteEditorVC()
 }
 
 /**
- * @brief Updates the FPS label
+ * @brief Advances the animation playback frame
+ */
+void SpriteEditorVC::updatePreview()
+{
+	//TODO(JVielstich): get frame from model
+
+	//TODO(JVielstich): set playback frame
+}
+
+/**
+ * @brief Updates the FPS label and controls the animation
+ * playback timer
  * @param value
  */
 void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 {
     ui->fpsLabel->setText(QString::number(value));
 	setupButtonColors();
+	fps = value;
+
+	if (fps == 0 && playbackUpdater.isActive())
+	{
+		playbackUpdater.stop();
+	}
+	else if (fps != 0)
+	{
+		if (!playbackUpdater.isActive())
+		{
+			playbackUpdater.start(1000 / fps);
+		}
+		else
+		{
+			playbackUpdater.setInterval(1000 / fps);
+		}
+	}
+}
+
+/**
+ * @brief Launches the "Save File" dialog window and prompts the user
+ * to choose a name and location for saving the active sprite. The file
+ * path and name will be passed to the model.
+ */
+void SpriteEditorVC::savePressed()
+{
+	path = QFileDialog::getSaveFileName(this, tr("Save File"), path, tr(FILE_FILTER));
+	std::string pathAsString(path.toStdString());
+
+	// Find the index of the last "/" character
+	auto i(pathAsString.find_last_of("/"));
+
+	// Separate the path and file name
+	if (i != std::string::npos)
+	{
+		path = QString::fromStdString(pathAsString.substr(0, i + 1));
+		std::string name(pathAsString.substr(i + 1));
+		emit save(path.toStdString(), name);
+	}
+}
+
+/**
+ * @brief Launches the "Open File" dialog window and prompts the user
+ * to choose a file to open and replace the active sprite. The file
+ * path and name will be passed to the model.
+ */
+void SpriteEditorVC::loadPressed()
+{
+	path = QFileDialog::getOpenFileName(this, tr("Open File"), path, tr(FILE_FILTER));
+	std::string pathAsString(path.toStdString());
+
+	// Find the index of the last "/" character
+	auto i(pathAsString.find_last_of("/"));
+
+	// Separate the path and file name
+	if (i != std::string::npos)
+	{
+		path = QString::fromStdString(pathAsString.substr(0, i + 1));
+		std::string name(pathAsString.substr(i + 1));
+		emit load(path.toStdString(), name);
+	}
+}
+
+/**
+ * @brief Triggers when any key is pressed and emits any
+ * relevant signals.
+ * @param event
+ */
+void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
+{
+	switch (event->key())
+	{
+	// Decrease tool size
+	case Qt::Key_BracketLeft:
+		emit decrementToolSize();
+		break;
+	// Increase tool size
+	case Qt::Key_BracketRight:
+		emit incrementToolSize();
+		break;
+	// Save the file
+	case Qt::Key_S:
+		if (event->modifiers() == Qt::ControlModifier)
+		{
+			savePressed();
+		}
+		break;
+	// Open a file
+	case Qt::Key_O:
+		if (event->modifiers() == Qt::ControlModifier)
+		{
+			loadPressed();
+		}
+		break;
+	// Move to previous frame (if it exists)
+	case Qt::Key_Left:
+		if (indexOfActiveFrame > 0)
+		{
+			emit changeActiveFrame(indexOfActiveFrame - 1);
+		}
+		break;
+	// Move to next frame (if it exists)
+	case Qt::Key_Right:
+		//TODO(JVielstich): Get frame count from model
+		break;
+	default:
+		// do nothing
+		break;
+	}
 }
 
 /**
