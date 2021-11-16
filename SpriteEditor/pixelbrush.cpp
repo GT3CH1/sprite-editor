@@ -96,7 +96,7 @@ void PixelBrush::apply(ActionState& canvasState, const CallbackOptions& callback
 		}
 	}
 
-	callbacks.paintPixelColors(colors, x, y);
+	callbacks.setPixelColors(colors, x, y);
 }
 
 /**
