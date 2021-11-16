@@ -11,8 +11,6 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
 	ui->fpsSlider->setSingleStep(FPS_STEP);
 	ui->fpsSlider->setMaximum(FPS_MAX);
-	qDebug() << ui->primaryColorButton1->styleSheet();
-
 	QObject::connect(&this->playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePreview);
 }
 
