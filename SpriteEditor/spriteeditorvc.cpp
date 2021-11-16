@@ -8,15 +8,27 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	ui->setupUi(this);
     this->setStyleSheet(QString("QMainWindow { background-color:white}"));
     // Set up FPS slider.
-    ui->fpsSlider->setTickInterval(10);
-    ui->fpsSlider->setSingleStep(10);
-    ui->fpsSlider->setMaximum(60);
+	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
+	ui->fpsSlider->setSingleStep(FPS_STEP);
+	ui->fpsSlider->setMaximum(FPS_MAX);
 	qDebug() << ui->primaryColorButton1->styleSheet();
+
+	QObject::connect(&this->playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePreview);
 }
 
 SpriteEditorVC::~SpriteEditorVC()
 {
 	delete ui;
+}
+
+/**
+ * @brief Advances the animation playback frame
+ */
+void SpriteEditorVC::updatePreview()
+{
+	//TODO(JVielstich): get frame from model
+
+	//TODO(JVielstich): set playback frame
 }
 
 /**
@@ -56,8 +68,10 @@ void SpriteEditorVC::savePressed()
 	path = QFileDialog::getSaveFileName(this, tr("Save File"), path, tr(FILE_FILTER));
 	std::string pathAsString(path.toStdString());
 
+	// Find the index of the last "/" character
 	auto i(pathAsString.find_last_of("/"));
 
+	// Separate the path and file name
 	if (i != std::string::npos)
 	{
 		path = QString::fromStdString(pathAsString.substr(0, i + 1));
@@ -76,8 +90,10 @@ void SpriteEditorVC::loadPressed()
 	path = QFileDialog::getOpenFileName(this, tr("Open File"), path, tr(FILE_FILTER));
 	std::string pathAsString(path.toStdString());
 
+	// Find the index of the last "/" character
 	auto i(pathAsString.find_last_of("/"));
 
+	// Separate the path and file name
 	if (i != std::string::npos)
 	{
 		path = QString::fromStdString(pathAsString.substr(0, i + 1));
@@ -97,16 +113,193 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 	{
 	// Decrease tool size
 	case Qt::Key_BracketLeft:
-		emit decrementBrushSize();
 		emit decrementToolSize();
 		break;
 	// Increase tool size
 	case Qt::Key_BracketRight:
-		emit incrementBrushSize();
 		emit incrementToolSize();
+		break;
+	// Save the file
+	case Qt::Key_S:
+		if (event->modifiers() == Qt::ControlModifier)
+		{
+			savePressed();
+		}
+		break;
+	// Open a file
+	case Qt::Key_O:
+		if (event->modifiers() == Qt::ControlModifier)
+		{
+			loadPressed();
+		}
+		break;
+	// Move to previous frame (if it exists)
+	case Qt::Key_Left:
+		if (indexOfActiveFrame > 0)
+		{
+			emit changeActiveFrame(indexOfActiveFrame - 1);
+		}
+		break;
+	// Move to next frame (if it exists)
+	case Qt::Key_Right:
+		//TODO(JVielstich): Get frame count from model
 		break;
 	default:
 		// do nothing
 		break;
 	}
 }
+
+/**
+ * @brief Changes the active color to that of Color Button 1
+ */
+void SpriteEditorVC::on_primaryColorButton1_clicked()
+{
+	emit setActiveColor(ui->primaryColorButton1->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Color Button 2
+ */
+void SpriteEditorVC::on_primaryColorButton2_clicked()
+{
+	emit setActiveColor(ui->primaryColorButton2->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Color Button 3
+ */
+void SpriteEditorVC::on_primaryColorButton3_clicked()
+{
+	emit setActiveColor(ui->primaryColorButton3->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Color Button 4
+ */
+void SpriteEditorVC::on_primaryColorButton4_clicked()
+{
+	emit setActiveColor(ui->primaryColorButton4->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Color Button 5
+ */
+void SpriteEditorVC::on_primaryColorButton5_clicked()
+{
+	emit setActiveColor(ui->primaryColorButton5->palette().color(QWidget::backgroundRole()));
+}
+
+
+/**
+ * @brief Changes the active color to that of Color Button 6
+ */
+void SpriteEditorVC::on_primaryColorButton6_clicked()
+{
+	emit setActiveColor(ui->primaryColorButton6->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Color Button 7
+ */
+void SpriteEditorVC::on_primaryColorButton7_clicked()
+{
+	emit setActiveColor(ui->primaryColorButton7->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Color Button 8
+ */
+void SpriteEditorVC::on_primaryColorButton8_clicked()
+{
+	emit setActiveColor(ui->primaryColorButton8->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Custom Color Button 1
+ */
+void SpriteEditorVC::on_customColorButton1_clicked()
+{
+	emit setActiveColor(ui->customColorButton1->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Custom Color Button 2
+ */
+void SpriteEditorVC::on_customColorButton2_clicked()
+{
+	emit setActiveColor(ui->customColorButton2->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Custom Color Button 3
+ */
+void SpriteEditorVC::on_customColorButton3_clicked()
+{
+	emit setActiveColor(ui->customColorButton3->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Custom Color Button 4
+ */
+void SpriteEditorVC::on_customColorButton4_clicked()
+{
+	emit setActiveColor(ui->customColorButton4->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Custom Color Button 5
+ */
+void SpriteEditorVC::on_customColorButton5_clicked()
+{
+	emit setActiveColor(ui->customColorButton5->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Custom Color Button 6
+ */
+void SpriteEditorVC::on_customColorButton6_clicked()
+{
+	emit setActiveColor(ui->customColorButton6->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Custom Color Button 7
+ */
+void SpriteEditorVC::on_customColorButton7_clicked()
+{
+	emit setActiveColor(ui->customColorButton7->palette().color(QWidget::backgroundRole()));
+}
+
+/**
+ * @brief Changes the active color to that of Custom Color Button 8
+ */
+void SpriteEditorVC::on_customColorButton8_clicked()
+{
+	emit setActiveColor(ui->customColorButton8->palette().color(QWidget::backgroundRole()));
+}
+
+
+void SpriteEditorVC::on_penToolButton_clicked()
+{
+	//TODO(JVielstich): Emit change tool signal
+}
+
+
+void SpriteEditorVC::on_brushToolButton_clicked()
+{
+	//TODO(JVielstich): Emit change tool signal
+}
+
+
+void SpriteEditorVC::on_eraserToolButton_clicked()
+{
+	//TODO(JVielstich): Emit change tool signal
+}
+
+
+void SpriteEditorVC::on_toolButton4_clicked()
+{
+	//TODO(JVielstich): Emit change tool signal
+}
+

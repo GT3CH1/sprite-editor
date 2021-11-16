@@ -26,27 +26,49 @@ public:
 	~SpriteEditorVC();
 
 private slots:
-    void on_fpsSlider_valueChanged(int value);
+	void updatePreview();
+	void on_fpsSlider_valueChanged(int);
 	void keyPressEvent(QKeyEvent*);
 	void savePressed();
 	void loadPressed();
+	void on_primaryColorButton1_clicked();
+	void on_primaryColorButton2_clicked();
+	void on_primaryColorButton3_clicked();
+	void on_primaryColorButton4_clicked();
+	void on_primaryColorButton5_clicked();
+	void on_primaryColorButton6_clicked();
+	void on_primaryColorButton7_clicked();
+	void on_primaryColorButton8_clicked();
+	void on_customColorButton1_clicked();
+	void on_customColorButton2_clicked();
+	void on_customColorButton3_clicked();
+	void on_customColorButton4_clicked();
+	void on_customColorButton5_clicked();
+	void on_customColorButton6_clicked();
+	void on_customColorButton7_clicked();
+	void on_customColorButton8_clicked();
+	void on_penToolButton_clicked();
+	void on_brushToolButton_clicked();
+	void on_eraserToolButton_clicked();
+	void on_toolButton4_clicked();
 
 private:
 	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
+	const int FPS_INTERVAL = 10;
+	const int FPS_MAX = 60;
+	const int FPS_STEP = 10;
 	Ui::SpriteEditorVC *ui;
-	int indexOfActiveFrame;
-	int indexOfPlayback;
+	int indexOfActiveFrame = 0;
+	int indexOfPlayback = 0;
 	int fps = 0;
 	QTimer playbackUpdater;
 	QString path = QDir::homePath();
+	void changeActiveColor(QPushButton*);
 
 signals:
-	void switchActiveFrame(int);
 	void incrementToolSize();
 	void decrementToolSize();
 	void setActiveColor(QColor);
-	void incrementBrushSize();
-	void decrementBrushSize();
 	void changeActiveFrame(int);
 	void deleteFrame(int);
 	void save(std::string, std::string);
