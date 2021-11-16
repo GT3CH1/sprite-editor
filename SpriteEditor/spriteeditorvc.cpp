@@ -35,6 +35,11 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->customColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 
 	connect(this,&SpriteEditorVC::colorChanged,this->model,&SpriteEditorModel::setActiveColor);
+	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
+	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
+	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
+	connect(ui->toolButton4,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
+	connect(this,&SpriteEditorVC::updateTool,this->model,&SpriteEditorModel::setActiveTool);
 
 	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
 	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
@@ -185,4 +190,21 @@ void SpriteEditorVC::colorButtonClicked(){
 	else if (name == "customColorButton8")
 		c = QColorDialog::customColor(7);
 	emit colorChanged(c);
+}
+
+/**
+ * @brief Changes the current tool based on what was clicked.
+ */
+void SpriteEditorVC::toolChanged()
+{
+	SpriteEditorModel::ToolType tool = SpriteEditorModel::ToolType::Brush;
+	std::string name(sender()->objectName().toStdString());
+	if(name == "penToolButton")
+		tool = SpriteEditorModel::ToolType::Pen;
+	else if(name == "brushToolButton")
+		tool = SpriteEditorModel::ToolType::Brush;
+	//TODO(GCPEASE): Implement rest of tool buttons
+	else if(name == "eraserToolButton")
+		tool = SpriteEditorModel::ToolType::HardEraser;
+	emit updateTool(tool);
 }

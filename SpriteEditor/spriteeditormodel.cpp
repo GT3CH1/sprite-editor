@@ -2,7 +2,6 @@
  * spriteeditormodel handles tools and the sprite itself as well as all modifications of the sprite
  */
 #include "spriteeditormodel.h"
-
 /**
  * @brief SpriteEditorModel::getFramefromIndex
  * @param index, frame index within vector

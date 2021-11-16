@@ -27,6 +27,7 @@ public slots:
 	void showColorDialog();
 	void updateCustomButtonColors();
 	void colorButtonClicked();
+	void toolChanged();
 private slots:
     void on_fpsSlider_valueChanged(int value);
 
@@ -48,5 +49,6 @@ private:
 
 signals:
 	void colorChanged(QColor color);
+	void updateTool(SpriteEditorModel::ToolType toolType);
 };
 #endif // SPRITEEDITORVC_H
