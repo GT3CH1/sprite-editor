@@ -7,6 +7,15 @@
 #include "itool.h"
 
 /**
+ * @brief SpriteEditorModel::SpriteEditorModel
+ */
+SpriteEditorModel::SpriteEditorModel()
+{
+	imageHeight = 64;
+	imageWidth = 64;
+}
+
+/**
  * @brief SpriteEditorModel::getFramefromIndex
  * @param index, frame index within vector
  * @return QImage for that frame

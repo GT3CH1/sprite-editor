@@ -35,6 +35,7 @@ private:
 
 public:
 	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};
+	SpriteEditorModel();
 	QPixmap getFramefromIndex(int index);
 	int getFrameCount();
 
