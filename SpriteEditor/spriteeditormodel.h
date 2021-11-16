@@ -6,7 +6,8 @@
 #include <QImage>
 #include <vector>
 #include <string>
-// #include "itool.h" Waiting for itool.h from TODO(kenzie and william):
+#include <QMap>
+#include "itool.h"
 
 using std::vector;
 using std::string;
@@ -17,28 +18,31 @@ Q_OBJECT
 
 public:
 	enum ToolType {Pen, Brush, SoftEraser, HardEraser, ColorPicker};
-	SpriteEditorModel() = default;
+
 private:
 	int imageWidth;
 	int imageHeight;
 	int toolSize;
 	QColor activeColor;
-	// map<ToolType, iTool> Tools; Waiting for itool.h from TODO(kenzie and william):
+	QMap<ToolType, ITool*> Tools;
 	ToolType activeTool;
-	vector<QImage> frames;
+	vector<QPixmap> frames;
 	int activeFrameIndex;
 	QPainter painter;
 
-	void setColorOfActiveFrame(QColor, int xCoord, int yCoord);
-	void setColorsOfActiveFrame(QColor[], int xCoord, int yCoord);
+	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
+	void setColorsOfActiveFrame(Pointer2DArray<QColor>, unsigned int, unsigned int);
 
 public:
 	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};
-	QImage getFramefromIndex(int index);
+	SpriteEditorModel();
+	QPixmap getFramefromIndex(int index);
 	int getFrameCount();
 
 signals:
-	void sendActiveFrame(int activeFrame);
+	void sendActiveFrame(QPixmap activeFrame);
+	void sendActiveFrameIndex(int activeFrameIndex);
+	void sendFrames(vector<QPixmap> allFrames);
 
 public slots:
 	void setActiveColor(QColor);
@@ -49,6 +53,7 @@ public slots:
 	void save(string filePath, string fileName);
 	void load(string filePath, string fileName);
 	void setActiveTool(ToolType newTool);
+	void drawing(float x, float y);
 };
 
 

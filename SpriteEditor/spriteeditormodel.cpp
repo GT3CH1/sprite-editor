@@ -1,13 +1,26 @@
 /* Alex Richins 11/10/21
  * spriteeditormodel handles tools and the sprite itself as well as all modifications of the sprite
  */
+#include <functional>
 #include "spriteeditormodel.h"
+#include "actionstate.h"
+#include "itool.h"
+
+/**
+ * @brief SpriteEditorModel::SpriteEditorModel
+ */
+SpriteEditorModel::SpriteEditorModel()
+{
+	imageHeight = 64;
+	imageWidth = 64;
+}
+
 /**
  * @brief SpriteEditorModel::getFramefromIndex
  * @param index, frame index within vector
  * @return QImage for that frame
  */
-QImage SpriteEditorModel::getFramefromIndex(int index)
+QPixmap SpriteEditorModel::getFramefromIndex(int index)
 {
 	return frames[index];
 }
@@ -36,7 +49,7 @@ void SpriteEditorModel::setActiveColor(QColor newColor)
  */
 void SpriteEditorModel::incrementBrushSize()
 {
-	// TODO(ALEX): need to work with kenzie and william once tools are more done
+	toolSize++;
 }
 
 /**
@@ -44,7 +57,7 @@ void SpriteEditorModel::incrementBrushSize()
  */
 void SpriteEditorModel::decrementBrushSize()
 {
-	// TODO(ALEX): need to work with kenzie and william once tools are more done
+	toolSize--;
 }
 
 /**
@@ -54,7 +67,7 @@ void SpriteEditorModel::decrementBrushSize()
 void SpriteEditorModel::changeActiveFrame(int newFrameIndex)
 {
 	activeFrameIndex = newFrameIndex;
-	emit sendActiveFrame(activeFrameIndex);
+	emit sendActiveFrameIndex(activeFrameIndex);
 }
 
 /**
@@ -63,13 +76,13 @@ void SpriteEditorModel::changeActiveFrame(int newFrameIndex)
  */
 void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 {
-	vector<QImage>::iterator itr = frames.begin();
+	vector<QPixmap>::iterator itr = frames.begin();
 	for(int i = 0; i <= indexOfFrameToDelete; i++)
 		itr++;
 	frames.erase(itr);
 	if(activeFrameIndex > 0)
 		activeFrameIndex--;
-	emit sendActiveFrame(activeFrameIndex);
+	emit sendActiveFrameIndex(activeFrameIndex);
 }
 
 /**
@@ -108,9 +121,12 @@ void SpriteEditorModel::setActiveTool(ToolType newTool)
  * @param xCoord
  * @param yCoord
  */
-void SpriteEditorModel::setColorOfActiveFrame(QColor newColor, int xCoord, int yCoord)
+void SpriteEditorModel::setColorOfActiveFrame(QColor newColor, unsigned int xCoord, unsigned int yCoord)
 {
-	//TODO(ALEX): talk to william and kenzie more about tool interaction
+	QPainter painter(&frames[activeFrameIndex]);
+	painter.fillRect(xCoord, yCoord, 1, 1, newColor);
+	painter.end();
+	emit sendActiveFrame(frames[activeFrameIndex]);
 }
 
 /**
@@ -119,7 +135,34 @@ void SpriteEditorModel::setColorOfActiveFrame(QColor newColor, int xCoord, int y
  * @param xCoord
  * @param yCoord
  */
-void SpriteEditorModel::setColorsOfActiveFrame(QColor newColors[], int xCoord, int yCoord)
+void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord)
 {
-	//TODO(ALEX): talk to william and kenzie more about tool interaction
+	QPainter painter(&frames[activeFrameIndex]);
+	for(unsigned int i = 0; i < newColors.getWidth(); i++)
+	{
+		for(unsigned int j = 0; j < newColors.getHeight(); j++)
+		{
+			QColor pixelColor = newColors[i][j];
+			int xPixel = xCoord + i;
+			int yPixel = yCoord + j;
+			painter.fillRect(xPixel, yPixel, 1, 1, pixelColor);
+		}
+	}
+	painter.end();
+	emit sendActiveFrame(frames[activeFrameIndex]);
 }
+
+
+
+/**
+ * @brief SpriteEditorModel::drawing
+ * @param x 0-1 for mouse position on drawing grid
+ * @param y 0-1 for mouse position on drawing grid
+ */
+void SpriteEditorModel::drawing(float x, float y){
+	ActionState toolActionState(toolSize, activeColor, (int)(x*imageWidth), (int)(y*imageHeight), frames[activeFrameIndex]);
+	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> setPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
+	CallbackOptions callBack(setPixelColorsCallback);
+	Tools[activeTool]->apply(toolActionState, callBack);
+}
+
