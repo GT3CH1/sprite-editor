@@ -17,7 +17,7 @@ Q_OBJECT
 
 public:
 	enum ToolType {Pen, Brush, SoftEraser, HardEraser, ColorPicker};
-
+	SpriteEditorModel() = default;
 private:
 	int imageWidth;
 	int imageHeight;
