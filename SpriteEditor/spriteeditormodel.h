@@ -26,21 +26,22 @@ private:
 	QColor activeColor;
 	QMap<ToolType, ITool*> Tools;
 	ToolType activeTool;
-	vector<QImage> frames;
+	vector<QPixmap> frames;
 	int activeFrameIndex;
 	QPainter painter;
 
-	void setColorOfActiveFrame(QColor, int xCoord, int yCoord);
-	void setColorsOfActiveFrame(QColor[], int xCoord, int yCoord);
-	void setPixelColors(Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord);
+	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
+	void setColorsOfActiveFrame(Pointer2DArray<QColor>, unsigned int, unsigned int);
 
 public:
 	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};
-	QImage getFramefromIndex(int index);
+	QPixmap getFramefromIndex(int index);
 	int getFrameCount();
 
 signals:
-	void sendActiveFrame(int activeFrame);
+	void sendActiveFrame(QPixmap activeFrame);
+	void sendActiveFrameIndex(int activeFrameIndex);
+	void sendFrames(vector<QPixmap> allFrames);
 
 public slots:
 	void setActiveColor(QColor);
