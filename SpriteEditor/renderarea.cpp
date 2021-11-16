@@ -61,6 +61,25 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
 }
 
 /**
+ * @brief Handles the mouse being moved across the RenderArea
+ * @param evt
+ */
+void RenderArea::mouseMoveEvent(QMouseEvent *evt)
+{
+	if(evt->buttons() & Qt::LeftButton)
+	{
+		//TODO(gcpease): Remove this code and place in model.
+		QPainter paint(&toRender);
+		int col = evt->pos().x()/pixelSize;
+		int row = evt->pos().y()/pixelSize;
+		paint.fillRect(col*pixelSize,row*pixelSize,pixelSize,pixelSize,Qt::blue);
+		paint.end();
+		setImage(toRender);
+		emit clicked();
+	}
+}
+
+/**
  * @brief Draws a grid on the render area
  */
 void RenderArea::drawGrid(){
