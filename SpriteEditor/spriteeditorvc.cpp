@@ -10,8 +10,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
     // Set up FPS slider.
     ui->fpsSlider->setTickInterval(10);
     ui->fpsSlider->setSingleStep(10);
-    ui->fpsSlider->setMaximum(60);
-	qDebug() << ui->primaryColorButton1->styleSheet();
+	ui->fpsSlider->setMaximum(60);
 }
 
 SpriteEditorVC::~SpriteEditorVC()
