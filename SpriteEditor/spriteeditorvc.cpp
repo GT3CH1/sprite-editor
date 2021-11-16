@@ -1,5 +1,8 @@
 #include "spriteeditorvc.h"
+#include "spriteeditormodel.h"
+#include "renderarea.h"
 #include "ui_spriteeditorvc.h"
+#include "itool.h"
 
 SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	: QMainWindow(parent)
@@ -11,7 +14,28 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
 	ui->fpsSlider->setSingleStep(FPS_STEP);
 	ui->fpsSlider->setMaximum(FPS_MAX);
+
+	// Set up animation playback
+	ui->playbackArea->setGridShown(false);
+
+	// Create model
+	model = new SpriteEditorModel;
+
+	// Connect signals and slots
+	// View to View
 	QObject::connect(&this->playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePreview);
+	// View to UI
+	// View to Model
+	QObject::connect(this, &SpriteEditorVC::setActiveColor, model, &SpriteEditorModel::setActiveColor);
+	QObject::connect(this, &SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
+	QObject::connect(this, &SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
+	QObject::connect(this, &SpriteEditorVC::changeActiveFrame, model, &SpriteEditorModel::changeActiveFrame);
+	QObject::connect(this, &SpriteEditorVC::deleteFrame, model, &SpriteEditorModel::deleteFrame);
+	QObject::connect(this, &SpriteEditorVC::save, model, &SpriteEditorModel::save);
+	QObject::connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
+	QObject::connect(this, &SpriteEditorVC::changeActiveTool, model, &SpriteEditorModel::setActiveTool);
+	// Model to View
+	// UI to View
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -24,9 +48,23 @@ SpriteEditorVC::~SpriteEditorVC()
  */
 void SpriteEditorVC::updatePreview()
 {
-	//TODO(JVielstich): get frame from model
+	int frameCount = model->getFrameCount();
+	indexOfPlayback++;
 
-	//TODO(JVielstich): set playback frame
+	// Loop back to the beginning of the animation
+	if (indexOfPlayback == frameCount)
+	{
+		indexOfPlayback = 0;
+	}
+
+	// Scale and display the next frame
+	if (frameCount != 0)
+	{
+		int w = ui->playbackArea->width();
+		int h = ui->playbackArea->height();
+		QPixmap frame = model->getFramefromIndex(indexOfPlayback);
+		ui->playbackArea->setImage(frame.scaled(w, h, Qt::KeepAspectRatio));
+	}
 }
 
 /**
@@ -38,6 +76,9 @@ void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 {
     ui->fpsLabel->setText(QString::number(value));
 	fps = value;
+
+	// Return focus to main window
+	this->setFocus();
 
 	if (fps == 0 && playbackUpdater.isActive())
 	{
@@ -140,7 +181,10 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 		break;
 	// Move to next frame (if it exists)
 	case Qt::Key_Right:
-		//TODO(JVielstich): Get frame count from model
+		if (indexOfActiveFrame < model->getFrameCount() - 1)
+		{
+			emit changeActiveFrame(indexOfActiveFrame + 1);
+		}
 		break;
 	default:
 		// do nothing
@@ -277,22 +321,29 @@ void SpriteEditorVC::on_customColorButton8_clicked()
 	emit setActiveColor(ui->customColorButton8->palette().color(QWidget::backgroundRole()));
 }
 
-
+/**
+ * @brief Sets Pen as the active tool
+ */
 void SpriteEditorVC::on_penToolButton_clicked()
 {
-	//TODO(JVielstich): Emit change tool signal
+	emit changeActiveTool(SpriteEditorModel::ToolType::Pen);
 }
 
-
+/**
+ * @brief Sets Brush as the active tool
+ */
 void SpriteEditorVC::on_brushToolButton_clicked()
 {
-	//TODO(JVielstich): Emit change tool signal
+	emit changeActiveTool(SpriteEditorModel::ToolType::Brush);
 }
 
 
+/**
+ * @brief Sets (Hard) Eraser as the active tool
+ */
 void SpriteEditorVC::on_eraserToolButton_clicked()
 {
-	//TODO(JVielstich): Emit change tool signal
+	emit changeActiveTool(SpriteEditorModel::ToolType::HardEraser);
 }
 
 

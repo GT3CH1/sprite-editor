@@ -10,6 +10,9 @@
 #include <QDir>
 #include <QFileDialog>
 
+#include "spriteeditormodel.h"
+#include "renderarea.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class SpriteEditorVC; }
 QT_END_NAMESPACE
@@ -57,6 +60,7 @@ private:
 	const int FPS_INTERVAL = 10;
 	const int FPS_MAX = 60;
 	const int FPS_STEP = 10;
+	SpriteEditorModel *model;
 	Ui::SpriteEditorVC *ui;
 	int indexOfActiveFrame = 0;
 	int indexOfPlayback = 0;
@@ -64,12 +68,14 @@ private:
 	QTimer playbackUpdater;
 	QString path = QDir::homePath();
 	void changeActiveColor(QPushButton*);
+	std::vector<RenderArea> framePreviews;
 
 signals:
 	void incrementToolSize();
 	void decrementToolSize();
 	void setActiveColor(QColor);
 	void changeActiveFrame(int);
+	void changeActiveTool(SpriteEditorModel::ToolType);
 	void deleteFrame(int);
 	void save(std::string, std::string);
 	void load(std::string, std::string);
