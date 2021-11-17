@@ -36,9 +36,9 @@ private:
 	QJsonArray writeRows(QImage frame, int row) const;
 	QJsonArray writeColor(QImage frame, int row, int col) const;
 	void read(const QJsonObject& json);
-	void readFrame(const QJsonObject &json, int frameNumber);
-	void readRow(const QJsonObject &json, QString currFrame, QImage newFrame, int row);
-	void readColor(QJsonArray newColor, int row, int col, QImage newFrame);
+	void readFrame(const QJsonValue &json, int frameNumber);
+	void readRow(const QJsonArray &json, QImage &newFrame, int row);
+	void readColor(QJsonArray newColor, int row, int col, QImage &newFrame);
 	void replaceColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord);
 
 public:
@@ -54,6 +54,7 @@ signals:
 	void sendFrames(vector<QPixmap> allFrames);
 
 public slots:
+	void setFrames(vector<QPixmap> allFrames);
 	void setActiveColor(QColor);
 	void incrementBrushSize();
 	void decrementBrushSize();

@@ -22,8 +22,8 @@
  */
 SpriteEditorModel::SpriteEditorModel()
 {
-	imageHeight = 64;
-	imageWidth = 64;
+	imageHeight = 4;
+	imageWidth = 4;
 	toolSize = 4;
 	QPixmap map(imageHeight,imageWidth);
 	map.fill();
@@ -258,15 +258,11 @@ void SpriteEditorModel::load(string filePath, string fileName)
 	// load the file
 	QString loadFileName = QString::fromStdString(filePath + fileName);
 	QFile loadFile(loadFileName);
-\
 	// read the file
 	if (loadFile.open(QIODevice::ReadOnly)) {
 		QByteArray saveData = loadFile.readAll();
 		QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
-		frames.clear();
 		read(loadDoc.object());
-		emit sendFrames(frames);
-		emit sendActiveFrame(frames[activeFrameIndex]);
 	}
 }
 
@@ -286,8 +282,17 @@ void SpriteEditorModel::read(const QJsonObject &json)
 	if (json.contains("numberOfFrames") && json["numberOfFrames"].isDouble())
 		size = json["numberOfFrames"].toInt();
 
-	for (int i = 0; i < size; i++)
-		readFrame(json, i);
+
+
+	for (int i = 0; i < size; i++){
+		QString frameName = QString("frame%1");
+		frameName = frameName.arg(i);
+		char* c = strcpy(new char[frameName.length() + 1], frameName.toStdString().c_str());
+		readFrame(json["frames"][c].toArray(), i);
+	}
+	qDebug() << frames.size();
+	emit changeActiveFrame(0);
+	emit sendActiveFrame(frames[0]);
 }
 
 /**
@@ -295,26 +300,15 @@ void SpriteEditorModel::read(const QJsonObject &json)
  * @param json
  * @param frameNumber
  */
-void SpriteEditorModel::readFrame(const QJsonObject &json, int frameNumber)
+void SpriteEditorModel::readFrame(const QJsonValue &json, int frameNumber)
 {
-	QString currFrame = QString::fromStdString("frame" + std::to_string(frameNumber));
-	if (json.contains(currFrame) && json[currFrame].isArray())
-	{
-		QJsonArray frameArray = json[currFrame].toArray();
-		QImage newFrame(imageWidth, imageHeight, QImage::Format_ARGB32);
-
-		for (int j = 0; j < frameArray.size(); j++)
-			readRow(json, currFrame, newFrame, j);
+		QJsonArray frameRow = json[frameNumber].toArray();
+		QImage newFrame(imageWidth, imageHeight, QImage::Format_RGBA8888);
+		for (int j = 0; j < frameRow.size(); j++)
+			readRow(json.toArray(), newFrame, j);
 
 		QPixmap frame(QPixmap::fromImage(newFrame));
-		qDebug() << frame.size();
 		frames.push_back(frame);
-		newFrame.save(QString("%1.jpg").arg(frames.size()));
-		std::cout << frames.size() << std::endl;
-		//frames.assign(frameNumber, frame);
-
-	}
-
 }
 
 /**
@@ -324,12 +318,15 @@ void SpriteEditorModel::readFrame(const QJsonObject &json, int frameNumber)
  * @param newFrame
  * @param x
  */
-void SpriteEditorModel::readRow(const QJsonObject &json, QString currFrame, QImage newFrame, int row)
+void SpriteEditorModel::readRow(const QJsonArray &json, QImage &newFrame, int row)
 {
-	QJsonArray rows = json.value(currFrame).toArray()[row].toArray();
-
+	QJsonArray rows(json[row].toArray());
 	for (int i = 0; i < rows.size(); i++)
-		readColor(rows[i].toArray(), row, i, newFrame);
+	{
+		QJsonArray currentPixel(rows[i].toArray());
+		QColor color(currentPixel[0].toInt(), currentPixel[1].toInt(), currentPixel[2].toInt(), currentPixel[3].toInt());
+		newFrame.setPixelColor(i, row, color);
+	}
 }
 
 /**
@@ -337,15 +334,10 @@ void SpriteEditorModel::readRow(const QJsonObject &json, QString currFrame, QIma
  * @param newColor
  * @return
  */
-void SpriteEditorModel::readColor(QJsonArray pixel, int row, int col, QImage newFrame)
+void SpriteEditorModel::readColor(QJsonArray pixel, int row, int col, QImage &newFrame)
 {
 	QColor color(pixel[0].toInt(), pixel[1].toInt(), pixel[2].toInt(), pixel[3].toInt());
 	newFrame.setPixelColor(row, col, color);
-//	std::cout << row << ", " << col;
-//	std::cout << newFrame.pixelColor(row, col).red();
-//	std::cout << newFrame.pixelColor(row, col).green();
-//	std::cout << newFrame.pixelColor(row, col).blue();
-//	std::cout << newFrame.pixelColor(row, col).alpha() << std::endl;
 }
 
 /**
@@ -391,6 +383,7 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
 	painter.end();
 	emit sendActiveFrame(frames[activeFrameIndex]);
 	emit sendActiveFrameIndex(activeFrameIndex);
+
 }
 
 /** William Erignac
@@ -425,3 +418,8 @@ void SpriteEditorModel::drawing(float x, float y)
 	Tools[activeTool]->apply(toolActionState, callBack);
 }
 
+
+void SpriteEditorModel::setFrames(std::vector<QPixmap> map)
+{
+	frames = map;
+}

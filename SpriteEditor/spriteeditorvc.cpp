@@ -87,6 +87,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
 	connect(this, &SpriteEditorVC::deleteFrame, model, &SpriteEditorModel::deleteFrame);
 	connect(this, &SpriteEditorVC::addFrame, model, &SpriteEditorModel::addFrame);
+	connect(this->model,&SpriteEditorModel::sendFrames, model, &SpriteEditorModel::setFrames);
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -439,3 +440,4 @@ void SpriteEditorVC::toolChanged()
 		tool = SpriteEditorModel::ToolType::HardEraser;
 	emit updateTool(tool);
 }
+
