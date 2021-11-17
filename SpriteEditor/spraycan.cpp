@@ -115,11 +115,12 @@ void SprayCan::apply(ActionState& canvasState, const CallbackOptions& callbacks)
 	{
 		for (unsigned int j = 0; j < toAdd.getHeight(); j++)
 		{
+			float stencilAlpha = stencil[i + info.deltaX][j + info.deltaY];
+			QColor newStencilColor(0, 0, 0, 0);
 			if(rand()%10 == 0){
-				float stencilAlpha = stencil[i + info.deltaX][j + info.deltaY];
-				QColor newStencilColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), canvasState.TOOL_COLOR.alpha() * stencilAlpha);
-				toAdd[i][j] = newStencilColor;
+				newStencilColor = QColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), canvasState.TOOL_COLOR.alpha() * stencilAlpha);
 			}
+			toAdd[i][j] = newStencilColor;
 		}
 	}
 

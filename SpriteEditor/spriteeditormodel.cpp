@@ -211,6 +211,7 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
 	}
 	painter.end();
 	emit sendActiveFrame(frames[activeFrameIndex]);
+	emit sendActiveFrameIndex(activeFrameIndex);
 }
 
 /** William Erignac
