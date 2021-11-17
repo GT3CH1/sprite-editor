@@ -6,6 +6,7 @@
 
 #include "hardcirclestencilgenerator.h"
 #include <math.h>
+#include <iostream>
 
 Pointer2DArray<float> HardCircleStencilGenerator::generate(unsigned int size)
 {
@@ -13,9 +14,9 @@ Pointer2DArray<float> HardCircleStencilGenerator::generate(unsigned int size)
 
 	float radius = (float)size/2;
 
-	for (unsigned int i = 0; i < size; i++)
+	for (int i = 0; i < (int)size; i++)
 	{
-		for (unsigned int j = 0; j < size; j++)
+		for (int j = 0; j < (int)size; j++)
 		{
 			float distance = sqrt(pow(i - radius, 2) + pow(j - radius, 2));
 			stencil[i][j] = (distance <= radius);

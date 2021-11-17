@@ -33,7 +33,12 @@ public slots:
 	void showColorDialog();
 	void updateCustomButtonColors();
 	void colorButtonClicked();
-	void toolChanged();
+	void setInvertBrush();
+	void setRainbowBrush();
+	void setSoftEraser();
+	void setHardPen();
+	void setSoftBrush();
+	void setHardEraser();
 
 private slots:
 	void sendActiveFrame();
@@ -46,7 +51,6 @@ private slots:
 	void keyPressEvent(QKeyEvent*);
 	void savePressed();
 	void loadPressed();
-
 private:
 	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
 	const int FPS_INTERVAL = 10;
@@ -68,8 +72,17 @@ private:
 	QAction *closeAction;
 	QAction *helpAction;
 	QAction *newFileAction;
+
+	QAction *rainbowBrushSelected;
+	QAction *softEraserSelected;
+	QAction *invertSelected;
+	QAction *hardPenSelected;
+	QAction *softBrushSelected;
+	QAction *hardEraserSelected;
+
 	QMenu *fileMenu;
 	QMenu *helpMenu;
+	QMenu *toolsMenu;
 	void setButtonColor(QPushButton* button, QString hex);
 	void createMenu();
 	void setupButtonColors();
