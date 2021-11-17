@@ -25,7 +25,7 @@ SpriteEditorModel::SpriteEditorModel()
 	frames.push_back(map);
 	Tools.insert(ToolType::Brush,new PixelBrush(new SoftCircleStencilGenerator()));
 	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));
-	Tools.insert(ToolType::HardEraser,new PixelBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::HardEraser,new PixelEraser(new SquareStencilGenerator()));
 }
 
 /**
