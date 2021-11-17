@@ -104,7 +104,7 @@ QRect SprayCan::ConstrainStencilBounds(Pointer2DArray<float> stencil, int stenci
  */
 void SprayCan::apply(ActionState& canvasState, const CallbackOptions& callbacks)
 {
-	stencil = stencilGenerator->generate(newSize);
+	stencil = stencilGenerator->generate(canvasState.TOOL_SIZE);
 
 	BoundsInformation info;
 	QRect boundedArea = ConstrainStencilBounds(stencil, canvasState.MOUSE_X_GRID_COORD, canvasState.MOUSE_Y_GRID_COORD,
