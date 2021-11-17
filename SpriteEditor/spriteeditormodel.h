@@ -22,10 +22,10 @@ public:
 private:
 	int imageWidth;
 	int imageHeight;
-	int toolSize = 2;
+	int toolSize = 1;
 	QColor activeColor = Qt::blue;
 	QMap<ToolType, ITool*> Tools;
-	ToolType activeTool = ToolType::Brush;
+	ToolType activeTool = ToolType::Pen;
 	vector<QPixmap> frames;
 	int activeFrameIndex =0;
 

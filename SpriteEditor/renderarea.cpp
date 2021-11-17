@@ -22,7 +22,7 @@ RenderArea::RenderArea(QWidget* parent,[[maybe_unused]] Qt::WindowFlags f, int c
 	QPixmap blank(canvasSize,canvasSize);
 	blank.fill();
 	setImage(blank);
-	drawGrid();
+	drawGrid(blank);
 }
 
 /**
@@ -38,11 +38,22 @@ int RenderArea::getNumColsAndRows(){
  */
 void RenderArea::setImage(QPixmap newMapToRender)
 {
-	QPixmap newMap(newMapToRender.scaled(512,512,Qt::KeepAspectRatio));
+	QPixmap newMap(newMapToRender.scaled(512,512,Qt::KeepAspectRatioByExpanding));
+	QPainter paint(&newMap);
+	if(gridShown)
+		paint.setPen(Qt::black);
+	else
+		paint.setPen(Qt::white);
+	for(int loc = 0; loc < canvasSize; loc++){
+		paint.drawLine(loc*(512/canvasSize),0,loc*(512/canvasSize),512);
+		paint.drawLine(0,loc*(512/canvasSize),512,loc*(512/canvasSize));
+	}
+	paint.end();
 	setPixmap(newMap);
 	toRender = newMap;
+
 	update();
-	repaint();
+	toRender = newMap.scaled(canvasSize,canvasSize,Qt::KeepAspectRatioByExpanding);
 }
 
 /**
@@ -53,7 +64,9 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
 		int x = evt->pos().x();
 		unsigned int y = evt->pos().y();
-		emit clicked((float)x/512.0,(float)y/512.0);
+		if((x < 512 && x > 0) && (y < 512 && y > 0))
+			emit clicked((float)x/512.0,(float)y/512.0);
+		drawGrid(toRender);
 }
 
 /**
@@ -66,25 +79,16 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 	{
 		int x = evt->pos().x();
 		int y = evt->pos().y();
-		emit clicked(x/512,y/512);
+		/*if((x < 510 && x > 2) && (y < 510 && y > 2))
+			emit clicked((float)x/512.0,(float)y/512.0); */
 	}
 }
 
 /**
  * @brief Draws a grid on the render area
  */
-void RenderArea::drawGrid(){
-	QPainter paint(&toRender);
-	if(gridShown)
-		paint.setPen(Qt::black);
-	else
-		paint.setPen(Qt::white);
-	for(int loc = 1; loc < getNumColsAndRows(); loc++){
-		paint.drawLine(loc*getPixelSize(),0,loc*getPixelSize(),canvasSize*512);
-		paint.drawLine(0,loc*getPixelSize(),canvasSize*512,loc*getPixelSize());
-	}
-	paint.end();
-	setImage(toRender);
+void RenderArea::drawGrid(QPixmap newFrame){
+	qDebug() << "Grid size: " << newFrame.size();
 }
 
 /**
@@ -93,9 +97,10 @@ void RenderArea::drawGrid(){
  */
 void RenderArea::setGridShown(bool gridShown){
 	this->gridShown = gridShown;
-	drawGrid();
+	drawGrid(toRender);
 }
 
 int RenderArea::getPixelSize(){
+		qDebug() << "Pixel size: " << (512/canvasSize);
 		return (512/canvasSize);
 }

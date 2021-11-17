@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <pixelbrush.h>
 #include <squarestencilgenerator.h>
+#include <softcirclestencilgenerator.h>
 /**
  * @brief SpriteEditorModel::SpriteEditorModel
  */
@@ -16,11 +17,14 @@ SpriteEditorModel::SpriteEditorModel()
 {
 	imageHeight = 64;
 	imageWidth = 64;
+	toolSize = 4;
 	QPixmap map(imageHeight,imageWidth);
-	map.fill(Qt::yellow);
+	map.fill();
+	emit sendActiveFrame(map);
 	frames.push_back(map);
-	ITool* tool = new PixelBrush(new SquareStencilGenerator());
+	ITool* tool = new PixelBrush(new SoftCircleStencilGenerator());
 	Tools.insert(ToolType::Brush,tool);
+	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));
 }
 
 /**
@@ -57,7 +61,8 @@ void SpriteEditorModel::setActiveColor(QColor newColor)
  */
 void SpriteEditorModel::incrementBrushSize()
 {
-	toolSize++;
+	if(toolSize < imageHeight || toolSize < imageWidth)
+		toolSize++;
 }
 
 /**
@@ -65,7 +70,9 @@ void SpriteEditorModel::incrementBrushSize()
  */
 void SpriteEditorModel::decrementBrushSize()
 {
-	toolSize--;
+	if(toolSize > 1)
+		toolSize--;
+	qDebug() << "Tool size is now" << toolSize;
 }
 
 /**
@@ -153,6 +160,7 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
 			painter.fillRect(xPixel, yPixel, 1, 1, pixelColor);
 		}
 	}
+	qDebug() << "Active Tool: " <<activeTool;
 	painter.end();
 	emit sendActiveFrame(frames[activeFrameIndex]);
 }

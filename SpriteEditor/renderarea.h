@@ -18,17 +18,17 @@ private:
 	bool gridShown = true;
 
 	int getNumColsAndRows();
-	void drawGrid();
 
 private slots:
 	void mousePressEvent(QMouseEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
 public:
-	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 8);
+	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 64);
 	int getPixelSize();
 public slots:
 	void setImage(QPixmap mapToRender);
 	void setGridShown(bool gridShown);
+	void drawGrid(QPixmap newRender);
 signals:
 	void clicked(float x, float y);
 };

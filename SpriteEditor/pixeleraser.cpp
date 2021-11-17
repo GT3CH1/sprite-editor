@@ -59,7 +59,9 @@ void PixelEraser::apply(ActionState& canvasState, const CallbackOptions& callbac
 	{
 		for (unsigned int j = y - upperLeftY; j < colors.getHeight(); j++)
 		{
-			float newAlpha = (1 - stencil[i + upperLeftX][j + upperLeftY]);
+			int deltaX = upperLeftX - x;
+			int deltaY = upperLeftY - y;
+			float newAlpha = (1 - stencil[i + deltaX][j + deltaY]);
 			QColor newColor(255, 255, 255, newAlpha*255);
 			colors[i][j] = newColor;
 		}

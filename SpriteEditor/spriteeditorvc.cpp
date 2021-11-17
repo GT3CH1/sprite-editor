@@ -33,7 +33,8 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->customColorButton6,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-
+	connect(this, &SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
+	connect(this, &SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
 	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
