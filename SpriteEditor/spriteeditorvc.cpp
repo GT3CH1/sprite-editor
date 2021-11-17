@@ -1,4 +1,5 @@
 #include "spriteeditorvc.h"
+#include <iostream>
 
 SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	: QMainWindow(parent)
@@ -19,12 +20,20 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 
 	colorDialog = new QColorDialog();
 
+	// Setup Menu bar
+	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
+	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
+	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
+
+	createMenu();
+	setupButtonColors();
+
 	//	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
 
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
 	connect(colorDialog, &QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
 
-	// UI to Control -- Color Buttons
+	// UI to Control
 	// Default Colors
 	connect(ui->primaryColorButton1, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->primaryColorButton2, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
@@ -48,6 +57,9 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->penToolButton, &QPushButton::pressed,this, &SpriteEditorVC::toolChanged);
 	connect(ui->eraserToolButton, &QPushButton::pressed,this, &SpriteEditorVC::toolChanged);
 	connect(ui->toolButton4, &QPushButton::pressed,this, &SpriteEditorVC::toolChanged);
+	// Menu Buttons
+	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::savePressed);
+	connect(openAction, &QAction::triggered, this, &SpriteEditorVC::loadPressed);
 
 	// UI to Model
 	connect(ui->addFrameButton,&QPushButton::pressed,this->model,&SpriteEditorModel::addFrame);
@@ -75,14 +87,6 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
 	connect(this, &SpriteEditorVC::deleteFrame, model, &SpriteEditorModel::deleteFrame);
 	connect(this, &SpriteEditorVC::addFrame, model, &SpriteEditorModel::addFrame);
-
-	// Setup Menu bar
-	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
-	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
-	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
-
-	createMenu();
-	setupButtonColors();
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -101,6 +105,7 @@ SpriteEditorVC::~SpriteEditorVC()
 
 void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
 {
+
 	for (int i = 0; i < ui->frameDisplay->layout()->count(); i++)
 	{
 		QWidget *toRemove = ui->frameDisplay->layout()->itemAt(i)->widget();
@@ -222,6 +227,17 @@ void SpriteEditorVC::loadPressed()
 	{
 		path = QString::fromStdString(pathAsString.substr(0, i + 1));
 		std::string name(pathAsString.substr(i + 1));
+
+		// Remove any instances of .ssp from the file name
+		auto j = name.find(".ssp");
+		while (j != std::string::npos)
+		{
+			name.erase(j, 4);
+			j = name.find(".ssp");
+		}
+
+		std::cout << path.toStdString() << std::endl;
+		std::cout << name << std::endl;
 		emit load(path.toStdString(), name);
 	}
 }
