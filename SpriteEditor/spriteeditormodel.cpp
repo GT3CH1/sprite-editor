@@ -188,9 +188,12 @@ void SpriteEditorModel::write(QJsonObject &json) const
 	json["width"] = imageWidth;
 	int frameCount = frames.size();
 	json["numberOfFrames"] = frameCount;
-
-	for (int i = 0; i < frameCount; i++)
-		writeFrame(json, i);
+	json["frames"] = QJsonObject();
+	QJsonObject frames(json["frames"].toObject());
+	for (int i = 0; i < frameCount; i++){
+		writeFrame(frames, i);
+	}
+	json["frames"] = frames;
 
 }
 
@@ -201,7 +204,7 @@ void SpriteEditorModel::write(QJsonObject &json) const
  */
 void SpriteEditorModel::writeFrame(QJsonObject& json, int frameNumber) const
 {
-	QString currFrame = QString::fromStdString("frame" + std::to_string(frameNumber));
+	QString currFrame = QString("frame%1").arg(frameNumber);
 	QImage frame = frames[frameNumber].toImage();
 
 	QJsonArray pixels;
