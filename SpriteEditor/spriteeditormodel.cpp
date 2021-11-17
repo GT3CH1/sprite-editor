@@ -27,7 +27,8 @@ SpriteEditorModel::SpriteEditorModel()
 	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));
 	Tools.insert(ToolType::HardEraser,new PixelEraser(new SquareStencilGenerator()));
 	Tools.insert(ToolType::InvertBrush,new ColorInverterBrush(new SquareStencilGenerator()));
-	Tools.insert(ToolType::Rainbow, new RainbowBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::Rainbow,new RainbowBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::SprayCan,new SprayCanBrush(new SoftCircleStencilGenerator()));
 	Tools.insert(ToolType::SoftEraser,new PixelEraser(new SoftCircleStencilGenerator()));
 	QPoint initialPosition(-1,-1);
 	lastPosition = initialPosition;
@@ -102,6 +103,13 @@ void SpriteEditorModel::changeActiveFrame(int newFrameIndex)
  */
 void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 {
+	if(frames.size() == 1)
+	{
+		frames[activeFrameIndex].fill();
+		emit sendActiveFrameIndex(activeFrameIndex);
+		emit sendFrames(frames);
+		return;
+	}
 	vector<QPixmap>::iterator itr = frames.begin();
 	for(int i = 0; i <= indexOfFrameToDelete; i++)
 		itr++;
@@ -109,6 +117,7 @@ void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 	if(activeFrameIndex > 0)
 		activeFrameIndex--;
 	emit sendActiveFrameIndex(activeFrameIndex);
+	emit sendFrames(frames);
 }
 
 /**
@@ -122,12 +131,14 @@ void SpriteEditorModel::addFrame()
 	if(activeFrameIndex == frames.size())
 	{
 		frames.push_back(blank);
-		emit sendActiveFrame(blank);
+		emit sendActiveFrameIndex(activeFrameIndex);
+		emit sendFrames(frames);
 		return;
 	}
 	QPixmap temp = frames[activeFrameIndex];
 	frames[activeFrameIndex] = blank;
-	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++){
+	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
+	{
 		swap(temp, frames[j]);
 	}
 	frames.push_back(temp);
@@ -146,12 +157,14 @@ void SpriteEditorModel::duplicateFrame()
 	if(activeFrameIndex == frames.size())
 	{
 		frames.push_back(copy);
-		emit sendActiveFrame(copy);
+		emit sendActiveFrameIndex(activeFrameIndex);
+		emit sendFrames(frames);
 		return;
 	}
 	QPixmap temp = frames[activeFrameIndex];
 	frames[activeFrameIndex] = copy;
-	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++){
+	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
+	{
 		swap(temp, frames[j]);
 	}
 	frames.push_back(temp);
@@ -187,17 +200,6 @@ void SpriteEditorModel::setActiveTool(ToolType newTool)
 {
 	activeTool = newTool;
 	//TODO(ALEX): don't think i need to do more, but we see
-}
-
-/**
- * @brief SpriteEditorModel::setColorOfActiveFrame
- * @param newColor
- * @param xCoord
- * @param yCoord
- */
-void SpriteEditorModel::setColorOfActiveFrame(QColor newColor, unsigned int xCoord, unsigned int yCoord)
-{
-	emit sendActiveFrame(frames[activeFrameIndex]);
 }
 
 /**
@@ -245,7 +247,8 @@ void SpriteEditorModel::replaceColorsOfActiveFrame(Pointer2DArray<QColor> newCol
  * @param x - 0-1 for mouse position on drawing grid
  * @param y - 0-1 for mouse position on drawing grid
  */
-void SpriteEditorModel::drawing(float x, float y){
+void SpriteEditorModel::drawing(float x, float y)
+{
 	int currentX = (int)(x*imageWidth);
 	int currentY = (int)(y*imageHeight);
 
@@ -257,8 +260,14 @@ void SpriteEditorModel::drawing(float x, float y){
 		if (newStroke)
 			newStroke = false;
 
-		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
-		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> replacePixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->replaceColorsOfActiveFrame(colors, xCoord, yCoord); };
+		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord)
+		{
+			this->setColorsOfActiveFrame(colors, xCoord, yCoord);
+		};
+		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> replacePixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord)
+		{
+			this->replaceColorsOfActiveFrame(colors, xCoord, yCoord);
+		};
 		CallbackOptions callBack(paintPixelColorsCallback, replacePixelColorsCallback);
 		Tools[activeTool]->apply(toolActionState, callBack);
 		lastPosition = currentPosition;
