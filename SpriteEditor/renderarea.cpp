@@ -53,7 +53,7 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
 		int x = evt->pos().x();
 		unsigned int y = evt->pos().y();
-		emit clicked(x/512,y/512);
+		emit clicked((float)x/512.0,(float)y/512.0);
 }
 
 /**

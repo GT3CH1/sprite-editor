@@ -28,7 +28,6 @@ private:
 	ToolType activeTool = ToolType::Brush;
 	vector<QPixmap> frames;
 	int activeFrameIndex =0;
-	QPainter painter;
 
 	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
 	void setColorsOfActiveFrame(Pointer2DArray<QColor>, unsigned int, unsigned int);

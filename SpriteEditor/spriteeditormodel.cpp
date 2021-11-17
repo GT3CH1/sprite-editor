@@ -17,6 +17,7 @@ SpriteEditorModel::SpriteEditorModel()
 	imageHeight = 64;
 	imageWidth = 64;
 	QPixmap map(imageHeight,imageWidth);
+	map.fill(Qt::yellow);
 	frames.push_back(map);
 	ITool* tool = new PixelBrush(new SquareStencilGenerator());
 	Tools.insert(ToolType::Brush,tool);

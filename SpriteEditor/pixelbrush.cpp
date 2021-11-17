@@ -18,7 +18,7 @@
  * @brief Creates the PixelBrush object
  * @param generator Pointer to the stencil needed for the tool
  */
-PixelBrush::PixelBrush(IStencilGenerator* generator) : stencilGenerator(generator), stencil(0,0)
+PixelBrush::PixelBrush(IStencilGenerator* generator) : stencilGenerator(generator), stencil(2,2)
 {
 }
 
@@ -90,7 +90,9 @@ void PixelBrush::apply(ActionState& canvasState, const CallbackOptions& callback
 	{
 		for (unsigned int j = y - upperLeftY; j < colors.getHeight(); j++)
 		{
-			float stencilAlpha = stencil[i + upperLeftX][j + upperLeftY];
+			int deltaX = upperLeftX - x;
+			int deltaY = upperLeftX - y;
+			float stencilAlpha = stencil[i + deltaX][j + deltaY];
 			QColor newStencilColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), stencilAlpha * 255);
 			colors[i][j] = newStencilColor;
 		}
