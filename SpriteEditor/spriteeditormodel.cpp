@@ -123,7 +123,8 @@ void SpriteEditorModel::addFrame()
 		swap(temp, frames[j]);
 	}
 	frames.push_back(temp);
-	emit sendActiveFrame(blank);
+	emit sendActiveFrameIndex(activeFrameIndex);
+	emit sendFrames(frames);
 }
 
 /**
@@ -146,7 +147,8 @@ void SpriteEditorModel::duplicateFrame()
 		swap(temp, frames[j]);
 	}
 	frames.push_back(temp);
-	emit sendActiveFrame(copy);
+	emit sendActiveFrameIndex(activeFrameIndex);
+	emit sendFrames(frames);
 }
 
 /**
