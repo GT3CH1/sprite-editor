@@ -9,12 +9,11 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	this->setStyleSheet(QString("QMainWindow { background-color:white}"));
     // Set up FPS slider.
 	colorDialog = new QColorDialog();
-	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
+//	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
 	model = new SpriteEditorModel();
+
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
 	connect(colorDialog,&QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
-	connect(this,&SpriteEditorVC::colorChanged,this->model,&SpriteEditorModel::setActiveColor);
-
 	// Sets up the getting when a color button is clicked.
 	connect(ui->primaryColorButton1,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->primaryColorButton2,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
@@ -33,23 +32,33 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->customColorButton6,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(this, &SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
-	connect(this, &SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
+
+	connect(this,&SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
+	connect(this,&SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
+	connect(this,&SpriteEditorVC::updateTool,this->model,&SpriteEditorModel::setActiveTool);
+	connect(this,&SpriteEditorVC::colorChanged,this->model,&SpriteEditorModel::setActiveColor);
+	connect(colorDialog,&QColorDialog::colorSelected, this->model, &SpriteEditorModel::setActiveColor);
+	connect(this,&SpriteEditorVC::toggleGrid,ui->mainCanvas,&RenderArea::toggleGrid);
+
 	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->toolButton4,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
-	connect(this,&SpriteEditorVC::updateTool,this->model,&SpriteEditorModel::setActiveTool);
+
 	connect(this->model,&SpriteEditorModel::sendActiveFrame,ui->mainCanvas,&RenderArea::setImage);
 	connect(ui->mainCanvas,&RenderArea::clicked, this->model,&SpriteEditorModel::drawing);
+
 	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
 	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
 	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
+
 	createMenu();
 	setupButtonColors();
+
 	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
 	ui->fpsSlider->setSingleStep(FPS_STEP);
 	ui->fpsSlider->setMaximum(FPS_MAX);
+
 	QObject::connect(&this->playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePreview);
 }
 
@@ -190,6 +199,10 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_Right:
 		//TODO(JVielstich): Get frame count from model
 		break;
+	// Toggles if the grid is shown.
+    case Qt::Key_G:
+        emit toggleGrid();
+        break;
 	default:
 		// do nothing
 		break;
@@ -216,17 +229,21 @@ void SpriteEditorVC::createMenu()
 	openAction = new QAction(QIcon::fromTheme(":/res/open.svg"), tr("&Open..."), this);
 	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
 	newFileAction = new QAction(QIcon(":/res/new.svg"), tr("&New..."), this);
+	helpAction = new QAction(tr("&Help..."),this);
+	helpAction->setStatusTip(tr("Help"));
 	saveAction->setStatusTip(tr("Save this file"));
 	openAction->setStatusTip(tr("Open an existing file"));
 	closeAction->setStatusTip(tr("Close project"));
 	newFileAction->setStatusTip(tr("Create a new file"));
 
 	//TODO(GCPEASE): Attach this to the real signal and slots
-//	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::showColorDialog);
-//	connect(openAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
+//	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::savePressed);
+//	connect(openAction, &QAction::triggered, this,  &SpriteEditorVC::open);
 //	connect(closeAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
 //	connect(newFileAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
 	fileMenu = menuBar()->addMenu(tr("&File"));
+	helpMenu = menuBar()->addMenu(tr("&Help"));
+	helpMenu->addAction(helpAction);
 	fileMenu->addAction(newFileAction);
 	fileMenu->addAction(saveAction);
 	fileMenu->addAction(openAction);
