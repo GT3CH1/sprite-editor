@@ -2,13 +2,15 @@
  * spriteeditormodel handles tools and the sprite itself as well as all modifications of the sprite
  */
 #include <functional>
-#include "spriteeditormodel.h"
-#include "actionstate.h"
-#include "itool.h"
-#include "pointer2darray.h"
 #include <pixelbrush.h>
 #include <squarestencilgenerator.h>
 #include <softcirclestencilgenerator.h>
+#include <pixeleraser.h>
+#include <spriteeditormodel.h>
+#include <actionstate.h>
+#include <itool.h>
+#include <pointer2darray.h>
+
 /**
  * @brief SpriteEditorModel::SpriteEditorModel
  */
@@ -21,9 +23,9 @@ SpriteEditorModel::SpriteEditorModel()
 	map.fill();
 	emit sendActiveFrame(map);
 	frames.push_back(map);
-	ITool* tool = new PixelBrush(new SoftCircleStencilGenerator());
-	Tools.insert(ToolType::Brush,tool);
+	Tools.insert(ToolType::Brush,new PixelBrush(new SoftCircleStencilGenerator()));
 	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::HardEraser,new PixelBrush(new SquareStencilGenerator()));
 }
 
 /**
