@@ -6,8 +6,8 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	saveTest();
 	SpriteEditorVC w;
 	w.show();
+	saveTest();
 	return a.exec();
 }

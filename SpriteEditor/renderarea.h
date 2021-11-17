@@ -4,6 +4,8 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QDragMoveEvent>
+#include <QPoint>
 
 class RenderArea : public QLabel
 {
@@ -11,25 +13,25 @@ class RenderArea : public QLabel
 
 private:
 	QPixmap toRender;
-
-	// How big our pixel is
-	int pixelSize = 16;
+    QPixmap gridRender;
 	// How big our canvas size is.
 	int canvasSize = 0;
 	// Whether or not the grid is going to shown.
-	bool gridShown = true;
-
+	bool gridShown = false;
 	int getNumColsAndRows();
-	void drawGrid();
+	QPoint lastPosition;
 private slots:
 	void mousePressEvent(QMouseEvent* event);
+	void mouseMoveEvent(QMouseEvent* event);
 public:
-	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 512);
+	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 64);
+	int getPixelSize();
 public slots:
 	void setImage(QPixmap mapToRender);
-	void setGridShown(bool gridShown);
+	void setImageScaled(QPixmap mapToRender, int scale);
+	void toggleGrid();
 signals:
-	void clicked();
+	void clicked(float x, float y);
 };
 
 #endif // RENDERAREA_H
