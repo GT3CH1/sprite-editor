@@ -143,7 +143,7 @@ void SpriteEditorModel::duplicateFrame()
 
 	QPixmap copy = frames[activeFrameIndex];
 	activeFrameIndex++;
-	if(activeFrameIndex == frames.size())
+	if((uint)activeFrameIndex == frames.size())
 	{
 		frames.push_back(copy);
 		emit sendActiveFrame(copy);
