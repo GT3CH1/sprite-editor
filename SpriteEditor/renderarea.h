@@ -12,9 +12,6 @@ class RenderArea : public QLabel
 
 private:
 	QPixmap toRender;
-
-	// How big our pixel is
-	int pixelSize = 1;
 	// How big our canvas size is.
 	int canvasSize = 0;
 	// Whether or not the grid is going to shown.
@@ -22,16 +19,18 @@ private:
 
 	int getNumColsAndRows();
 	void drawGrid();
+
 private slots:
 	void mousePressEvent(QMouseEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
 public:
 	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 8);
+	int getPixelSize();
 public slots:
 	void setImage(QPixmap mapToRender);
 	void setGridShown(bool gridShown);
 signals:
-	void clicked();
+	void clicked(float x, float y);
 };
 
 #endif // RENDERAREA_H

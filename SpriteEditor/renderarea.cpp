@@ -29,7 +29,7 @@ RenderArea::RenderArea(QWidget* parent,[[maybe_unused]] Qt::WindowFlags f, int c
  * @brief Gets the maximum number of columns and rows that we can draw on.
  */
 int RenderArea::getNumColsAndRows(){
-	return canvasSize/pixelSize;
+	return 512/canvasSize;
 }
 
 /**
@@ -51,15 +51,9 @@ void RenderArea::setImage(QPixmap newMapToRender)
  */
 void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
-		//TODO(gcpease): Remove this code and place in model.
-		QPainter paint(&toRender);
-		int col = evt->pos().x()/64;
-		int row = evt->pos().y()/64;
-		qDebug() << col << " " << row;
-		paint.fillRect(col,row,pixelSize,pixelSize,Qt::blue);
-		paint.end();
-		setImage(toRender);
-		emit clicked();
+		int x = evt->pos().x();
+		unsigned int y = evt->pos().y();
+		emit clicked(x/512,y/512);
 }
 
 /**
@@ -70,14 +64,9 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 {
 	if(evt->buttons() & Qt::LeftButton)
 	{
-		//TODO(gcpease): Remove this code and place in model.
-		QPainter paint(&toRender);
-		int col = evt->pos().x()/pixelSize;
-		int row = evt->pos().y()/pixelSize;
-		paint.fillRect(col*512,row*512,pixelSize,pixelSize,Qt::blue);
-		paint.end();
-		setImage(toRender);
-		emit clicked();
+		int x = evt->pos().x();
+		int y = evt->pos().y();
+		emit clicked(x/512,y/512);
 	}
 }
 
@@ -91,8 +80,8 @@ void RenderArea::drawGrid(){
 	else
 		paint.setPen(Qt::white);
 	for(int loc = 1; loc < getNumColsAndRows(); loc++){
-		paint.drawLine(loc*pixelSize,0,loc*pixelSize,canvasSize);
-		paint.drawLine(0,loc*pixelSize,canvasSize,loc*pixelSize);
+		paint.drawLine(loc*getPixelSize(),0,loc*getPixelSize(),canvasSize*512);
+		paint.drawLine(0,loc*getPixelSize(),canvasSize*512,loc*getPixelSize());
 	}
 	paint.end();
 	setImage(toRender);
@@ -105,4 +94,8 @@ void RenderArea::drawGrid(){
 void RenderArea::setGridShown(bool gridShown){
 	this->gridShown = gridShown;
 	drawGrid();
+}
+
+int RenderArea::getPixelSize(){
+		return (512/canvasSize);
 }

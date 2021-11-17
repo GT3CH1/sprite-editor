@@ -64,9 +64,9 @@ template<typename T>
  */
 Pointer2DArray<T>::~Pointer2DArray()
 {
-	for (unsigned int i = 0; i < width; i++)
-		free(array[i]);
-	free(array);
+//	for (unsigned int i = 0; i < width; i++)
+//		free(array[i]);
+//	free(array);
 }
 
 

@@ -22,12 +22,12 @@ public:
 private:
 	int imageWidth;
 	int imageHeight;
-	int toolSize;
-	QColor activeColor;
+	int toolSize = 2;
+	QColor activeColor = Qt::blue;
 	QMap<ToolType, ITool*> Tools;
-	ToolType activeTool;
+	ToolType activeTool = ToolType::Brush;
 	vector<QPixmap> frames;
-	int activeFrameIndex;
+	int activeFrameIndex =0;
 	QPainter painter;
 
 	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
