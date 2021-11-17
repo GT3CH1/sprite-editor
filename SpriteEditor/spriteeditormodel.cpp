@@ -194,6 +194,8 @@ void SpriteEditorModel::load(string filePath, string fileName)
 		QByteArray saveData = loadFile.readAll();
 		QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
 		read(loadDoc.object());
+		emit sendActiveFrame(frames[activeFrameIndex]);
+		emit sendFrames(frames);
 	}
 }
 
