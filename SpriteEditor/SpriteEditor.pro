@@ -40,7 +40,8 @@ HEADERS += \
     itool.h \
     pixelbrush.h \
     pixeleraser.h \
-    pointer2darray.h
+    pointer2darray.h \
+    stencils.h
 
 FORMS += \
     spriteeditorvc.ui
