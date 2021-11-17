@@ -185,15 +185,16 @@ QJsonArray SpriteEditorModel::writeColor(QImage frame, int row, int col) const
  */
 void SpriteEditorModel::load(string filePath, string fileName)
 {
-	//TODO(ALEX): talk to gavin about json and stufffffff
+	// load the file
+	QString loadFileName = QString::fromStdString(filePath + "/" + fileName + ".ssp");
+	QFile loadFile(loadFileName);
 
-	// open the file!
-
-	QJsonObject load;
-	write(load);
-
-
-
+	// read the file
+	if (loadFile.open(QIODevice::WriteOnly)) {
+		QByteArray saveData = loadFile.readAll();
+		QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+		read(loadDoc.object());
+	}
 }
 
 /**
