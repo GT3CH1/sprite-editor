@@ -2,14 +2,13 @@
  * spriteeditormodel handles tools and the sprite itself as well as all modifications of the sprite
  */
 #include <functional>
-#include <pixelbrush.h>
-#include <squarestencilgenerator.h>
-#include <softcirclestencilgenerator.h>
-#include <pixeleraser.h>
 #include <spriteeditormodel.h>
 #include <actionstate.h>
 #include <itool.h>
 #include <pointer2darray.h>
+
+#include <brush.h>
+#include <stencil.h>
 
 /**
  * @brief SpriteEditorModel::SpriteEditorModel
