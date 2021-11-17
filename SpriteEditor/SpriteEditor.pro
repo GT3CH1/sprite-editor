@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     actionstate.cpp \
     callbackoptions.cpp \
+    hardcirclestencilgenerator.cpp \
     main.cpp \
     spriteeditormodel.cpp \
     pixelbrush.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
     renderarea.cpp
 
 HEADERS += \
+    hardcirclestencilgenerator.h \
     istencilgenerator.h \
     softcirclestencilgenerator.h \
     spriteeditorvc.h \
