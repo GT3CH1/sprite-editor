@@ -22,14 +22,13 @@ RenderArea::RenderArea(QWidget* parent,[[maybe_unused]] Qt::WindowFlags f, int c
 	QPixmap blank(canvasSize,canvasSize);
 	blank.fill();
 	setImage(blank);
-	drawGrid();
 }
 
 /**
  * @brief Gets the maximum number of columns and rows that we can draw on.
  */
 int RenderArea::getNumColsAndRows(){
-	return canvasSize/pixelSize;
+	return 512/canvasSize;
 }
 
 /**
@@ -38,10 +37,32 @@ int RenderArea::getNumColsAndRows(){
  */
 void RenderArea::setImage(QPixmap newMapToRender)
 {
-	toRender = newMapToRender;;
-	setPixmap(toRender);
+	setImageScaled(newMapToRender,512);
+}
+
+/**
+ * @brief Sets the image to be rendered
+ * @param toRender - a pointer to the QImage to be displayed
+ * @param scale - The scale in which to show the image at.
+ */
+void RenderArea::setImageScaled(QPixmap newMapToRender, int scale)
+{
+	QPixmap newMap(newMapToRender.scaled(scale,scale,Qt::KeepAspectRatioByExpanding));
+	gridRender = newMap;
+	QPainter paint(&gridRender);
+	paint.setPen(Qt::gray);
+	for(int loc = 0; loc < canvasSize+2; loc++){
+		paint.drawLine(loc*(512/canvasSize),0,loc*(512/canvasSize),512);
+		paint.drawLine(0,loc*(512/canvasSize),512,loc*(512/canvasSize));
+	}
+	paint.end();
+	if(gridShown)
+		setPixmap(gridRender);
+	else
+		setPixmap(newMap);
+	toRender = newMap;
 	update();
-	repaint();
+	toRender = newMap.scaled(canvasSize,canvasSize,Qt::KeepAspectRatioByExpanding);
 }
 
 /**
@@ -50,37 +71,41 @@ void RenderArea::setImage(QPixmap newMapToRender)
  */
 void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
-	QPainter paint(&toRender);
-	paint.setPen(QColor(0, 0, 0, 255));
-	int col = evt->pos().x()/pixelSize;
-	int row = evt->pos().y()/pixelSize;
-	paint.fillRect(col*pixelSize,row*pixelSize,pixelSize,pixelSize,Qt::blue);
-	paint.end();
-	setImage(toRender);
+		int x = evt->pos().x();
+		unsigned int y = evt->pos().y();
+		if((x < 512 && x > 0) && (y < 512 && y >= 0))
+			emit clicked((float)x/512.0,(float)y/512.0);
 }
 
 /**
- * @brief Draws a grid on the render area
+ * @brief Handles the mouse being moved across the RenderArea
+ * @param evt
  */
-void RenderArea::drawGrid(){
-	QPainter paint(&toRender);
-	if(gridShown)
-		paint.setPen(Qt::black);
-	else
-		paint.setPen(Qt::white);
-	for(int loc = 1; loc < getNumColsAndRows(); loc++){
-		paint.drawLine(loc*pixelSize,0,loc*pixelSize,canvasSize);
-		paint.drawLine(0,loc*pixelSize,canvasSize,loc*pixelSize);
+void RenderArea::mouseMoveEvent(QMouseEvent *evt)
+{
+	if(evt->buttons() & Qt::LeftButton)
+	{
+
+		int x = evt->pos().x();
+		int y = evt->pos().y();
+		if((abs(lastPosition.x() - x) > 20) || (abs(lastPosition.y() - y) > 20)){
+			lastPosition = evt->pos();
+			if((x < 510 && x > 2) && (y < 510 && y > 2))
+				emit clicked((float)x/512.0,(float)y/512.0);
+		}
 	}
-	paint.end();
-	setImage(toRender);
 }
 
 /**
  * @brief Sets whether or not the grid is shown.
  * @param gridShown - When true, the grid will be shown. If false, the grid will not be showed.
  */
-void RenderArea::setGridShown(bool gridShown){
-	this->gridShown = gridShown;
-	drawGrid();
+void RenderArea::toggleGrid(){
+	this->gridShown = !gridShown;
+    setImage(toRender);
+}
+
+int RenderArea::getPixelSize(){
+		qDebug() << "Pixel size: " << (512/canvasSize);
+		return (512/canvasSize);
 }

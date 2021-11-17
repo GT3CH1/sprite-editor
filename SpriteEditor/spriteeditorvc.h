@@ -1,10 +1,13 @@
 #ifndef SPRITEEDITORVC_H
 #define SPRITEEDITORVC_H
 
+#include <QAction>
+#include <QColorDialog>
 #include <QDir>
 #include <QFileDialog>
 #include <QLabel>
 #include <QMainWindow>
+#include <QMenuBar>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QSlider>
@@ -23,46 +26,31 @@ class SpriteEditorVC : public QMainWindow
 	Q_OBJECT
 
 public:
-    // TODO(gcpease): Add all the buttons for tools
-    QPushButton *tool1;
-
 	SpriteEditorVC(QWidget *parent = nullptr);
 	~SpriteEditorVC();
 
+public slots:
+	void showColorDialog();
+	void updateCustomButtonColors();
+	void colorButtonClicked();
+	void toolChanged();
+
 private slots:
-	void updatePreview();
 	void sendActiveFrame();
 	void previewFrames(vector<QPixmap>);
+	void updateActivePreviewFrame(int);
+	void updatePlaybackFrame();
 	void on_fpsSlider_valueChanged(int);
 	void keyPressEvent(QKeyEvent*);
 	void savePressed();
 	void loadPressed();
-	void on_primaryColorButton1_clicked();
-	void on_primaryColorButton2_clicked();
-	void on_primaryColorButton3_clicked();
-	void on_primaryColorButton4_clicked();
-	void on_primaryColorButton5_clicked();
-	void on_primaryColorButton6_clicked();
-	void on_primaryColorButton7_clicked();
-	void on_primaryColorButton8_clicked();
-	void on_customColorButton1_clicked();
-	void on_customColorButton2_clicked();
-	void on_customColorButton3_clicked();
-	void on_customColorButton4_clicked();
-	void on_customColorButton5_clicked();
-	void on_customColorButton6_clicked();
-	void on_customColorButton7_clicked();
-	void on_customColorButton8_clicked();
-	void on_penToolButton_clicked();
-	void on_brushToolButton_clicked();
-	void on_eraserToolButton_clicked();
-	void on_toolButton4_clicked();
 
 private:
 	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
 	const int FPS_INTERVAL = 10;
 	const int FPS_MAX = 60;
 	const int FPS_STEP = 10;
+	const int PREVIEW_SIZE = 128;
 	SpriteEditorModel *model;
 	Ui::SpriteEditorVC *ui;
 	int indexOfActiveFrame = 0;
@@ -72,15 +60,31 @@ private:
 	QString path = QDir::homePath();
 	void changeActiveColor(QPushButton*);
 	std::vector<RenderArea*> framePreviews;
+	QColorDialog *colorDialog;
+	QAction *saveAction;
+	QAction *openAction;
+	QAction *closeAction;
+	QAction *helpAction;
+	QAction *newFileAction;
+	QMenu *fileMenu;
+	QMenu *helpMenu;
+	void setButtonColor(QPushButton* button, QString hex);
+	void createMenu();
+	void setupButtonColors();
+	constexpr unsigned int hash(const char* str, int h = 0);
 
 signals:
+	void colorChanged(QColor color);
+	void updateTool(SpriteEditorModel::ToolType toolType);
 	void incrementToolSize();
 	void decrementToolSize();
 	void setActiveColor(QColor);
 	void changeActiveFrame(int);
 	void changeActiveTool(SpriteEditorModel::ToolType);
+	void addFrame();
 	void deleteFrame(int);
 	void save(std::string, std::string);
 	void load(std::string, std::string);
+    void toggleGrid();
 };
 #endif // SPRITEEDITORVC_H

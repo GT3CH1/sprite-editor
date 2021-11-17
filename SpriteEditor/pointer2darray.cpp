@@ -52,8 +52,8 @@ template<typename T>
  */
 Pointer2DArray<T>& Pointer2DArray<T>::operator=(Pointer2DArray<T> otherCopy)
 {
-	width = otherCopy.width;
-	height = otherCopy.height;
+	std::swap(width,otherCopy.width);
+	std::swap(height,otherCopy.height);
 	std::swap(array, otherCopy.array);
 	return *this;
 }
