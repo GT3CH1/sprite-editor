@@ -14,6 +14,7 @@ SOURCES += \
     colorinverterbrush.cpp \
     hardcirclestencilgenerator.cpp \
     main.cpp \
+    rainbowbrush.cpp \
     spriteeditormodel.cpp \
     pixelbrush.cpp \
     pixeleraser.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     colorinverterbrush.h \
     hardcirclestencilgenerator.h \
     istencilgenerator.h \
+    rainbowbrush.h \
     softcirclestencilgenerator.h \
     spriteeditorvc.h \
     squarestencilgenerator.h \
