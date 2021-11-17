@@ -24,7 +24,7 @@ SpriteEditorModel::SpriteEditorModel()
 	map.fill();
 	frames.push_back(map);
 	Tools.insert(ToolType::Brush,new PixelBrush(new SoftCircleStencilGenerator()));
-	Tools.insert(ToolType::Pen,new ColorInverterBrush(new HardCircleStencilGenerator()));
+	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));
 	Tools.insert(ToolType::HardEraser,new PixelEraser(new SquareStencilGenerator()));
 	QPoint initialPosition(-1,-1);
 	lastPosition = initialPosition;

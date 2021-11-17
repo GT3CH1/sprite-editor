@@ -32,6 +32,8 @@ void ColorInverterBrush::apply(ActionState& canvasState, const CallbackOptions& 
 		coveredArea = clearedArea;
 		StrokeCovered defaultStrokeCovered;
 		defaultStrokeCovered.amountAffected = 0;
+		QColor defaultColor;
+		defaultStrokeCovered.initialColor = defaultColor;
 
 		for(int  i = 0; i < (int)coveredArea.getWidth(); i++)
 			for(int j = 0; j < (int)coveredArea.getHeight(); j++)
