@@ -562,8 +562,8 @@
      <rect>
       <x>630</x>
       <y>20</y>
-      <width>151</width>
-      <height>127</height>
+      <width>152</width>
+      <height>205</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="playbackLayout">
@@ -625,11 +625,17 @@
       </widget>
      </item>
      <item row="1" column="0" colspan="2">
-      <widget class="QWidget" name="QRenderArea" native="true">
+      <widget class="RenderArea" name="playbackArea" native="true">
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>80</height>
+         <width>150</width>
+         <height>150</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>150</height>
         </size>
        </property>
       </widget>

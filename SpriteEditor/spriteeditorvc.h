@@ -1,17 +1,18 @@
 #ifndef SPRITEEDITORVC_H
 #define SPRITEEDITORVC_H
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include <QPushButton>
-#include <QSlider>
-#include <QLabel>
-#include <QTimer>
 #include <QDir>
 #include <QFileDialog>
+#include <QLabel>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QSlider>
+#include <QTimer>
 
-#include "spriteeditormodel.h"
 #include "renderarea.h"
+#include "spriteeditormodel.h"
+#include "ui_spriteeditorvc.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SpriteEditorVC; }
@@ -30,6 +31,8 @@ public:
 
 private slots:
 	void updatePreview();
+	void sendActiveFrame();
+	void previewFrames(vector<QPixmap>);
 	void on_fpsSlider_valueChanged(int);
 	void keyPressEvent(QKeyEvent*);
 	void savePressed();
@@ -68,7 +71,7 @@ private:
 	QTimer playbackUpdater;
 	QString path = QDir::homePath();
 	void changeActiveColor(QPushButton*);
-	std::vector<RenderArea> framePreviews;
+	std::vector<RenderArea*> framePreviews;
 
 signals:
 	void incrementToolSize();

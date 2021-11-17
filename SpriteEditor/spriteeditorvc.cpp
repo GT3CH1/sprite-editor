@@ -1,8 +1,4 @@
 #include "spriteeditorvc.h"
-#include "spriteeditormodel.h"
-#include "renderarea.h"
-#include "ui_spriteeditorvc.h"
-#include "itool.h"
 
 SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	: QMainWindow(parent)
@@ -23,24 +19,26 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 
 	// Connect signals and slots
 	// View to View
-	QObject::connect(&this->playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePreview);
+	connect(&this->playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePreview);
 	// View to UI
 	// View to Model
-	QObject::connect(this, &SpriteEditorVC::setActiveColor, model, &SpriteEditorModel::setActiveColor);
-	QObject::connect(this, &SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
-	QObject::connect(this, &SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
-	QObject::connect(this, &SpriteEditorVC::changeActiveFrame, model, &SpriteEditorModel::changeActiveFrame);
-	QObject::connect(this, &SpriteEditorVC::deleteFrame, model, &SpriteEditorModel::deleteFrame);
-	QObject::connect(this, &SpriteEditorVC::save, model, &SpriteEditorModel::save);
-	QObject::connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
-	QObject::connect(this, &SpriteEditorVC::changeActiveTool, model, &SpriteEditorModel::setActiveTool);
+	connect(this, &SpriteEditorVC::setActiveColor, model, &SpriteEditorModel::setActiveColor);
+	connect(this, &SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
+	connect(this, &SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
+	connect(this, &SpriteEditorVC::changeActiveFrame, model, &SpriteEditorModel::changeActiveFrame);
+	connect(this, &SpriteEditorVC::deleteFrame, model, &SpriteEditorModel::deleteFrame);
+	connect(this, &SpriteEditorVC::save, model, &SpriteEditorModel::save);
+	connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
+	connect(this, &SpriteEditorVC::changeActiveTool, model, &SpriteEditorModel::setActiveTool);
 	// Model to View
+	connect(model, &SpriteEditorModel::sendFrames, this, &SpriteEditorVC::previewFrames);
 	// UI to View
 }
 
 SpriteEditorVC::~SpriteEditorVC()
 {
 	delete ui;
+	delete model;
 }
 
 /**
@@ -60,10 +58,27 @@ void SpriteEditorVC::updatePreview()
 	// Scale and display the next frame
 	if (frameCount != 0)
 	{
-		int w = ui->playbackArea->width();
-		int h = ui->playbackArea->height();
 		QPixmap frame = model->getFramefromIndex(indexOfPlayback);
-		ui->playbackArea->setImage(frame.scaled(w, h, Qt::KeepAspectRatio));
+		ui->playbackArea->setImage(frame);
+	}
+}
+
+void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
+{
+	for (RenderArea* frame : framePreviews)
+	{
+		ui->frameDisplay->layout()->removeWidget(frame);
+	}
+	framePreviews.clear();
+
+	for (const QPixmap &frame : qAsConst(allFrames))
+	{
+		RenderArea *newFrame = new RenderArea;
+		newFrame->setImage(frame);
+		newFrame->setGridShown(false);
+		connect(newFrame, &RenderArea::clicked, this, &SpriteEditorVC::sendActiveFrame);
+		framePreviews.push_back(newFrame);
+		ui->frameDisplay->layout()->addWidget(newFrame);
 	}
 }
 
@@ -93,6 +108,23 @@ void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 		else
 		{
 			playbackUpdater.setInterval(1000 / fps);
+		}
+	}
+}
+
+void SpriteEditorVC::sendActiveFrame()
+{
+	for (int i = 0; i < model->getFrameCount(); i++)
+	{
+		std::string frameName(framePreviews.at(i)->objectName().toStdString());
+		std::string senderName(sender()->objectName().toStdString());
+		if (frameName == senderName)
+		{
+			if (i != indexOfActiveFrame)
+			{
+				emit changeActiveFrame(i);
+			}
+			break;
 		}
 	}
 }
@@ -349,6 +381,9 @@ void SpriteEditorVC::on_eraserToolButton_clicked()
 
 void SpriteEditorVC::on_toolButton4_clicked()
 {
-	//TODO(JVielstich): Emit change tool signal
+	if (model->getFrameCount() > 0)
+	{
+		emit deleteFrame(indexOfActiveFrame);
+	}
 }
 
