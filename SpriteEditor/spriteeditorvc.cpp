@@ -60,10 +60,12 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	// Menu Buttons
 	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::savePressed);
 	connect(openAction, &QAction::triggered, this, &SpriteEditorVC::loadPressed);
+	// Other
+	connect(ui->addFrameButton, &QPushButton::clicked, this, &SpriteEditorVC::addFrame);
+	connect(ui->deleteFrameButton, &QPushButton::clicked, this, &SpriteEditorVC::deleteFrame);
 
 	// UI to Model
-	connect(ui->addFrameButton,&QPushButton::pressed,this->model,&SpriteEditorModel::addFrame);
-	connect(ui->mainCanvas, &RenderArea::clicked, this->model, &SpriteEditorModel::drawing);
+	connect(ui->mainCanvas, &RenderArea::clicked, model, &SpriteEditorModel::drawing);
 
 
 	// Model to UI
@@ -85,8 +87,8 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(this, &SpriteEditorVC::toggleGrid,ui->mainCanvas, &RenderArea::toggleGrid);
 	connect(this, &SpriteEditorVC::save, model, &SpriteEditorModel::save);
 	connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
-	connect(this, &SpriteEditorVC::deleteFrame, model, &SpriteEditorModel::deleteFrame);
-	connect(this, &SpriteEditorVC::addFrame, model, &SpriteEditorModel::addFrame);
+	connect(this, &SpriteEditorVC::remove, model, &SpriteEditorModel::deleteFrame);
+	connect(this, &SpriteEditorVC::add, model, &SpriteEditorModel::addFrame);
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -103,199 +105,7 @@ SpriteEditorVC::~SpriteEditorVC()
 	delete helpMenu;
 }
 
-void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
-{
-
-	for (int i = 0; i < ui->frameDisplay->layout()->count(); i++)
-	{
-		QWidget *toRemove = ui->frameDisplay->layout()->itemAt(i)->widget();
-		ui->frameDisplay->layout()->removeWidget(toRemove);
-	}
-
-	for (QPixmap toAdd : allFrames)
-	{
-		RenderArea *newWidget = new RenderArea;
-		newWidget->setImageScaled(toAdd, 64);
-		ui->frameDisplay->layout()->addWidget(newWidget);
-	}
-}
-
-void SpriteEditorVC::updateActivePreviewFrame(int activeFrameIndex)
-{
-	//TODO(JVielstich): update the preview of the active frame when the drawing is changed
-}
-
-/**
- * @brief Advances the animation playback frame
- */
-void SpriteEditorVC::updatePlaybackFrame()
-{
-	if(indexOfPlayback + 1 > model->getFrameCount())
-	{
-		indexOfPlayback = 0;
-	}
-
-	QPixmap currentFrame(model->getFramefromIndex(indexOfPlayback++).scaled(PREVIEW_SIZE, PREVIEW_SIZE));
-	ui->playbackCanvas->setImageScaled(currentFrame, PREVIEW_SIZE);
-}
-
-/**
- * @brief Updates the FPS label and controls the animation
- * playback timer
- * @param value
- */
-void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
-{
-    ui->fpsLabel->setText(QString::number(value));
-	setupButtonColors();
-	fps = value;
-
-	// Return focus to main window
-	this->setFocus();
-
-	if (fps == 0 && playbackUpdater.isActive())
-	{
-		playbackUpdater.stop();
-	}
-	else if (fps != 0)
-	{
-		if (!playbackUpdater.isActive())
-		{
-			playbackUpdater.start(1000 / fps);
-		}
-		else
-		{
-			playbackUpdater.setInterval(1000 / fps);
-		}
-	}
-}
-
-void SpriteEditorVC::sendActiveFrame()
-{
-	for (int i = 0; i < model->getFrameCount(); i++)
-	{
-		std::string frameName(framePreviews.at(i)->objectName().toStdString());
-		std::string senderName(sender()->objectName().toStdString());
-		if (frameName == senderName)
-		{
-			if (i != indexOfActiveFrame)
-			{
-				emit changeActiveFrame(i);
-			}
-			break;
-		}
-	}
-}
-
-/**
- * @brief Launches the "Save File" dialog window and prompts the user
- * to choose a name and location for saving the active sprite. The file
- * path and name will be passed to the model.
- */
-void SpriteEditorVC::savePressed()
-{
-	path = QFileDialog::getSaveFileName(this, tr("Save File"), path, tr(FILE_FILTER));
-	std::string pathAsString(path.toStdString());
-
-	// Find the index of the last "/" character
-	auto i(pathAsString.find_last_of("/"));
-
-	// Separate the path and file name
-	if (i != std::string::npos)
-	{
-		path = QString::fromStdString(pathAsString.substr(0, i + 1));
-		std::string name(pathAsString.substr(i + 1));
-		emit save(path.toStdString(), name);
-	}
-}
-
-/**
- * @brief Launches the "Open File" dialog window and prompts the user
- * to choose a file to open and replace the active sprite. The file
- * path and name will be passed to the model.
- */
-void SpriteEditorVC::loadPressed()
-{
-	path = QFileDialog::getOpenFileName(this, tr("Open File"), path, tr(FILE_FILTER));
-	std::string pathAsString(path.toStdString());
-
-	// Find the index of the last "/" character
-	auto i(pathAsString.find_last_of("/"));
-
-	// Separate the path and file name
-	if (i != std::string::npos)
-	{
-		path = QString::fromStdString(pathAsString.substr(0, i + 1));
-		std::string name(pathAsString.substr(i + 1));
-
-		// Remove any instances of .ssp from the file name
-		auto j = name.find(".ssp");
-		while (j != std::string::npos)
-		{
-			name.erase(j, 4);
-			j = name.find(".ssp");
-		}
-
-		std::cout << path.toStdString() << std::endl;
-		std::cout << name << std::endl;
-		emit load(path.toStdString(), name);
-	}
-}
-
-/**
- * @brief Triggers when any key is pressed and emits any
- * relevant signals.
- * @param event
- */
-void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
-{
-	switch (event->key())
-	{
-	// Decrease tool size
-	case Qt::Key_BracketLeft:
-		emit decrementToolSize();
-		break;
-	// Increase tool size
-	case Qt::Key_BracketRight:
-		emit incrementToolSize();
-		break;
-	// Save the file
-	case Qt::Key_S:
-		if (event->modifiers() == Qt::ControlModifier)
-		{
-			savePressed();
-		}
-		break;
-	// Open a file
-	case Qt::Key_O:
-		if (event->modifiers() == Qt::ControlModifier)
-		{
-			loadPressed();
-		}
-		break;
-	// Move to previous frame (if it exists)
-	case Qt::Key_Left:
-		if (indexOfActiveFrame > 0)
-		{
-			emit changeActiveFrame(indexOfActiveFrame - 1);
-		}
-		break;
-	// Move to next frame (if it exists)
-	case Qt::Key_Right:
-		if (indexOfActiveFrame < model->getFrameCount() - 1)
-		{
-			emit changeActiveFrame(indexOfActiveFrame + 1);
-		}
-		break;
-	// Toggles if the grid is shown.
-    case Qt::Key_G:
-        emit toggleGrid();
-        break;
-	default:
-		// do nothing
-		break;
-	}
-}
+// UI SETUP
 
 /**
  * @brief Sets the given button color (via background-color) to the given hex value.
@@ -306,7 +116,6 @@ void SpriteEditorVC::setButtonColor(QPushButton *button, QString hex)
 {
 	button->setStyleSheet(QString("QPushButton {background-color:%1;border:1px solid lightgray; border-radius:5px} QPushButton:hover{border: 1px solid gray;}").arg(hex));
 }
-
 
 /**
  * @brief Creates the top menu bar on the UI.
@@ -381,6 +190,206 @@ void SpriteEditorVC::showColorDialog()
 	colorDialog->show();
 }
 
+// UI CONTROL
+
+// Animation Preview
+
+/**
+ * @brief Advances the animation playback frame
+ */
+void SpriteEditorVC::updatePlaybackFrame()
+{
+	if(indexOfPlayback + 1 > model->getFrameCount())
+	{
+		indexOfPlayback = 0;
+	}
+
+	QPixmap currentFrame(model->getFramefromIndex(indexOfPlayback++).scaled(PREVIEW_SIZE, PREVIEW_SIZE));
+	ui->playbackCanvas->setImageScaled(currentFrame, PREVIEW_SIZE);
+}
+
+/**
+ * @brief Updates the FPS label and controls the animation
+ * playback timer
+ * @param value
+ */
+void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
+{
+	ui->fpsLabel->setText(QString::number(value));
+	setupButtonColors();
+	fps = value;
+
+	// Return focus to main window
+	this->setFocus();
+
+	if (fps == 0 && playbackUpdater.isActive())
+	{
+		playbackUpdater.stop();
+	}
+	else if (fps != 0)
+	{
+		if (!playbackUpdater.isActive())
+		{
+			playbackUpdater.start(1000 / fps);
+		}
+		else
+		{
+			playbackUpdater.setInterval(1000 / fps);
+		}
+	}
+}
+
+// Frame Preview
+
+/**
+ * @brief Displays the frames in the frame selection bar below the main canvas
+ * @param allFrames
+ */
+void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
+{
+	if (ui->frameDisplay->layout()->count() > 0)
+	{
+		for (int i = 0; i < ui->frameDisplay->layout()->count(); i++)
+		{
+			QWidget *toRemove = ui->frameDisplay->layout()->itemAt(i)->widget();
+			ui->frameDisplay->layout()->removeWidget(toRemove);
+			std::cout << "Removing frame " << i << " from preview" << std::endl;
+		}
+	}
+
+	for (const QPixmap &toAdd : qAsConst(allFrames))
+	{
+		RenderArea *newWidget = new RenderArea;
+		newWidget->setImageScaled(toAdd, 64);
+		connect(newWidget, &RenderArea::clicked, this, &SpriteEditorVC::sendActiveFrame);
+		ui->frameDisplay->layout()->addWidget(newWidget);
+		std::cout << "Adding frame to preview" << std::endl;
+	}
+}
+
+/**
+ * @brief Changes the active frame to the one selected
+ */
+void SpriteEditorVC::sendActiveFrame()
+{
+	for (int i = 0; i < model->getFrameCount(); i++)
+	{
+		std::string frameName(framePreviews.at(i)->objectName().toStdString());
+		std::string senderName(sender()->objectName().toStdString());
+		if (frameName == senderName)
+		{
+			if (i != indexOfActiveFrame)
+			{
+				emit changeActiveFrame(i);
+			}
+			break;
+		}
+	}
+}
+
+void SpriteEditorVC::updateActivePreviewFrame(int activeFrameIndex)
+{
+	//TODO(JVielstich): update the preview of the active frame when the drawing is changed
+}
+
+// MODEL CONTROL
+
+// Frame Buttons
+
+/**
+ * @brief Tells the Model to delete the current frame
+ */
+void SpriteEditorVC::deleteFrame()
+{
+	emit remove(indexOfActiveFrame);
+}
+
+/**
+ * @brief Tells the Model to add a frame to the end of the sprite
+ */
+void SpriteEditorVC::addFrame()
+{
+	emit add();
+}
+
+// File Menu
+
+/**
+ * @brief Launches the "Save File" dialog window and prompts the user
+ * to choose a name and location for saving the active sprite. The file
+ * path and name will be passed to the model.
+ */
+void SpriteEditorVC::savePressed()
+{
+	path = QFileDialog::getSaveFileName(this, tr("Save File"), path, tr(FILE_FILTER));
+	std::string pathAsString(path.toStdString());
+
+	// Find the index of the last "/" character
+	auto i(pathAsString.find_last_of("/"));
+
+	// Separate the path and file name
+	if (i != std::string::npos)
+	{
+		path = QString::fromStdString(pathAsString.substr(0, i + 1));
+		std::string name(pathAsString.substr(i + 1));
+		emit save(path.toStdString(), name);
+	}
+}
+
+/**
+ * @brief Launches the "Open File" dialog window and prompts the user
+ * to choose a file to open and replace the active sprite. The file
+ * path and name will be passed to the model.
+ */
+void SpriteEditorVC::loadPressed()
+{
+	path = QFileDialog::getOpenFileName(this, tr("Open File"), path, tr(FILE_FILTER));
+	std::string pathAsString(path.toStdString());
+
+	// Find the index of the last "/" character
+	auto i(pathAsString.find_last_of("/"));
+
+	// Separate the path and file name
+	if (i != std::string::npos)
+	{
+		path = QString::fromStdString(pathAsString.substr(0, i + 1));
+		std::string name(pathAsString.substr(i + 1));
+
+		// Remove any instances of .ssp from the file name
+		auto j = name.find(".ssp");
+		while (j != std::string::npos)
+		{
+			name.erase(j, 4);
+			j = name.find(".ssp");
+		}
+
+		std::cout << path.toStdString() << std::endl;
+		std::cout << name << std::endl;
+		emit load(path.toStdString(), name);
+	}
+}
+
+// Tool Buttons
+
+/**
+ * @brief Changes the current tool based on what was clicked.
+ */
+void SpriteEditorVC::toolChanged()
+{
+	SpriteEditorModel::ToolType tool = SpriteEditorModel::ToolType::Brush;
+	std::string name(sender()->objectName().toStdString());
+	if(name == "penToolButton")
+		tool = SpriteEditorModel::ToolType::Pen;
+	else if(name == "brushToolButton")
+		tool = SpriteEditorModel::ToolType::Brush;
+	//TODO(GCPEASE): Implement rest of tool buttons
+	else if(name == "eraserToolButton")
+		tool = SpriteEditorModel::ToolType::HardEraser;
+	emit updateTool(tool);
+}
+
+// Color Buttons
+
 /**
  * @brief Handles setting the new color when one of the color buttons is clicked.
  */
@@ -423,19 +432,59 @@ void SpriteEditorVC::colorButtonClicked(){
 	emit colorChanged(c);
 }
 
+// Keyboard Shortcuts
+
 /**
- * @brief Changes the current tool based on what was clicked.
+ * @brief Triggers when any key is pressed and emits any
+ * relevant signals.
+ * @param event
  */
-void SpriteEditorVC::toolChanged()
+void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 {
-	SpriteEditorModel::ToolType tool = SpriteEditorModel::ToolType::Brush;
-	std::string name(sender()->objectName().toStdString());
-	if(name == "penToolButton")
-		tool = SpriteEditorModel::ToolType::Pen;
-	else if(name == "brushToolButton")
-		tool = SpriteEditorModel::ToolType::Brush;
-	//TODO(GCPEASE): Implement rest of tool buttons
-	else if(name == "eraserToolButton")
-		tool = SpriteEditorModel::ToolType::HardEraser;
-	emit updateTool(tool);
+	switch (event->key())
+	{
+	// Decrease tool size
+	case Qt::Key_BracketLeft:
+		emit decrementToolSize();
+		break;
+	// Increase tool size
+	case Qt::Key_BracketRight:
+		emit incrementToolSize();
+		break;
+	// Save the file
+	case Qt::Key_S:
+		if (event->modifiers() == Qt::ControlModifier)
+		{
+			savePressed();
+		}
+		break;
+	// Open a file
+	case Qt::Key_O:
+		if (event->modifiers() == Qt::ControlModifier)
+		{
+			loadPressed();
+		}
+		break;
+	// Move to previous frame (if it exists)
+	case Qt::Key_Left:
+		if (indexOfActiveFrame > 0)
+		{
+			emit changeActiveFrame(indexOfActiveFrame - 1);
+		}
+		break;
+	// Move to next frame (if it exists)
+	case Qt::Key_Right:
+		if (indexOfActiveFrame < model->getFrameCount() - 1)
+		{
+			emit changeActiveFrame(indexOfActiveFrame + 1);
+		}
+		break;
+	// Toggles if the grid is shown.
+	case Qt::Key_G:
+		emit toggleGrid();
+		break;
+	default:
+		// do nothing
+		break;
+	}
 }

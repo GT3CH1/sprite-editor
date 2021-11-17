@@ -37,6 +37,8 @@ public slots:
 
 private slots:
 	void sendActiveFrame();
+	void deleteFrame();
+	void addFrame();
 	void previewFrames(vector<QPixmap>);
 	void updateActivePreviewFrame(int);
 	void updatePlaybackFrame();
@@ -81,8 +83,8 @@ signals:
 	void setActiveColor(QColor);
 	void changeActiveFrame(int);
 	void changeActiveTool(SpriteEditorModel::ToolType);
-	void addFrame();
-	void deleteFrame(int);
+	void add();
+	void remove(int);
 	void save(std::string, std::string);
 	void load(std::string, std::string);
     void toggleGrid();
