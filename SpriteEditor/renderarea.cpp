@@ -22,7 +22,6 @@ RenderArea::RenderArea(QWidget* parent,[[maybe_unused]] Qt::WindowFlags f, int c
 	QPixmap blank(canvasSize,canvasSize);
 	blank.fill();
 	setImage(blank);
-	drawGrid(blank);
 }
 
 /**
@@ -39,19 +38,19 @@ int RenderArea::getNumColsAndRows(){
 void RenderArea::setImage(QPixmap newMapToRender)
 {
 	QPixmap newMap(newMapToRender.scaled(512,512,Qt::KeepAspectRatioByExpanding));
-	QPainter paint(&newMap);
-	if(gridShown)
-		paint.setPen(Qt::black);
-	else
-		paint.setPen(Qt::white);
-	for(int loc = 0; loc < canvasSize; loc++){
+	gridRender = newMap;
+	QPainter paint(&gridRender);
+	paint.setPen(Qt::gray);
+	for(int loc = 0; loc < canvasSize+2; loc++){
 		paint.drawLine(loc*(512/canvasSize),0,loc*(512/canvasSize),512);
 		paint.drawLine(0,loc*(512/canvasSize),512,loc*(512/canvasSize));
 	}
 	paint.end();
-	setPixmap(newMap);
+	if(gridShown)
+		setPixmap(gridRender);
+	else
+		setPixmap(newMap);
 	toRender = newMap;
-
 	update();
 	toRender = newMap.scaled(canvasSize,canvasSize,Qt::KeepAspectRatioByExpanding);
 }
@@ -64,9 +63,8 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
 		int x = evt->pos().x();
 		unsigned int y = evt->pos().y();
-		if((x < 512 && x > 0) && (y < 512 && y > 0))
+		if((x < 512 && x > 0) && (y < 512 && y >= 0))
 			emit clicked((float)x/512.0,(float)y/512.0);
-		drawGrid(toRender);
 }
 
 /**
@@ -85,19 +83,12 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 }
 
 /**
- * @brief Draws a grid on the render area
- */
-void RenderArea::drawGrid(QPixmap newFrame){
-	qDebug() << "Grid size: " << newFrame.size();
-}
-
-/**
  * @brief Sets whether or not the grid is shown.
  * @param gridShown - When true, the grid will be shown. If false, the grid will not be showed.
  */
-void RenderArea::setGridShown(bool gridShown){
-	this->gridShown = gridShown;
-	drawGrid(toRender);
+void RenderArea::toggleGrid(){
+	this->gridShown = !gridShown;
+    setImage(toRender);
 }
 
 int RenderArea::getPixelSize(){
