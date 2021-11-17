@@ -85,10 +85,14 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 {
 	if(evt->buttons() & Qt::LeftButton)
 	{
+
 		int x = evt->pos().x();
 		int y = evt->pos().y();
-		/*if((x < 510 && x > 2) && (y < 510 && y > 2))
-			emit clicked((float)x/512.0,(float)y/512.0); */
+		if((abs(lastPosition.x() - x) > 20) || (abs(lastPosition.y() - y) > 20)){
+			lastPosition = evt->pos();
+			if((x < 510 && x > 2) && (y < 510 && y > 2))
+				emit clicked((float)x/512.0,(float)y/512.0);
+		}
 	}
 }
 

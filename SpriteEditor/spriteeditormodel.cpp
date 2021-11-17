@@ -2,6 +2,8 @@
  * spriteeditormodel handles tools and the sprite itself as well as all modifications of the sprite
  */
 #include <functional>
+#include <stencils.h>
+#include <brushes.h>
 #include <spriteeditormodel.h>
 #include <actionstate.h>
 #include <itool.h>
@@ -20,7 +22,6 @@ SpriteEditorModel::SpriteEditorModel()
 	toolSize = 4;
 	QPixmap map(imageHeight,imageWidth);
 	map.fill();
-	emit sendActiveFrame(map);
 	frames.push_back(map);
 	Tools.insert(ToolType::Brush,new PixelBrush(new SoftCircleStencilGenerator()));
 	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));

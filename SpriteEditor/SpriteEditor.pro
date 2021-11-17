@@ -44,6 +44,7 @@ HEADERS += \
     pointer2darray.h \
     stencil.h
 
+
 FORMS += \
     spriteeditorvc.ui
 
