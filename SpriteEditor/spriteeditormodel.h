@@ -29,6 +29,9 @@ private:
 	vector<QPixmap> frames;
 	int activeFrameIndex =0;
 
+	QPoint lastPosition;
+	bool newStroke = true;
+
 	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
 	void setColorsOfActiveFrame(Pointer2DArray<QColor>, unsigned int, unsigned int);
 	void replaceColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord);
@@ -57,6 +60,7 @@ public slots:
 	void load(string filePath, string fileName);
 	void setActiveTool(ToolType newTool);
 	void drawing(float x, float y);
+	void stopDrawing(float x, float y);
 };
 
 

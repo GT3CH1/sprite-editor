@@ -77,6 +77,8 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(this, &SpriteEditorVC::addFrame, model, &SpriteEditorModel::addFrame);
 
 	// Setup Menu bar
+
+	connect(ui->mainCanvas,&RenderArea::released,this->model,&SpriteEditorModel::stopDrawing);
 	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
 	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
 	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);

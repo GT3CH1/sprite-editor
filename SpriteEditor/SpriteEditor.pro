@@ -26,6 +26,7 @@ SOURCES += \
     renderarea.cpp
 
 HEADERS += \
+    brush.h \
     colorinverterbrush.h \
     hardcirclestencilgenerator.h \
     istencilgenerator.h \
@@ -43,7 +44,8 @@ HEADERS += \
     pixelbrush.h \
     pixeleraser.h \
     pointer2darray.h \
-    stencils.h
+    stencil.h
+
 
 FORMS += \
     spriteeditorvc.ui

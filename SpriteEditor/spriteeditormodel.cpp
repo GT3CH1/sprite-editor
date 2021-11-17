@@ -9,6 +9,9 @@
 #include <itool.h>
 #include <pointer2darray.h>
 
+#include <brush.h>
+#include <stencil.h>
+
 /**
  * @brief SpriteEditorModel::SpriteEditorModel
  */
@@ -23,6 +26,8 @@ SpriteEditorModel::SpriteEditorModel()
 	Tools.insert(ToolType::Brush,new PixelBrush(new SoftCircleStencilGenerator()));
 	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));
 	Tools.insert(ToolType::HardEraser,new PixelEraser(new SquareStencilGenerator()));
+	QPoint initialPosition(-1,-1);
+	lastPosition = initialPosition;
 }
 
 SpriteEditorModel::~SpriteEditorModel()
@@ -237,14 +242,35 @@ void SpriteEditorModel::replaceColorsOfActiveFrame(Pointer2DArray<QColor> newCol
  * @param x - 0-1 for mouse position on drawing grid
  * @param y - 0-1 for mouse position on drawing grid
  */
-void SpriteEditorModel::drawing(float x, float y)
+void SpriteEditorModel::drawing(float x, float y){
+	int currentX = (int)(x*imageWidth);
+	int currentY = (int)(y*imageHeight);
+
+	QPoint currentPosition(currentX, currentY);
+
+	if (currentX != lastPosition.x() || currentY != lastPosition.y())
+	{
+		ActionState toolActionState(toolSize, activeColor, currentX, currentY, newStroke, frames[activeFrameIndex]);
+		if (newStroke)
+			newStroke = false;
+
+		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
+		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> replacePixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->replaceColorsOfActiveFrame(colors, xCoord, yCoord); };
+		CallbackOptions callBack(paintPixelColorsCallback, replacePixelColorsCallback);
+		Tools[activeTool]->apply(toolActionState, callBack);
+		lastPosition = currentPosition;
+	}
+}
+
+/**
+ * @brief Informs the model that a stroke has ended.
+ * @param x The x coordinate of the mouse.
+ * @param y The y coordinate of the mouse.
+ */
+void SpriteEditorModel::stopDrawing(float x, float y)
 {
-	ActionState toolActionState(toolSize, activeColor, (int)(x*imageWidth), (int)(y*imageHeight), frames[activeFrameIndex]);
-
-	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
-	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> replacePixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->replaceColorsOfActiveFrame(colors, xCoord, yCoord); };
-
-	CallbackOptions callBack(paintPixelColorsCallback, replacePixelColorsCallback);
-	Tools[activeTool]->apply(toolActionState, callBack);
+	newStroke = true;
+	QPoint initialPosition(-1,-1);
+	lastPosition = initialPosition;
 }
 
