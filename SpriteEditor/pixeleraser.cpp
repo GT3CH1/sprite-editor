@@ -50,8 +50,11 @@ void PixelEraser::apply(ActionState& canvasState, const CallbackOptions& callbac
 	if (upperLeftY > 0)
 		y = upperLeftY;
 
-	affectedWidth = bottomRightX - upperLeftX;
-	affectedHeight = bottomRightY - upperLeftY;
+	affectedWidth = bottomRightX - x + (stencil.getWidth() % 2);
+	affectedHeight = bottomRightY - y + (stencil.getHeight() % 2);
+
+	int deltaX = x - upperLeftX;
+	int deltaY = y - upperLeftY;
 
 	Pointer2DArray<QColor> colors (affectedWidth, affectedHeight);
 
@@ -59,8 +62,6 @@ void PixelEraser::apply(ActionState& canvasState, const CallbackOptions& callbac
 	{
 		for (unsigned int j = y - upperLeftY; j < colors.getHeight(); j++)
 		{
-			int deltaX = upperLeftX - x;
-			int deltaY = upperLeftY - y;
 			float newAlpha = (1 - stencil[i + deltaX][j + deltaY]);
 			QColor newColor(255, 255, 255, newAlpha*255);
 			colors[i][j] = newColor;

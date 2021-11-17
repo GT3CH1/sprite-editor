@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <QPixmap>
 #include <QDebug>
+#include <iostream>
 
 /**
  * @brief Creates the PixelBrush object
@@ -63,7 +64,10 @@ void PixelBrush::apply(ActionState& canvasState, const CallbackOptions& callback
 	 * brush that are outside the bounds of the canvas).
 	 * TODO(werignac-utah): Replace this with a helper method.
 	 */
-	int upperLeftX = canvasState.MOUSE_X_GRID_COORD - stencil.getWidth() / 2;
+
+	int addition = stencil.getWidth() / 2;
+
+	int upperLeftX = canvasState.MOUSE_X_GRID_COORD - addition;
 	int upperLeftY = canvasState.MOUSE_Y_GRID_COORD - stencil.getHeight() / 2;
 
 	int bottomRightX = canvasState.MOUSE_X_GRID_COORD + stencil.getWidth() / 2;
@@ -82,17 +86,18 @@ void PixelBrush::apply(ActionState& canvasState, const CallbackOptions& callback
 	if (upperLeftY > 0)
 		y = upperLeftY;
 
-	affectedWidth = bottomRightX - upperLeftX;
-	affectedHeight = bottomRightY - upperLeftY;
+	affectedWidth = bottomRightX - x + (stencil.getWidth() % 2);
+	affectedHeight = bottomRightY - y + (stencil.getHeight() % 2);
+
+	int deltaX = x - upperLeftX;
+	int deltaY = y - upperLeftY;
 
 	Pointer2DArray<QColor> colors (affectedWidth, affectedHeight);
 
-	for (unsigned int i = x - upperLeftX; i < colors.getWidth(); i++)
+	for (unsigned int i = 0; i < colors.getWidth(); i++)
 	{
-		for (unsigned int j = y - upperLeftY; j < colors.getHeight(); j++)
+		for (unsigned int j = 0; j < colors.getHeight(); j++)
 		{
-			int deltaX = upperLeftX - x;
-			int deltaY = upperLeftY - y;
 			float stencilAlpha = stencil[i + deltaX][j + deltaY];
 			QColor newStencilColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), stencilAlpha * 255);
 			colors[i][j] = newStencilColor;
