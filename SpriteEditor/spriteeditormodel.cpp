@@ -25,6 +25,12 @@ SpriteEditorModel::SpriteEditorModel()
 	Tools.insert(ToolType::HardEraser,new PixelEraser(new SquareStencilGenerator()));
 }
 
+SpriteEditorModel::~SpriteEditorModel()
+{
+	for(auto toolKeys : Tools.keys())
+		delete Tools.value(toolKeys);
+}
+
 /**
  * @brief SpriteEditorModel::getFramefromIndex
  * @param index, frame index within vector
