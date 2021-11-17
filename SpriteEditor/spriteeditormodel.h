@@ -32,6 +32,8 @@ private:
 
 	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
 	void setColorsOfActiveFrame(Pointer2DArray<QColor>, unsigned int, unsigned int);
+	void write(QJsonObject& json) const;
+	void read(const QJsonObject& json);
 
 public:
 	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};

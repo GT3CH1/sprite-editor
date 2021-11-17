@@ -5,6 +5,8 @@
 #include "spriteeditormodel.h"
 #include "actionstate.h"
 #include "itool.h"
+#include <QJsonObject>
+#include <QJsonArray>
 
 /**
  * @brief SpriteEditorModel::SpriteEditorModel
@@ -93,6 +95,53 @@ void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 void SpriteEditorModel::save(string filePath, string fileName)
 {
 	//TODO(ALEX): talk to gavin about json and stufffffff
+
+	QJsonObject save;
+	write(save);
+
+
+
+}
+
+/**
+ * @brief SpriteEditorModel::write
+ * @param json
+ */
+void SpriteEditorModel::write(QJsonObject &json) const
+{
+	json["height"] = imageHeight;
+	json["width"] = imageWidth;
+	int frameCount = frames.size();
+	json["numberOfFrames"] = frameCount;
+
+	for (int i = 0; i < frameCount; i++)
+	{
+		QString currFrame = QString::fromStdString("frame" + std::to_string(i));
+		QImage frame = frames[i].toImage();
+
+		QJsonArray pixels;
+
+		for(int x = 0; x < imageWidth; x++)
+		{
+			QJsonArray rows;
+			for (int y = 0; y < imageHeight; y++)
+			{
+				QJsonArray colors;
+
+				QColor pixelColor = frame.pixelColor(x,y);
+				colors.append(pixelColor.red());
+				colors.append(pixelColor.green());
+				colors.append(pixelColor.blue());
+				colors.append(pixelColor.alpha());
+				rows.append(colors);
+			}
+			pixels.append(rows);
+		}
+
+		json.insert(currFrame, pixels);
+	}
+
+
 }
 
 /**
@@ -103,6 +152,59 @@ void SpriteEditorModel::save(string filePath, string fileName)
 void SpriteEditorModel::load(string filePath, string fileName)
 {
 	//TODO(ALEX): talk to gavin about json and stufffffff
+
+	// open the file!
+
+	QJsonObject load;
+	write(load);
+
+
+
+}
+
+/**
+ * @brief SpriteEditorModel::load
+ * @param json
+ */
+void SpriteEditorModel::read(const QJsonObject &json)
+{
+	if (json.contains("height") && json["height"].isDouble())
+		imageHeight = json["height"].toInt();
+
+	if (json.contains("width") && json["width"].isDouble())
+		imageWidth = json["width"].toInt();
+
+	if (json.contains("numberOfFrames") && json["numberofFrames"].isDouble())
+	{
+		int size = json["numberOfFrames"].toInt();
+		frames.resize(size);
+	}
+
+	int size = frames.size();
+	for (int i = 0; i < size; i++)
+	{
+		QString currFrame = QString::fromStdString("frame" + std::to_string(i));
+		if (json.contains(currFrame) && json[currFrame].isArray())
+		{
+			QJsonArray frameArray = json[currFrame].toArray();
+			QImage newFrame;
+
+			for (int j = 0; j < frameArray.size(); j++)
+			{
+				QJsonArray pixels = json.value(currFrame).toArray();
+
+				for (int k = 0; i < pixels.size(); k++)
+				{
+					// need to get the color of the pixel and set it on the QImage
+					//QColor newColor(pixels[0], pixels[1], pixels)
+					//newFrame.setPixel(j, k, )
+				}
+
+			}
+			//QPixmap frame = json[currFrame];
+			//frames.assign(i, frame);
+		}
+	}
 }
 
 /**
