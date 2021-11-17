@@ -1,10 +1,10 @@
-#ifndef SPRAYCAN_H
-#define SPRAYCAN_H
+#ifndef SprayCanBrushBRUSH_H
+#define SprayCanBrushBRUSH_H
 
 #include "itool.h"
 #include "istencilgenerator.h"
 
-class SprayCan : public ITool
+class SprayCanBrush : public ITool
 {
 protected:
 	struct BoundsInformation
@@ -19,10 +19,10 @@ protected:
 	};
 
 public:
-	SprayCan(IStencilGenerator* generator);
-	SprayCan(const SprayCan& other);
-	SprayCan& operator=(SprayCan otherCopy);
-	virtual ~SprayCan();
+	SprayCanBrush(IStencilGenerator* generator);
+	SprayCanBrush(const SprayCanBrush& other);
+	SprayCanBrush& operator=(SprayCanBrush otherCopy);
+	virtual ~SprayCanBrush();
 	virtual void apply(ActionState& canvasState, const CallbackOptions& callbacks);
 	static QRect ConstrainStencilBounds(Pointer2DArray<float> stencil, int stencilCenterX, int stencilCenterY, int areaWidth, int areaHeight,  BoundsInformation& outInfo);
 private:
@@ -32,4 +32,4 @@ protected:
 	void setStencilOnSizeChange(unsigned int newSize);
 };
 
-#endif // SPRAYCAN_H
+#endif // SprayCanBrushBRUSH_H

@@ -32,6 +32,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	hardPenSelected = new QAction(tr("&Pen"),this);
 	hardEraserSelected = new QAction(tr("&Eraser"),this);
 	softBrushSelected = new QAction(tr("&Brush"),this);
+	sprayCanSelected = new QAction(tr("&Spray Can"),this);
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
 	connect(colorDialog, &QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
 
@@ -81,6 +82,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(hardPenSelected,&QAction::triggered,this, &SpriteEditorVC::setHardPen);
 	connect(softBrushSelected, &QAction::triggered,this,&SpriteEditorVC::setSoftBrush);
 	connect(hardEraserSelected,&QAction::triggered,this,&SpriteEditorVC::setHardEraser);
+	connect(sprayCanSelected,&QAction::triggered,this, &SpriteEditorVC::setSprayCan);
 
 	// Model to UI
 	connect(this->model, &SpriteEditorModel::sendActiveFrame,ui->mainCanvas, &RenderArea::setImage);
@@ -128,6 +130,7 @@ SpriteEditorVC::~SpriteEditorVC()
 	delete hardEraserSelected;
 	delete softBrushSelected;
 	delete hardPenSelected;
+	delete sprayCanSelected;
 }
 
 void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
@@ -347,6 +350,7 @@ void SpriteEditorVC::createMenu()
 	toolsMenu->addAction(invertSelected);
 	toolsMenu->addAction(rainbowBrushSelected);
 	toolsMenu->addAction(softEraserSelected);
+	toolsMenu->addAction(sprayCanSelected);
 }
 
 
@@ -462,4 +466,9 @@ void SpriteEditorVC::setSoftBrush()
 void SpriteEditorVC::setHardEraser()
 {
 	emit updateTool(SpriteEditorModel::ToolType::HardEraser);
+}
+
+void SpriteEditorVC::setSprayCan()
+{
+	emit updateTool(SpriteEditorModel::ToolType::SprayCan);
 }
