@@ -1,5 +1,4 @@
 #include "spriteeditorvc.h"
-#include "ui_spriteeditorvc.h"
 
 SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	: QMainWindow(parent)
@@ -7,9 +6,18 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 {
 	ui->setupUi(this);
 	this->setStyleSheet(QString("QMainWindow { background-color:white}"));
-    // Set up FPS slider.
+
+	model = new SpriteEditorModel();
+
+	// Set up FPS slider.
+	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
+	ui->fpsSlider->setSingleStep(FPS_STEP);
+	ui->fpsSlider->setMaximum(FPS_MAX);
+
+	// Set up frame preview area
+	ui->frameDisplay->setLayout(new QHBoxLayout);
+
 	colorDialog = new QColorDialog();
-//	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
 	model = new SpriteEditorModel();
 
 	// Set up actions
@@ -25,26 +33,29 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	hardEraserSelected = new QAction(tr("&Eraser"),this);
 	softBrushSelected = new QAction(tr("&Brush"),this);
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
-	connect(colorDialog,&QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
-	// Sets up the getting when a color button is clicked.
-	connect(ui->primaryColorButton1,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->primaryColorButton2,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->primaryColorButton3,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->primaryColorButton4,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->primaryColorButton5,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->primaryColorButton6,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->primaryColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->primaryColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	connect(colorDialog, &QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
 
-	connect(ui->customColorButton1,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->customColorButton2,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->customColorButton3,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->customColorButton4,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->customColorButton5,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->customColorButton6,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->customColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
-	connect(ui->customColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
+	// UI to Control -- Color Buttons
+	// Default Colors
+	connect(ui->primaryColorButton1, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton2, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton3, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton4, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton5, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton6, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton7, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->primaryColorButton8, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	// Custom Colors
+	connect(ui->customColorButton1, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton2, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton3, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton4, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton5, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton6, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton7, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
+	connect(ui->customColorButton8, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
 
+	// UI to Model
 	connect(ui->addFrameButton,&QPushButton::pressed,this->model,&SpriteEditorModel::addFrame);
 	connect(&playbackUpdater, &QTimer::timeout,this,&SpriteEditorVC::updatePlaybackFrame);
 
@@ -55,14 +66,13 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(colorDialog,&QColorDialog::colorSelected, this->model, &SpriteEditorModel::setActiveColor);
 	connect(this,&SpriteEditorVC::toggleGrid,ui->mainCanvas,&RenderArea::toggleGrid);
 
+	// Tool changes`
 	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setSoftBrush);
 	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setHardPen);
 	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setHardEraser);
 //	connect(ui->toolButton4,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
-	connect(this->model,&SpriteEditorModel::sendActiveFrame,ui->mainCanvas,&RenderArea::setImage);
 	connect(ui->mainCanvas,&RenderArea::clicked, this->model,&SpriteEditorModel::drawing);
 	connect(ui->mainCanvas,&RenderArea::released,this->model,&SpriteEditorModel::stopDrawing);
-	connect(ui->mainCanvas,&RenderArea::clicked, this,&SpriteEditorVC::updatePreview);
 
 	// Extra tools
 	connect(invertSelected,&QAction::triggered,this,&SpriteEditorVC::setInvertBrush);
@@ -72,18 +82,38 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(softBrushSelected, &QAction::triggered,this,&SpriteEditorVC::setSoftBrush);
 	connect(hardEraserSelected,&QAction::triggered,this,&SpriteEditorVC::setHardEraser);
 
+	// Model to UI
+	connect(this->model, &SpriteEditorModel::sendActiveFrame,ui->mainCanvas, &RenderArea::setImage);
+
+	// Model to Control
+	connect(model, &SpriteEditorModel::sendFrames, this, &SpriteEditorVC::previewFrames);
+	connect(model, &SpriteEditorModel::sendActiveFrameIndex, this, &SpriteEditorVC::updateActivePreviewFrame);
+
+	// Internal
+	connect(&playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePlaybackFrame);
+
+	// Control to Model
+	connect(this, &SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
+	connect(this, &SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
+	connect(this, &SpriteEditorVC::updateTool, this->model, &SpriteEditorModel::setActiveTool);
+	connect(this, &SpriteEditorVC::colorChanged, this->model, &SpriteEditorModel::setActiveColor);
+	connect(colorDialog, &QColorDialog::colorSelected, this->model, &SpriteEditorModel::setActiveColor);
+	connect(this, &SpriteEditorVC::toggleGrid,ui->mainCanvas, &RenderArea::toggleGrid);
+	connect(this, &SpriteEditorVC::save, model, &SpriteEditorModel::save);
+	connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
+	connect(this, &SpriteEditorVC::deleteFrame, model, &SpriteEditorModel::deleteFrame);
+	connect(this, &SpriteEditorVC::addFrame, model, &SpriteEditorModel::addFrame);
+
+	// Setup Menu bar
 
 	createMenu();
 	setupButtonColors();
-
-	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
-	ui->fpsSlider->setSingleStep(FPS_STEP);
-	ui->fpsSlider->setMaximum(FPS_MAX);
 }
 
 SpriteEditorVC::~SpriteEditorVC()
 {
 	delete ui;
+	delete model;
 	delete colorDialog;
 	delete saveAction;
 	delete openAction;
@@ -100,13 +130,25 @@ SpriteEditorVC::~SpriteEditorVC()
 	delete hardPenSelected;
 }
 
-/**
- * @brief Advances the animation playback frame
- */
-void SpriteEditorVC::updatePreview()
+void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
 {
-	QPixmap currentFrame(model->getFramefromIndex(indexOfActiveFrame).scaled(128,128));
-	ui->playbackCanvas->setImageScaled(currentFrame,128);
+	for (int i = 0; i < ui->frameDisplay->layout()->count(); i++)
+	{
+		QWidget *toRemove = ui->frameDisplay->layout()->itemAt(i)->widget();
+		ui->frameDisplay->layout()->removeWidget(toRemove);
+	}
+
+	for (QPixmap toAdd : allFrames)
+	{
+		RenderArea *newWidget = new RenderArea;
+		newWidget->setImageScaled(toAdd, 64);
+		ui->frameDisplay->layout()->addWidget(newWidget);
+	}
+}
+
+void SpriteEditorVC::updateActivePreviewFrame(int activeFrameIndex)
+{
+	//TODO(JVielstich): update the preview of the active frame when the drawing is changed
 }
 
 /**
@@ -114,10 +156,13 @@ void SpriteEditorVC::updatePreview()
  */
 void SpriteEditorVC::updatePlaybackFrame()
 {
-	if(indexOfPlayback+1 > model->getFrameCount())
+	if(indexOfPlayback + 1 > model->getFrameCount())
+	{
 		indexOfPlayback = 0;
-	QPixmap currentFrame(model->getFramefromIndex(indexOfPlayback++).scaled(128,128));
-	ui->playbackCanvas->setImageScaled(currentFrame,128);
+	}
+
+	QPixmap currentFrame(model->getFramefromIndex(indexOfPlayback++).scaled(PREVIEW_SIZE, PREVIEW_SIZE));
+	ui->playbackCanvas->setImageScaled(currentFrame, PREVIEW_SIZE);
 }
 
 /**
@@ -127,9 +172,12 @@ void SpriteEditorVC::updatePlaybackFrame()
  */
 void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 {
-    ui->fpsLabel->setText(QString::number(value));
+	ui->fpsLabel->setText(QString::number(value));
 	setupButtonColors();
 	fps = value;
+
+	// Return focus to main window
+	this->setFocus();
 
 	if (fps == 0 && playbackUpdater.isActive())
 	{
@@ -144,6 +192,23 @@ void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 		else
 		{
 			playbackUpdater.setInterval(1000 / fps);
+		}
+	}
+}
+
+void SpriteEditorVC::sendActiveFrame()
+{
+	for (int i = 0; i < model->getFrameCount(); i++)
+	{
+		std::string frameName(framePreviews.at(i)->objectName().toStdString());
+		std::string senderName(sender()->objectName().toStdString());
+		if (frameName == senderName)
+		{
+			if (i != indexOfActiveFrame)
+			{
+				emit changeActiveFrame(i);
+			}
+			break;
 		}
 	}
 }
@@ -232,12 +297,15 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 		break;
 	// Move to next frame (if it exists)
 	case Qt::Key_Right:
-		//TODO(JVielstich): Get frame count from model
+		if (indexOfActiveFrame < model->getFrameCount() - 1)
+		{
+			emit changeActiveFrame(indexOfActiveFrame + 1);
+		}
 		break;
 	// Toggles if the grid is shown.
-    case Qt::Key_G:
-        emit toggleGrid();
-        break;
+	case Qt::Key_G:
+		emit toggleGrid();
+		break;
 	default:
 		// do nothing
 		break;
@@ -326,7 +394,8 @@ void SpriteEditorVC::showColorDialog()
 /**
  * @brief Handles setting the new color when one of the color buttons is clicked.
  */
-void SpriteEditorVC::colorButtonClicked(){
+void SpriteEditorVC::colorButtonClicked()
+{
 	// Please, c++. Let us use switch on strings. This is absurd.
 	QColor c;
 	std::string name(sender()->objectName().toStdString());

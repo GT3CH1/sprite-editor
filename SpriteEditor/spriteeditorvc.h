@@ -1,18 +1,21 @@
 #ifndef SPRITEEDITORVC_H
 #define SPRITEEDITORVC_H
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include <QPushButton>
-#include <QSlider>
-#include <QLabel>
-#include <QColorDialog>
-#include <QMenuBar>
 #include <QAction>
-#include "spriteeditormodel.h"
-#include <QTimer>
+#include <QColorDialog>
 #include <QDir>
 #include <QFileDialog>
+#include <QLabel>
+#include <QMainWindow>
+#include <QMenuBar>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QSlider>
+#include <QTimer>
+
+#include "renderarea.h"
+#include "spriteeditormodel.h"
+#include "ui_spriteeditorvc.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SpriteEditorVC; }
@@ -38,7 +41,9 @@ public slots:
 	void setHardEraser();
 
 private slots:
-	void updatePreview();
+	void sendActiveFrame();
+	void previewFrames(vector<QPixmap>);
+	void updateActivePreviewFrame(int);
 	void updatePlaybackFrame();
 	void on_fpsSlider_valueChanged(int);
 	void keyPressEvent(QKeyEvent*);
@@ -49,12 +54,16 @@ private:
 	const int FPS_INTERVAL = 10;
 	const int FPS_MAX = 60;
 	const int FPS_STEP = 10;
+	const int PREVIEW_SIZE = 128;
+	SpriteEditorModel *model;
+	Ui::SpriteEditorVC *ui;
 	int indexOfActiveFrame = 0;
 	int indexOfPlayback = 0;
 	int fps = 0;
 	QTimer playbackUpdater;
 	QString path = QDir::homePath();
-	Ui::SpriteEditorVC *ui;
+	void changeActiveColor(QPushButton*);
+	std::vector<RenderArea*> framePreviews;
 	QColorDialog *colorDialog;
 	QAction *saveAction;
 	QAction *openAction;
@@ -76,16 +85,16 @@ private:
 	void createMenu();
 	void setupButtonColors();
 	constexpr unsigned int hash(const char* str, int h = 0);
-	SpriteEditorModel *model;
 
 signals:
 	void colorChanged(QColor color);
 	void updateTool(SpriteEditorModel::ToolType toolType);
-	void changeActiveColor(QPushButton*);
 	void incrementToolSize();
 	void decrementToolSize();
 	void setActiveColor(QColor);
 	void changeActiveFrame(int);
+	void changeActiveTool(SpriteEditorModel::ToolType);
+	void addFrame();
 	void deleteFrame(int);
 	void save(std::string, std::string);
 	void load(std::string, std::string);
