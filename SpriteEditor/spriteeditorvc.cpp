@@ -11,6 +11,19 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	colorDialog = new QColorDialog();
 //	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
 	model = new SpriteEditorModel();
+
+	// Set up actions
+	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
+	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
+	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
+	newFileAction = new QAction(QIcon(":/res/new.svg"), tr("&New..."), this);
+	helpAction = new QAction(tr("&Help..."),this);
+	invertSelected = new QAction(tr("&Invert Brush"),this);
+	rainbowBrushSelected = new QAction(tr("&Rainbow Brush"),this);
+	softEraserSelected = new QAction(tr("&Soft Eraser"),this);
+	hardPenSelected = new QAction(tr("&Pen"),this);
+	hardEraserSelected = new QAction(tr("&Eraser"),this);
+	softBrushSelected = new QAction(tr("&Brush"),this);
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
 	connect(colorDialog,&QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
 	// Sets up the getting when a color button is clicked.
@@ -42,17 +55,23 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(colorDialog,&QColorDialog::colorSelected, this->model, &SpriteEditorModel::setActiveColor);
 	connect(this,&SpriteEditorVC::toggleGrid,ui->mainCanvas,&RenderArea::toggleGrid);
 
-	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
-	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
-	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
-	connect(ui->toolButton4,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
+	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setSoftBrush);
+	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setHardPen);
+	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setHardEraser);
+//	connect(ui->toolButton4,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(this->model,&SpriteEditorModel::sendActiveFrame,ui->mainCanvas,&RenderArea::setImage);
 	connect(ui->mainCanvas,&RenderArea::clicked, this->model,&SpriteEditorModel::drawing);
 	connect(ui->mainCanvas,&RenderArea::released,this->model,&SpriteEditorModel::stopDrawing);
 	connect(ui->mainCanvas,&RenderArea::clicked, this,&SpriteEditorVC::updatePreview);
-	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
-	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
-	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
+
+	// Extra tools
+	connect(invertSelected,&QAction::triggered,this,&SpriteEditorVC::setInvertBrush);
+	connect(rainbowBrushSelected,&QAction::triggered,this,&SpriteEditorVC::setRainbowBrush);
+	connect(softEraserSelected,&QAction::triggered,this,&SpriteEditorVC::setSoftEraser);
+	connect(hardPenSelected,&QAction::triggered,this, &SpriteEditorVC::setHardPen);
+	connect(softBrushSelected, &QAction::triggered,this,&SpriteEditorVC::setSoftBrush);
+	connect(hardEraserSelected,&QAction::triggered,this,&SpriteEditorVC::setHardEraser);
+
 
 	createMenu();
 	setupButtonColors();
@@ -73,6 +92,12 @@ SpriteEditorVC::~SpriteEditorVC()
 	delete newFileAction;
 	delete fileMenu;
 	delete helpMenu;
+	delete invertSelected;
+	delete rainbowBrushSelected;
+	delete softEraserSelected;
+	delete hardEraserSelected;
+	delete softBrushSelected;
+	delete hardPenSelected;
 }
 
 /**
@@ -235,30 +260,25 @@ void SpriteEditorVC::setButtonColor(QPushButton *button, QString hex)
  */
 void SpriteEditorVC::createMenu()
 {
-	saveAction = new QAction(QIcon::fromTheme(":/res/save.svg"), tr("&Save..."), this);
-	openAction = new QAction(QIcon::fromTheme(":/res/open.svg"), tr("&Open..."), this);
-	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
-	newFileAction = new QAction(QIcon(":/res/new.svg"), tr("&New..."), this);
-	helpAction = new QAction(tr("&Help..."),this);
 	helpAction->setStatusTip(tr("Help"));
 	saveAction->setStatusTip(tr("Save this file"));
 	openAction->setStatusTip(tr("Open an existing file"));
 	closeAction->setStatusTip(tr("Close project"));
 	newFileAction->setStatusTip(tr("Create a new file"));
 
-	//TODO(GCPEASE): Attach this to the real signal and slots
-//	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::savePressed);
-//	connect(openAction, &QAction::triggered, this,  &SpriteEditorVC::open);
-//	connect(closeAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
-//	connect(newFileAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
 	fileMenu = menuBar()->addMenu(tr("&File"));
+	toolsMenu = menuBar()->addMenu(tr("&Tools"));
 	helpMenu = menuBar()->addMenu(tr("&Help"));
-	helpMenu->addAction(helpAction);
 	fileMenu->addAction(newFileAction);
 	fileMenu->addAction(saveAction);
 	fileMenu->addAction(openAction);
 	fileMenu->addSeparator();
 	fileMenu->addAction(closeAction);
+	helpMenu->addAction(helpAction);
+
+	toolsMenu->addAction(invertSelected);
+	toolsMenu->addAction(rainbowBrushSelected);
+	toolsMenu->addAction(softEraserSelected);
 }
 
 
@@ -345,19 +365,32 @@ void SpriteEditorVC::colorButtonClicked(){
 	emit colorChanged(c);
 }
 
-/**
- * @brief Changes the current tool based on what was clicked.
- */
-void SpriteEditorVC::toolChanged()
+void SpriteEditorVC::setInvertBrush()
 {
-	SpriteEditorModel::ToolType tool = SpriteEditorModel::ToolType::Brush;
-	std::string name(sender()->objectName().toStdString());
-	if(name == "penToolButton")
-		tool = SpriteEditorModel::ToolType::Pen;
-	else if(name == "brushToolButton")
-		tool = SpriteEditorModel::ToolType::Brush;
-	//TODO(GCPEASE): Implement rest of tool buttons
-	else if(name == "eraserToolButton")
-		tool = SpriteEditorModel::ToolType::HardEraser;
-	emit updateTool(tool);
+	emit updateTool(SpriteEditorModel::ToolType::InvertBrush);
+}
+
+void SpriteEditorVC::setRainbowBrush()
+{
+	emit updateTool(SpriteEditorModel::ToolType::Rainbow);
+}
+
+void SpriteEditorVC::setSoftEraser()
+{
+	emit updateTool(SpriteEditorModel::ToolType::SoftEraser);
+}
+
+void SpriteEditorVC::setHardPen()
+{
+	emit updateTool(SpriteEditorModel::ToolType::Pen);
+}
+
+void SpriteEditorVC::setSoftBrush()
+{
+	emit updateTool(SpriteEditorModel::ToolType::Brush);
+}
+
+void SpriteEditorVC::setHardEraser()
+{
+	emit updateTool(SpriteEditorModel::ToolType::HardEraser);
 }
