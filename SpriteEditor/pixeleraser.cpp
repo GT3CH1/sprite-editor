@@ -34,13 +34,16 @@ void PixelEraser::apply(ActionState& canvasState, const CallbackOptions& callbac
 														  info);
 	Pointer2DArray<QColor> toReplace(boundedArea.width(), boundedArea.height());
 
+	QImage pixelColors = canvasState.ACTIVE_FRAME.toImage();
+
 	for (unsigned int i = 0; i < toReplace.getWidth(); i++)
 	{
 		for (unsigned int j = 0; j < toReplace.getHeight(); j++)
 		{
-			float newAlpha =  stencil[i + info.deltaX][j + info.deltaY];
-			QColor newColor(255, 255, 255, newAlpha*255);
-			toReplace[i][j] = newColor;
+			float newAlpha =  (1 - stencil[i + info.deltaX][j + info.deltaY]);
+			QColor previousColor = pixelColors.pixelColor(boundedArea.x() + i, boundedArea.y() + j);
+			QColor erasedColor(previousColor.red(), previousColor.green(), previousColor.blue(), newAlpha*previousColor.alpha());
+			toReplace[i][j] = erasedColor;
 		}
 	}
 
