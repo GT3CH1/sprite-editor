@@ -7,6 +7,8 @@
 #include "itool.h"
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QFile>
+#include <QJsonDocument>
 
 /**
  * @brief SpriteEditorModel::SpriteEditorModel
@@ -94,13 +96,16 @@ void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
  */
 void SpriteEditorModel::save(string filePath, string fileName)
 {
-	//TODO(ALEX): talk to gavin about json and stufffffff
+	// create the file
+	QString saveFileName = QString::fromStdString(filePath + "/" + fileName + ".ssp");
+	QFile saveFile(saveFileName);
 
-	QJsonObject save;
-	write(save);
-
-
-
+	// write the file
+	if (saveFile.open(QIODevice::WriteOnly)) {
+		QJsonObject save;
+		write(save);
+		saveFile.write(QJsonDocument(save).toJson());
+	}
 }
 
 /**
