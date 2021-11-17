@@ -164,7 +164,21 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
 	emit sendActiveFrame(frames[activeFrameIndex]);
 }
 
-
+/** William Erignac
+ *
+ * @brief Replaces the pixels of the area defined by newColors and xCoord and yCoord
+ * with the colors in newColors.
+ * @param newColors The colors of the pixels to be set to.
+ * @param xCoord The x coordinate of the upper left corner of the area to replace.
+ * @param yCoord The y coordinate of the upper left corner of the area to replace.
+ */
+void SpriteEditorModel::replaceColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord)
+{
+	QPainter clearer(&frames[activeFrameIndex]);
+	clearer.eraseRect(xCoord, yCoord, newColors.getWidth(), newColors.getHeight());
+	clearer.end();
+	setColorsOfActiveFrame(newColors, xCoord, yCoord);
+}
 
 /**
  * @brief Draws on the main canvas
@@ -173,8 +187,11 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
  */
 void SpriteEditorModel::drawing(float x, float y){
 	ActionState toolActionState(toolSize, activeColor, (int)(x*imageWidth), (int)(y*imageHeight), frames[activeFrameIndex]);
-	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> setPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
-	CallbackOptions callBack(setPixelColorsCallback);
+
+	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
+	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> replacePixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->replaceColorsOfActiveFrame(colors, xCoord, yCoord); };
+
+	CallbackOptions callBack(paintPixelColorsCallback, replacePixelColorsCallback);
 	Tools[activeTool]->apply(toolActionState, callBack);
 }
 

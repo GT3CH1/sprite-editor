@@ -68,5 +68,5 @@ void PixelEraser::apply(ActionState& canvasState, const CallbackOptions& callbac
 		}
 	}
 
-	callbacks.setPixelColors(colors, x, y);
+	callbacks.paintPixelColors(colors, x, y);
 }
