@@ -99,7 +99,7 @@ void PixelBrush::apply(ActionState& canvasState, const CallbackOptions& callback
 		for (unsigned int j = 0; j < colors.getHeight(); j++)
 		{
 			float stencilAlpha = stencil[i + deltaX][j + deltaY];
-			QColor newStencilColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), canvasState.TOOL_COLOR.alpha() * 255);
+			QColor newStencilColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), canvasState.TOOL_COLOR.alpha() * stencilAlpha);
 			colors[i][j] = newStencilColor;
 		}
 	}
