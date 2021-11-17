@@ -16,7 +16,7 @@ private:
 	// How big our canvas size is.
 	int canvasSize = 0;
 	// Whether or not the grid is going to shown.
-	bool gridShown = true;
+	bool gridShown = false;
 	int getNumColsAndRows();
 private slots:
 	void mousePressEvent(QMouseEvent* event);
@@ -26,6 +26,7 @@ public:
 	int getPixelSize();
 public slots:
 	void setImage(QPixmap mapToRender);
+	void setImageScaled(QPixmap mapToRender, int scale);
 	void toggleGrid();
 signals:
 	void clicked(float x, float y);

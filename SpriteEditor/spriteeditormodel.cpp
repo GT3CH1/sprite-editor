@@ -178,3 +178,11 @@ void SpriteEditorModel::drawing(float x, float y){
 	Tools[activeTool]->apply(toolActionState, callBack);
 }
 
+void SpriteEditorModel::addFrame(){
+	QPixmap blank(imageHeight,imageHeight);
+	blank.fill();
+	frames.push_back(blank);
+	activeFrameIndex = frames.size()-1;
+	emit sendActiveFrame(blank);
+}
+

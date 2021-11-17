@@ -37,7 +37,17 @@ int RenderArea::getNumColsAndRows(){
  */
 void RenderArea::setImage(QPixmap newMapToRender)
 {
-	QPixmap newMap(newMapToRender.scaled(512,512,Qt::KeepAspectRatioByExpanding));
+	setImageScaled(newMapToRender,512);
+}
+
+/**
+ * @brief Sets the image to be rendered
+ * @param toRender - a pointer to the QImage to be displayed
+ * @param scale - The scale in which to show the image at.
+ */
+void RenderArea::setImageScaled(QPixmap newMapToRender, int scale)
+{
+	QPixmap newMap(newMapToRender.scaled(scale,scale,Qt::KeepAspectRatioByExpanding));
 	gridRender = newMap;
 	QPainter paint(&gridRender);
 	paint.setPen(Qt::gray);

@@ -34,6 +34,7 @@ public slots:
 
 private slots:
 	void updatePreview();
+	void updatePlaybackFrame();
 	void on_fpsSlider_valueChanged(int);
 	void keyPressEvent(QKeyEvent*);
 	void savePressed();

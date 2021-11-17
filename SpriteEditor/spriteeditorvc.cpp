@@ -11,7 +11,6 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	colorDialog = new QColorDialog();
 //	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
 	model = new SpriteEditorModel();
-
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
 	connect(colorDialog,&QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
 	// Sets up the getting when a color button is clicked.
@@ -33,6 +32,9 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->customColorButton7,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton8,&QPushButton::pressed,this, &SpriteEditorVC::colorButtonClicked);
 
+	connect(ui->addFrameButton,&QPushButton::pressed,this->model,&SpriteEditorModel::addFrame);
+	connect(&playbackUpdater, &QTimer::timeout,this,&SpriteEditorVC::updatePlaybackFrame);
+
 	connect(this,&SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
 	connect(this,&SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
 	connect(this,&SpriteEditorVC::updateTool,this->model,&SpriteEditorModel::setActiveTool);
@@ -44,10 +46,9 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(ui->toolButton4,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
-
 	connect(this->model,&SpriteEditorModel::sendActiveFrame,ui->mainCanvas,&RenderArea::setImage);
 	connect(ui->mainCanvas,&RenderArea::clicked, this->model,&SpriteEditorModel::drawing);
-
+	connect(ui->mainCanvas,&RenderArea::clicked, this,&SpriteEditorVC::updatePreview);
 	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
 	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
 	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
@@ -58,8 +59,6 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
 	ui->fpsSlider->setSingleStep(FPS_STEP);
 	ui->fpsSlider->setMaximum(FPS_MAX);
-
-	QObject::connect(&this->playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePreview);
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -80,9 +79,19 @@ SpriteEditorVC::~SpriteEditorVC()
  */
 void SpriteEditorVC::updatePreview()
 {
-	//TODO(JVielstich): get frame from model
+	QPixmap currentFrame(model->getFramefromIndex(indexOfActiveFrame).scaled(128,128));
+	ui->playbackCanvas->setImageScaled(currentFrame,128);
+}
 
-	//TODO(JVielstich): set playback frame
+/**
+ * @brief Advances the animation playback frame
+ */
+void SpriteEditorVC::updatePlaybackFrame()
+{
+	if(indexOfPlayback+1 > model->getFrameCount())
+		indexOfPlayback = 0;
+	QPixmap currentFrame(model->getFramefromIndex(indexOfPlayback++).scaled(128,128));
+	ui->playbackCanvas->setImageScaled(currentFrame,128);
 }
 
 /**

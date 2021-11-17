@@ -49,6 +49,7 @@ public slots:
 	void decrementBrushSize();
 	void changeActiveFrame(int newFrameIndex);
 	void deleteFrame(int indexOfFrameToDelete);
+	void addFrame();
 	void save(string filePath, string fileName);
 	void load(string filePath, string fileName);
 	void setActiveTool(ToolType newTool);
