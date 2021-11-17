@@ -12,13 +12,12 @@ class RenderArea : public QLabel
 
 private:
 	QPixmap toRender;
+    QPixmap gridRender;
 	// How big our canvas size is.
 	int canvasSize = 0;
 	// Whether or not the grid is going to shown.
 	bool gridShown = true;
-
 	int getNumColsAndRows();
-
 private slots:
 	void mousePressEvent(QMouseEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
@@ -27,8 +26,7 @@ public:
 	int getPixelSize();
 public slots:
 	void setImage(QPixmap mapToRender);
-	void setGridShown(bool gridShown);
-	void drawGrid(QPixmap newRender);
+	void toggleGrid();
 signals:
 	void clicked(float x, float y);
 };

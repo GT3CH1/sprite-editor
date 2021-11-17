@@ -75,5 +75,6 @@ signals:
 	void deleteFrame(int);
 	void save(std::string, std::string);
 	void load(std::string, std::string);
+    void toggleGrid();
 };
 #endif // SPRITEEDITORVC_H
