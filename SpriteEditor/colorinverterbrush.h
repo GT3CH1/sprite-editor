@@ -7,7 +7,7 @@
 class ColorInverterBrush : public PixelBrush
 {
 protected:
-	union StrokeCovered{
+	struct StrokeCovered{
 		float amountAffected = 0;
 		QColor initialColor;
 	};
