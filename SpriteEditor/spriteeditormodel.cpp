@@ -203,9 +203,9 @@ void SpriteEditorModel::load(string filePath, string fileName)
 	// load the file
 	QString loadFileName = QString::fromStdString(filePath + "\\" + fileName + ".ssp");
 	QFile loadFile(loadFileName);
-
+\
 	// read the file
-	if (loadFile.open(QIODevice::WriteOnly)) {
+	if (loadFile.open(QIODevice::ReadOnly)) {
 		QByteArray saveData = loadFile.readAll();
 		QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
 		read(loadDoc.object());
