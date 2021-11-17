@@ -6,7 +6,6 @@
 #include "actionstate.h"
 #include "itool.h"
 #include "pointer2darray.h"
-#include <QDebug>
 #include <pixelbrush.h>
 #include <squarestencilgenerator.h>
 #include <softcirclestencilgenerator.h>
@@ -72,7 +71,6 @@ void SpriteEditorModel::decrementBrushSize()
 {
 	if(toolSize > 1)
 		toolSize--;
-	qDebug() << "Tool size is now" << toolSize;
 }
 
 /**
@@ -160,7 +158,6 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
 			painter.fillRect(xPixel, yPixel, 1, 1, pixelColor);
 		}
 	}
-	qDebug() << "Active Tool: " <<activeTool;
 	painter.end();
 	emit sendActiveFrame(frames[activeFrameIndex]);
 }
@@ -168,12 +165,11 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
 
 
 /**
- * @brief SpriteEditorModel::drawing
- * @param x 0-1 for mouse position on drawing grid
- * @param y 0-1 for mouse position on drawing grid
+ * @brief Draws on the main canvas
+ * @param x - 0-1 for mouse position on drawing grid
+ * @param y - 0-1 for mouse position on drawing grid
  */
 void SpriteEditorModel::drawing(float x, float y){
-	qDebug() << "Received click: " <<x << " " << y;
 	ActionState toolActionState(toolSize, activeColor, (int)(x*imageWidth), (int)(y*imageHeight), frames[activeFrameIndex]);
 	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> setPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
 	CallbackOptions callBack(setPixelColorsCallback);
