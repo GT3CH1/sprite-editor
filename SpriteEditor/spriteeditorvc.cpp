@@ -238,7 +238,7 @@ void SpriteEditorVC::loadPressed()
 
 		std::cout << path.toStdString() << std::endl;
 		std::cout << name << std::endl;
-		emit load(path.toStdString(), name);
+		emit load(path.toStdString(), name + ".ssp");
 	}
 }
 

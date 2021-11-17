@@ -15,6 +15,7 @@
 #include <actionstate.h>
 #include <itool.h>
 #include <pointer2darray.h>
+#include <iostream>
 
 /**
  * @brief SpriteEditorModel::SpriteEditorModel
@@ -262,14 +263,15 @@ void SpriteEditorModel::load(string filePath, string fileName)
 	if (loadFile.open(QIODevice::ReadOnly)) {
 		QByteArray saveData = loadFile.readAll();
 		QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+		frames.clear();
 		read(loadDoc.object());
-		emit sendActiveFrame(frames[activeFrameIndex]);
 		emit sendFrames(frames);
+		emit sendActiveFrame(frames[activeFrameIndex]);
 	}
 }
 
 /**
- * @brief SpriteEditorModel::load
+ * @brief SpriteEditorModel::read
  * @param json
  */
 void SpriteEditorModel::read(const QJsonObject &json)
@@ -280,13 +282,10 @@ void SpriteEditorModel::read(const QJsonObject &json)
 	if (json.contains("width") && json["width"].isDouble())
 		imageWidth = json["width"].toInt();
 
-	if (json.contains("numberOfFrames") && json["numberofFrames"].isDouble())
-	{
-		int size = json["numberOfFrames"].toInt();
-		frames.resize(size);
-	}
+	int size = 0;
+	if (json.contains("numberOfFrames") && json["numberOfFrames"].isDouble())
+		size = json["numberOfFrames"].toInt();
 
-	int size = frames.size();
 	for (int i = 0; i < size; i++)
 		readFrame(json, i);
 }
@@ -302,14 +301,17 @@ void SpriteEditorModel::readFrame(const QJsonObject &json, int frameNumber)
 	if (json.contains(currFrame) && json[currFrame].isArray())
 	{
 		QJsonArray frameArray = json[currFrame].toArray();
-		QImage newFrame;
+		QImage newFrame(imageWidth, imageHeight, QImage::Format_ARGB32);
 
 		for (int j = 0; j < frameArray.size(); j++)
 			readRow(json, currFrame, newFrame, j);
 
-		QPixmap frame;
-		frame.fromImage(newFrame);
-		frames.assign(frameNumber, frame);
+		QPixmap frame(QPixmap::fromImage(newFrame));
+		qDebug() << frame.size();
+		frames.push_back(frame);
+		newFrame.save(QString("%1.jpg").arg(frames.size()));
+		std::cout << frames.size() << std::endl;
+		//frames.assign(frameNumber, frame);
 
 	}
 
@@ -322,16 +324,28 @@ void SpriteEditorModel::readFrame(const QJsonObject &json, int frameNumber)
  * @param newFrame
  * @param x
  */
-void SpriteEditorModel::readRow(const QJsonObject &json, QString currFrame, QImage newFrame, int x)
+void SpriteEditorModel::readRow(const QJsonObject &json, QString currFrame, QImage newFrame, int row)
 {
-	QJsonArray pixels = json.value(currFrame).toArray();
+	QJsonArray rows = json.value(currFrame).toArray()[row].toArray();
 
-	for (int i = 0; i < pixels.size(); i++)
-	{
-		QJsonArray currPixel = pixels[i].toArray();
-		QColor newColor(currPixel[0].toInt(), currPixel[1].toInt(), currPixel[2].toInt(), currPixel[3].toInt());
-		newFrame.setPixelColor(x, i, newColor);
-	}
+	for (int i = 0; i < rows.size(); i++)
+		readColor(rows[i].toArray(), row, i, newFrame);
+}
+
+/**
+ * @brief SpriteEditorModel::readColor
+ * @param newColor
+ * @return
+ */
+void SpriteEditorModel::readColor(QJsonArray pixel, int row, int col, QImage newFrame)
+{
+	QColor color(pixel[0].toInt(), pixel[1].toInt(), pixel[2].toInt(), pixel[3].toInt());
+	newFrame.setPixelColor(row, col, color);
+//	std::cout << row << ", " << col;
+//	std::cout << newFrame.pixelColor(row, col).red();
+//	std::cout << newFrame.pixelColor(row, col).green();
+//	std::cout << newFrame.pixelColor(row, col).blue();
+//	std::cout << newFrame.pixelColor(row, col).alpha() << std::endl;
 }
 
 /**

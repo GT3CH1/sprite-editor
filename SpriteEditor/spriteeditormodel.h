@@ -37,7 +37,8 @@ private:
 	QJsonArray writeColor(QImage frame, int row, int col) const;
 	void read(const QJsonObject& json);
 	void readFrame(const QJsonObject &json, int frameNumber);
-	void readRow(const QJsonObject &json, QString currFrame, QImage newFrame, int x);
+	void readRow(const QJsonObject &json, QString currFrame, QImage newFrame, int row);
+	void readColor(QJsonArray newColor, int row, int col, QImage newFrame);
 	void replaceColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord);
 
 public:
