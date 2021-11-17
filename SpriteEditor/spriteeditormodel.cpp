@@ -166,7 +166,7 @@ void SpriteEditorModel::duplicateFrame()
 void SpriteEditorModel::save(string filePath, string fileName)
 {
 	// create the file
-	QString saveFileName = QString::fromStdString(filePath + "/" + fileName + ".ssp");
+	QString saveFileName = QString::fromStdString(filePath + fileName);
 	QFile saveFile(saveFileName);
 
 	// write the file
@@ -255,7 +255,7 @@ QJsonArray SpriteEditorModel::writeColor(QImage frame, int row, int col) const
 void SpriteEditorModel::load(string filePath, string fileName)
 {
 	// load the file
-	QString loadFileName = QString::fromStdString(filePath + "\\" + fileName + ".ssp");
+	QString loadFileName = QString::fromStdString(filePath + fileName);
 	QFile loadFile(loadFileName);
 \
 	// read the file
