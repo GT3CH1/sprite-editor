@@ -98,6 +98,52 @@ void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 }
 
 /**
+ * @brief SpriteEditorModel::addFrame
+ */
+void SpriteEditorModel::addFrame()
+{
+	activeFrameIndex++;
+	QPixmap blank(imageHeight,imageHeight);
+	blank.fill();
+	if(activeFrameIndex == frames.size())
+	{
+		frames.push_back(blank);
+		emit sendActiveFrame(blank);
+		return;
+	}
+	QPixmap temp = frames[activeFrameIndex];
+	frames[activeFrameIndex] = blank;
+	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++){
+		swap(temp, frames[j]);
+	}
+	frames.push_back(temp);
+	emit sendActiveFrame(blank);
+}
+
+/**
+ * @brief SpriteEditorModel::duplicateFrame
+ */
+void SpriteEditorModel::duplicateFrame()
+{
+
+	QPixmap copy = frames[activeFrameIndex];
+	activeFrameIndex++;
+	if(activeFrameIndex == frames.size())
+	{
+		frames.push_back(copy);
+		emit sendActiveFrame(copy);
+		return;
+	}
+	QPixmap temp = frames[activeFrameIndex];
+	frames[activeFrameIndex] = copy;
+	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++){
+		swap(temp, frames[j]);
+	}
+	frames.push_back(temp);
+	emit sendActiveFrame(copy);
+}
+
+/**
  * @brief SpriteEditorModel::save
  * @param filePath, file path to location to be save at
  * @param fileName, save file name
@@ -182,7 +228,8 @@ void SpriteEditorModel::replaceColorsOfActiveFrame(Pointer2DArray<QColor> newCol
  * @param x - 0-1 for mouse position on drawing grid
  * @param y - 0-1 for mouse position on drawing grid
  */
-void SpriteEditorModel::drawing(float x, float y){
+void SpriteEditorModel::drawing(float x, float y)
+{
 	ActionState toolActionState(toolSize, activeColor, (int)(x*imageWidth), (int)(y*imageHeight), frames[activeFrameIndex]);
 
 	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
@@ -190,13 +237,5 @@ void SpriteEditorModel::drawing(float x, float y){
 
 	CallbackOptions callBack(paintPixelColorsCallback, replacePixelColorsCallback);
 	Tools[activeTool]->apply(toolActionState, callBack);
-}
-
-void SpriteEditorModel::addFrame(){
-	QPixmap blank(imageHeight,imageHeight);
-	blank.fill();
-	frames.push_back(blank);
-	activeFrameIndex = frames.size()-1;
-	emit sendActiveFrame(blank);
 }
 
