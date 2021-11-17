@@ -115,33 +115,62 @@ void SpriteEditorModel::write(QJsonObject &json) const
 	json["numberOfFrames"] = frameCount;
 
 	for (int i = 0; i < frameCount; i++)
-	{
-		QString currFrame = QString::fromStdString("frame" + std::to_string(i));
-		QImage frame = frames[i].toImage();
+		writeFrame(json, i);
 
-		QJsonArray pixels;
+}
 
-		for(int x = 0; x < imageWidth; x++)
-		{
-			QJsonArray rows;
-			for (int y = 0; y < imageHeight; y++)
-			{
-				QJsonArray colors;
+/**
+ * @brief SpriteEditorModel::writeFrame
+ * @param json
+ * @param frameNumber
+ */
+void SpriteEditorModel::writeFrame(QJsonObject& json, int frameNumber) const
+{
+	QString currFrame = QString::fromStdString("frame" + std::to_string(frameNumber));
+	QImage frame = frames[frameNumber].toImage();
 
-				QColor pixelColor = frame.pixelColor(x,y);
-				colors.append(pixelColor.red());
-				colors.append(pixelColor.green());
-				colors.append(pixelColor.blue());
-				colors.append(pixelColor.alpha());
-				rows.append(colors);
-			}
-			pixels.append(rows);
-		}
+	QJsonArray pixels;
 
-		json.insert(currFrame, pixels);
-	}
+	for (int i = 0; i < imageWidth; i++)
+		pixels.append(writeRows(frame, i));
 
+	json.insert(currFrame, pixels);
+}
 
+/**
+ * @brief SpriteEditorModel::writeRows
+ * @param frame
+ * @param row
+ * @return
+ */
+QJsonArray SpriteEditorModel::writeRows(QImage frame, int row) const
+{
+	QJsonArray rows;
+
+	for (int i = 0; i < imageHeight; i++)
+		rows.append(writeColor(frame, row, i));
+
+	return rows;
+
+}
+
+/**
+ * @brief SpriteEditorModel::writeColor
+ * @param frame
+ * @param row
+ * @param col
+ * @return
+ */
+QJsonArray SpriteEditorModel::writeColor(QImage frame, int row, int col) const
+{
+	QJsonArray colors;
+
+	QColor pixelColor = frame.pixelColor(row,col);
+	colors.append(pixelColor.red());
+	colors.append(pixelColor.green());
+	colors.append(pixelColor.blue());
+	colors.append(pixelColor.alpha());
+	return colors;
 }
 
 /**
@@ -182,28 +211,49 @@ void SpriteEditorModel::read(const QJsonObject &json)
 
 	int size = frames.size();
 	for (int i = 0; i < size; i++)
+		readFrame(json, i);
+}
+
+/**
+ * @brief SpriteEditorModel::readFrame
+ * @param json
+ * @param frameNumber
+ */
+void SpriteEditorModel::readFrame(const QJsonObject &json, int frameNumber)
+{
+	QString currFrame = QString::fromStdString("frame" + std::to_string(frameNumber));
+	if (json.contains(currFrame) && json[currFrame].isArray())
 	{
-		QString currFrame = QString::fromStdString("frame" + std::to_string(i));
-		if (json.contains(currFrame) && json[currFrame].isArray())
-		{
-			QJsonArray frameArray = json[currFrame].toArray();
-			QImage newFrame;
+		QJsonArray frameArray = json[currFrame].toArray();
+		QImage newFrame;
 
-			for (int j = 0; j < frameArray.size(); j++)
-			{
-				QJsonArray pixels = json.value(currFrame).toArray();
+		for (int j = 0; j < frameArray.size(); j++)
+			readRow(json, currFrame, newFrame, j);
 
-				for (int k = 0; i < pixels.size(); k++)
-				{
-					// need to get the color of the pixel and set it on the QImage
-					//QColor newColor(pixels[0], pixels[1], pixels)
-					//newFrame.setPixel(j, k, )
-				}
+		QPixmap frame;
+		frame.fromImage(newFrame);
+		frames.assign(frameNumber, frame);
 
-			}
-			//QPixmap frame = json[currFrame];
-			//frames.assign(i, frame);
-		}
+	}
+
+}
+
+/**
+ * @brief SpriteEditorModel::readRow
+ * @param json
+ * @param currFrame
+ * @param newFrame
+ * @param x
+ */
+void SpriteEditorModel::readRow(const QJsonObject &json, QString currFrame, QImage newFrame, int x)
+{
+	QJsonArray pixels = json.value(currFrame).toArray();
+
+	for (int i = 0; i < pixels.size(); i++)
+	{
+		QJsonArray currPixel = pixels[i].toArray();
+		QColor newColor(currPixel[0].toInt(), currPixel[1].toInt(), currPixel[2].toInt(), currPixel[3].toInt());
+		newFrame.setPixelColor(x, i, newColor);
 	}
 }
 

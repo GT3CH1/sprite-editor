@@ -33,7 +33,12 @@ private:
 	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
 	void setColorsOfActiveFrame(Pointer2DArray<QColor>, unsigned int, unsigned int);
 	void write(QJsonObject& json) const;
+	void writeFrame(QJsonObject& json, int frameNumber) const;
+	QJsonArray writeRows(QImage frame, int row) const;
+	QJsonArray writeColor(QImage frame, int row, int col) const;
 	void read(const QJsonObject& json);
+	void readFrame(const QJsonObject &json, int frameNumber);
+	void readRow(const QJsonObject &json, QString currFrame, QImage newFrame, int x);
 
 public:
 	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};
