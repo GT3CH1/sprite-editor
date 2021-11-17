@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QDragMoveEvent>
+#include <QPoint>
 
 class RenderArea : public QLabel
 {
@@ -18,6 +19,7 @@ private:
 	// Whether or not the grid is going to shown.
 	bool gridShown = false;
 	int getNumColsAndRows();
+	QPoint lastPosition;
 private slots:
 	void mousePressEvent(QMouseEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
