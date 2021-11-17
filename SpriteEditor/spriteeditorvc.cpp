@@ -48,6 +48,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->toolButton4,&QPushButton::pressed,this,&SpriteEditorVC::toolChanged);
 	connect(this->model,&SpriteEditorModel::sendActiveFrame,ui->mainCanvas,&RenderArea::setImage);
 	connect(ui->mainCanvas,&RenderArea::clicked, this->model,&SpriteEditorModel::drawing);
+	connect(ui->mainCanvas,&RenderArea::released,this->model,&SpriteEditorModel::stopDrawing);
 	connect(ui->mainCanvas,&RenderArea::clicked, this,&SpriteEditorVC::updatePreview);
 	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
 	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);

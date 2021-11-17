@@ -1,4 +1,5 @@
 #include "renderarea.h"
+#include <iostream>
 
 /**
  * Draws a single frame from the sprite
@@ -88,12 +89,17 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 
 		int x = evt->pos().x();
 		int y = evt->pos().y();
-		if((abs(lastPosition.x() - x) > 20) || (abs(lastPosition.y() - y) > 20)){
-			lastPosition = evt->pos();
-			if((x < 510 && x > 2) && (y < 510 && y > 2))
-				emit clicked((float)x/512.0,(float)y/512.0);
-		}
+		if((x < 510 && x > 2) && (y < 510 && y > 2))
+			emit clicked((float)x/512.0,(float)y/512.0);
 	}
+}
+
+void RenderArea::mouseReleaseEvent(QMouseEvent *evt)
+{
+	int x = evt->pos().x();
+	unsigned int y = evt->pos().y();
+	if((x < 512 && x > 0) && (y < 512 && y >= 0))
+		emit released((float)x/512.0,(float)y/512.0);
 }
 
 /**

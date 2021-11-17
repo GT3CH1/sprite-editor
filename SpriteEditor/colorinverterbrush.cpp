@@ -11,9 +11,8 @@
  * @brief Creates the ColorInverterBrush object
  * @param generator Pointer to the stencil needed for the tool
  */
-ColorInverterBrush::ColorInverterBrush(IStencilGenerator* generator) : PixelBrush(generator)
+ColorInverterBrush::ColorInverterBrush(IStencilGenerator* generator) : PixelBrush(generator), coveredArea(0,0)
 {
-
 }
 
 /**
@@ -23,8 +22,10 @@ ColorInverterBrush::ColorInverterBrush(IStencilGenerator* generator) : PixelBrus
  * @param callbacks Current callback information
  */
 void ColorInverterBrush::apply(ActionState& canvasState, const CallbackOptions& callbacks)
-{
+{	
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
+
+
 
 	BoundsInformation info;
 	QRect boundedArea = ConstrainStencilBounds(stencil, canvasState.MOUSE_X_GRID_COORD, canvasState.MOUSE_Y_GRID_COORD,
