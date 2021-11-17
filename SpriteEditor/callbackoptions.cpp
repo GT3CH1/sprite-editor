@@ -1,6 +1,8 @@
 #include <functional>
 #include "callbackoptions.h"
-CallbackOptions::CallbackOptions(std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> setPixelColorsFunc)
+CallbackOptions::CallbackOptions(std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsFunc,
+								 std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> replacePixelColorsFunc)
 {
-	setPixelColors = setPixelColorsFunc;
+	paintPixelColors = paintPixelColorsFunc;
+	replacePixelColors = replacePixelColorsFunc;
 }

@@ -31,6 +31,7 @@ private:
 
 	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
 	void setColorsOfActiveFrame(Pointer2DArray<QColor>, unsigned int, unsigned int);
+	void replaceColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord);
 
 public:
 	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};

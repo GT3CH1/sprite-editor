@@ -11,7 +11,10 @@ CONFIG += c++11
 SOURCES += \
     actionstate.cpp \
     callbackoptions.cpp \
+    colorinverterbrush.cpp \
+    hardcirclestencilgenerator.cpp \
     main.cpp \
+    rainbowbrush.cpp \
     spriteeditormodel.cpp \
     pixelbrush.cpp \
     pixeleraser.cpp \
@@ -22,7 +25,10 @@ SOURCES += \
     renderarea.cpp
 
 HEADERS += \
+    colorinverterbrush.h \
+    hardcirclestencilgenerator.h \
     istencilgenerator.h \
+    rainbowbrush.h \
     softcirclestencilgenerator.h \
     spriteeditorvc.h \
     squarestencilgenerator.h \
