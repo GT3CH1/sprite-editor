@@ -104,6 +104,7 @@ private:
 	QAction *hardEraserSelected;
 	QAction *sprayCanSelected;
 	QAction *gaussianSelected;
+	QAction *gridSelected;
 
 	QMenu *fileMenu;
 	QMenu *helpMenu;

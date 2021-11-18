@@ -7,5 +7,12 @@
         <file>res/open.svg</file>
         <file>res/save.svg</file>
         <file>res/new.svg</file>
+        <file>res/rainbow.svg</file>
+        <file>res/spray-can.svg</file>
+        <file>res/soft-brush.svg</file>
+        <file>res/help.svg</file>
+        <file>res/invert.svg</file>
+        <file>res/blur.svg</file>
+        <file>res/grid.svg</file>
     </qresource>
 </RCC>
