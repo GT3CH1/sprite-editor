@@ -13,6 +13,7 @@ SOURCES += \
     callbackoptions.cpp \
     colorinverterbrush.cpp \
     hardcirclestencilgenerator.cpp \
+    imagesizedialog.cpp \
     main.cpp \
     rainbowbrush.cpp \
     spraycanbrush.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
     brush.h \
     colorinverterbrush.h \
     hardcirclestencilgenerator.h \
+    imagesizedialog.h \
     istencilgenerator.h \
     rainbowbrush.h \
     softcirclestencilgenerator.h \
@@ -52,6 +54,7 @@ HEADERS += \
 
 
 FORMS += \
+    imagesizedialog.ui \
     spriteeditorvc.ui
 
 # Default rules for deployment.

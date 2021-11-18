@@ -16,6 +16,7 @@
 
 #include "renderarea.h"
 #include "spriteeditormodel.h"
+#include "imagesizedialog.h"
 #include "ui_spriteeditorvc.h"
 
 QT_BEGIN_NAMESPACE
@@ -57,6 +58,8 @@ private slots:
 	void on_lastFrameButton_clicked();
 	void updateActiveFrame(int);
 	void updateActivePreview(int);
+	void startSizeDialogue();
+	void finishSizeDialogue(int size);
 
 private:
 	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
@@ -109,6 +112,8 @@ private:
 	void createMenu();
 	void setupButtonColors();
 	constexpr unsigned int hash(const char* str, int h = 0);
+
+	ImageSizeDialog imageSizeDialogue;
 
 signals:
 	void colorChanged(QColor color);

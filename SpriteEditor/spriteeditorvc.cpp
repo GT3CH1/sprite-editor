@@ -3,6 +3,7 @@
 SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::SpriteEditorVC)
+	, imageSizeDialogue(this)
 {
 	ui->setupUi(this);
 	this->setStyleSheet(QString("QMainWindow { background-color:white}"));
@@ -100,6 +101,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(hardEraserSelected,&QAction::triggered,this,&SpriteEditorVC::setHardEraser);
 	connect(sprayCanSelected,&QAction::triggered,this, &SpriteEditorVC::setSprayCan);
 	connect(gaussianSelected,&QAction::triggered,this,&SpriteEditorVC::setGaussian);
+	connect(newFileAction, &QAction::triggered, this, &SpriteEditorVC::startSizeDialogue);
 
 	// Model to UI
 	connect(this->model, &SpriteEditorModel::sendActiveFrame,ui->mainCanvas, &RenderArea::setImage);
@@ -126,6 +128,10 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(this, &SpriteEditorVC::changeActiveFrame, model, &SpriteEditorModel::changeActiveFrame);
 	connect(this, &SpriteEditorVC::remove, model, &SpriteEditorModel::deleteFrame);
 	connect(this, &SpriteEditorVC::add, model, &SpriteEditorModel::addFrame);
+
+	connect(&imageSizeDialogue, &ImageSizeDialog::dialogueComplete, this, &SpriteEditorVC::finishSizeDialogue);
+	connect(this->model, &SpriteEditorModel::updateCanvasSize,ui->mainCanvas, &RenderArea::setCanvasSize);
+	imageSizeDialogue.setModal(true);
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -586,4 +592,15 @@ void SpriteEditorVC::on_lastFrameButton_clicked()
 	{
 		emit changeActiveFrame(indexOfActiveFrame - 1);
 	}
+}
+
+void SpriteEditorVC::startSizeDialogue()
+{
+	imageSizeDialogue.exec();
+}
+
+void SpriteEditorVC::finishSizeDialogue(int size)
+{
+	activateWindow();
+	model->setSize(size, size);
 }

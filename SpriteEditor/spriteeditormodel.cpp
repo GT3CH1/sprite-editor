@@ -459,3 +459,18 @@ void SpriteEditorModel::setFrames(std::vector<QPixmap> map)
 {
 	frames = map;
 }
+
+void SpriteEditorModel::setSize(int width, int height)
+{
+	imageWidth = width;
+	imageHeight = height;
+	activeFrameIndex = 0;
+	QPixmap firstFrame(width, height);
+	firstFrame.fill();
+	frames.clear();
+	frames.push_back(firstFrame);
+	emit sendActiveFrameIndex(0);
+	emit sendFrames(frames);
+	emit sendActiveFrame(firstFrame);
+	emit updateCanvasSize(imageHeight);
+}

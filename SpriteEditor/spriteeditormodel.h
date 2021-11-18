@@ -71,6 +71,7 @@ public slots:
 	void setActiveTool(ToolType newTool);
 	void drawing(float x, float y);
 	void stopDrawing(float x, float y);
+	void setSize(int width, int height);
 };
 
 
