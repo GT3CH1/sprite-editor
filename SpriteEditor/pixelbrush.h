@@ -19,14 +19,14 @@ protected:
 	};
 
 public:
-	PixelBrush(IStencilGenerator* generator);
-	PixelBrush(const PixelBrush& other);
-	PixelBrush& operator=(PixelBrush otherCopy);
+	PixelBrush(IStencilGenerator *generator);
+	PixelBrush(const PixelBrush &other);
+	PixelBrush &operator=(PixelBrush otherCopy);
 	virtual ~PixelBrush();
-	virtual void apply(ActionState& canvasState, const CallbackOptions& callbacks);
-	static QRect ConstrainStencilBounds(Pointer2DArray<float> stencil, int stencilCenterX, int stencilCenterY, int areaWidth, int areaHeight,  BoundsInformation& outInfo);
+	virtual void apply(ActionState &canvasState, const CallbackOptions &callbacks);
+	static QRect ConstrainStencilBounds(Pointer2DArray<float> stencil, int stencilCenterX, int stencilCenterY, int areaWidth, int areaHeight,  BoundsInformation &outInfo);
 private:
-	IStencilGenerator* stencilGenerator;
+	IStencilGenerator *stencilGenerator;
 protected:
 	Pointer2DArray<float> stencil;
 	void setStencilOnSizeChange(unsigned int newSize);

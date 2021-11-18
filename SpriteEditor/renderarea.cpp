@@ -1,5 +1,4 @@
 #include "renderarea.h"
-#include <iostream>
 
 /**
  * Draws a single frame from the sprite
@@ -18,9 +17,9 @@
  * @brief Constructs a new RenderArea widget
  * @param parent
  */
-RenderArea::RenderArea(QWidget* parent,[[maybe_unused]] Qt::WindowFlags f, int canvasSize) : QLabel(parent), canvasSize(canvasSize)
+RenderArea::RenderArea(QWidget *parent, [[maybe_unused]] Qt::WindowFlags f, int canvasSize) : QLabel(parent), canvasSize(canvasSize)
 {
-	QPixmap blank(canvasSize,canvasSize);
+	QPixmap blank(canvasSize, canvasSize);
 	blank.fill();
 	setImage(blank);
 }
@@ -28,7 +27,8 @@ RenderArea::RenderArea(QWidget* parent,[[maybe_unused]] Qt::WindowFlags f, int c
 /**
  * @brief Gets the maximum number of columns and rows that we can draw on.
  */
-int RenderArea::getNumColsAndRows(){
+int RenderArea::getNumColsAndRows()
+{
 	return 512 / canvasSize;
 }
 
@@ -48,19 +48,25 @@ void RenderArea::setImage(QPixmap newMapToRender)
  */
 void RenderArea::setImageScaled(QPixmap newMapToRender, int scale)
 {
-	QPixmap newMap(newMapToRender.scaled(scale,scale,Qt::KeepAspectRatioByExpanding));
+	QPixmap newMap(newMapToRender.scaled(scale, scale, Qt::KeepAspectRatioByExpanding));
 	gridRender = newMap;
 	QPainter paint(&gridRender);
 	paint.setPen(Qt::gray);
-	for(int loc = 0; loc < canvasSize+2; loc++){
-		paint.drawLine(loc*(512 / canvasSize), 0, loc*(512 / canvasSize), 512);
-		paint.drawLine(0, loc*(512 / canvasSize), 512, loc*(512 / canvasSize));
+
+	for (int loc = 1; loc < canvasSize + 2; loc++)
+	{
+		paint.drawLine(loc * (512 / canvasSize), 0, loc * (512 / canvasSize), 512);
+		paint.drawLine(0, loc * (512 / canvasSize), 512, loc * (512 / canvasSize));
 	}
+
 	paint.end();
-	if(gridShown)
+
+	if (gridShown)
 		setPixmap(gridRender);
+
 	else
 		setPixmap(newMap);
+
 	toRender = newMap;
 	update();
 	toRender = newMap.scaled(canvasSize, canvasSize, Qt::KeepAspectRatioByExpanding);
@@ -72,10 +78,11 @@ void RenderArea::setImageScaled(QPixmap newMapToRender, int scale)
  */
 void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
-		int x = evt->pos().x();
-		unsigned int y = evt->pos().y();
-		if((x < 512 && x > 0) && (y < 512 && y >= 0))
-			emit clicked((float)x / 512.0, (float)y / 512.0);
+	int x = evt->pos().x();
+	unsigned int y = evt->pos().y();
+
+	if (x < 512 && y < 512)
+		emit clicked((float)x / 512.0, (float)y / 512.0);
 }
 
 /**
@@ -84,38 +91,45 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
  */
 void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 {
-	if(evt->buttons() & Qt::LeftButton)
+	if (evt->buttons() & Qt::LeftButton)
 	{
-
 		int x = evt->pos().x();
 		int y = evt->pos().y();
-		if((x < 510 && x > 2) && (y < 510 && y > 2))
-			emit clicked((float)x / 512.0,(float)y / 512.0);
+
+		if ((x < 510 && x > 2) && (y < 510 && y > 2))
+			emit clicked((float)x / 512.0, (float)y / 512.0);
 	}
 }
 
+/**
+ * @brief Handles the mouse being released.
+ * @param evt
+ */
 void RenderArea::mouseReleaseEvent(QMouseEvent *evt)
 {
 	int x = evt->pos().x();
 	unsigned int y = evt->pos().y();
-	if((x < 512 && x > 0) && (y < 512 && y >= 0))
-		emit released((float)x / 512.0,(float)y / 512.0);
+
+	if (x < 512 && y < 512)
+		emit released((float)x / 512.0, (float)y / 512.0);
 }
 
 /**
  * @brief Sets whether or not the grid is shown.
  * @param gridShown - When true, the grid will be shown. If false, the grid will not be showed.
  */
-void RenderArea::toggleGrid(){
+void RenderArea::toggleGrid()
+{
 	this->gridShown = !gridShown;
-    setImage(toRender);
+	setImage(toRender);
 }
 
-int RenderArea::getPixelSize(){
-		return (512 / canvasSize);
-}
-
-void RenderArea::setCanvasSize(int size){
+/**
+ * @brief Updates the canvas size to match the given size.
+ * @param size - The new canvas size.
+ */
+void RenderArea::setCanvasSize(int size)
+{
 	canvasSize = size;
 	setImage(toRender);
 }

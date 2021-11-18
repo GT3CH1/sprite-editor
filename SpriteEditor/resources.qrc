@@ -14,5 +14,6 @@
         <file>res/invert.svg</file>
         <file>res/blur.svg</file>
         <file>res/grid.svg</file>
+        <file>res/soft-eraser.svg</file>
     </qresource>
 </RCC>

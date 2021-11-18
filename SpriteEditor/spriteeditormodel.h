@@ -12,40 +12,42 @@
 using std::vector;
 using std::string;
 
-class SpriteEditorModel : public QObject{
+class SpriteEditorModel : public QObject
+{
 
-Q_OBJECT
+	Q_OBJECT
 
 public:
 	enum ToolType {Pen, Brush, SoftEraser, HardEraser, Gaussian, InvertBrush, Rainbow, SprayCan};
 
 private:
-	int imageWidth;
-	int imageHeight;
-	int toolSize = 1;
-	QColor activeColor = Qt::blue;
-	QMap<ToolType, ITool*> Tools;
-	ToolType activeTool = ToolType::Pen;
+	int imageWidth = 64;
+	int imageHeight = 64;
+	int toolSize = 4;
+	QColor activeColor;
+	QMap<ToolType, ITool *> Tools;
+	ToolType activeTool;
+
 	vector<QPixmap> frames;
-	int activeFrameIndex =0;
+	int activeFrameIndex = 0;
 
 	QPoint lastPosition;
 	bool newStroke = true;
 
 	void setColorOfActiveFrame(QColor, unsigned int, unsigned int);
 	void setColorsOfActiveFrame(Pointer2DArray<QColor>, unsigned int, unsigned int);
-	void write(QJsonObject& json) const;
-	void writeFrame(QJsonObject& json, int frameNumber) const;
-	QJsonArray writeRows(QImage frame, int row) const;
-	QJsonArray writeColor(QImage frame, int row, int col) const;
-	void read(const QJsonObject& json);
+	void write(QJsonObject &json) const;
+	void writeFrame(QJsonObject &json, int frameNumber) const;
+	void read(const QJsonObject &json);
 	void readFrame(const QJsonValue &json, int frameNumber);
 	void readRow(const QJsonArray &json, QImage &newFrame, int row);
 	void readColor(QJsonArray newColor, int row, int col, QImage &newFrame);
 	void replaceColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord);
+	QJsonArray writeRows(QImage frame, int row) const;
+	QJsonArray writeColor(QImage frame, int row, int col) const;
 
 public:
-	SpriteEditorModel(int imageWidth, int imageHeight) :imageWidth(imageWidth), imageHeight(imageHeight){};
+	SpriteEditorModel(int imageWidth, int imageHeight) : imageWidth(imageWidth), imageHeight(imageHeight) {};
 	SpriteEditorModel();
 	~SpriteEditorModel();
 	QPixmap getFramefromIndex(int index);
@@ -56,6 +58,7 @@ signals:
 	void sendActiveFrameIndex(int activeFrameIndex);
 	void sendFrames(vector<QPixmap> allFrames);
 	void updateCanvasSize(int size);
+	void brushSizeChanged(int size);
 
 public slots:
 	void setFrames(vector<QPixmap> allFrames);
@@ -70,8 +73,9 @@ public slots:
 	void load(string filePath, string fileName);
 	void setActiveTool(ToolType newTool);
 	void drawing(float x, float y);
-	void stopDrawing(float x, float y);
+	void stopDrawing();
 	void setSize(int width, int height);
+	void setToolSize(int size);
 };
 
 

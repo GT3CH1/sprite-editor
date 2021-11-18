@@ -20,7 +20,10 @@
 #include "ui_spriteeditorvc.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class SpriteEditorVC; }
+namespace Ui
+{
+class SpriteEditorVC;
+}
 QT_END_NAMESPACE
 
 class SpriteEditorVC : public QMainWindow
@@ -43,15 +46,16 @@ public slots:
 	void setHardEraser();
 	void setSprayCan();
 	void setGaussian();
+	void setBrushSizeLabel(int size);
 
 private slots:
 	void sendActiveFrame();
 	void deleteFrame();
 	void addFrame();
-	void previewFrames(vector<QPixmap>);
+	void previewFrames();
 	void updatePlaybackFrame();
 	void on_fpsSlider_valueChanged(int);
-	void keyPressEvent(QKeyEvent*);
+	void keyPressEvent(QKeyEvent *);
 	void savePressed();
 	void loadPressed();
 	void on_nextFrameButton_clicked();
@@ -62,7 +66,7 @@ private slots:
 	void finishSizeDialogue(int size);
 
 private:
-	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
+	const char *FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
 	// FPS Slider parameters
 	const int FPS_INTERVAL = 10;
 	const int FPS_MAX = 60;
@@ -80,6 +84,21 @@ private:
 	const int BLACK = 0;
 	const int WHITE = 47;
 
+	const char* INVERT_SVG_PATH = ":/res/invert.svg";
+	const char* RAINBOW_SVG_PATH = ":/res/rainbow.svg";
+	const char* SOFT_ERASER_PATH = ":/res/soft-eraser.svg";
+	const char* PEN_SVG_PATH = ":/res/pen.svg";
+	const char* ERASER_SVG_PATH = ":/res/eraser.svg";
+	const char* SOFT_BRUSH_PATH = ":/res/soft-brush.svg";
+	const char* SPRAY_CAN_SVG_PATH = ":/res/spray-can.svg";
+	const char* BLUR_SVG_PATH = ":/res/blur.svg";
+	const char* GRID_SVG_PATH = ":/res/grid.svg";
+	const char* SAVE_SVG_PATH = ":/res/save.svg";
+	const char* OPEN_SVG_PATH = ":/res/open.svg";
+	const char* CLOSE_SVG_PATH = ":/res/close.svg";
+	const char* NEW_SVG_PATH = ":/res/new.svg";
+	const char* HELP_SVG_PATH = ":/res/help.svg";
+
 	SpriteEditorModel *model;
 	Ui::SpriteEditorVC *ui;
 	QHBoxLayout *framePreviewLayout;
@@ -88,12 +107,12 @@ private:
 	int fps = 0;
 	QTimer playbackUpdater;
 	QString path = QDir::homePath();
-	void changeActiveColor(QPushButton*);
-	std::vector<RenderArea*> framePreviews;
+	void changeActiveColor(QPushButton *);
+	std::vector<RenderArea *> framePreviews;
 	QColorDialog *colorDialog;
+
 	QAction *saveAction;
 	QAction *openAction;
-	QAction *closeAction;
 	QAction *helpAction;
 	QAction *newFileAction;
 	QAction *rainbowBrushSelected;
@@ -109,10 +128,11 @@ private:
 	QMenu *fileMenu;
 	QMenu *helpMenu;
 	QMenu *toolsMenu;
-	void setButtonColor(QPushButton* button, QString hex);
+	void setButtonColor(QPushButton *button, QString hex);
 	void createMenu();
 	void setupButtonColors();
-	constexpr unsigned int hash(const char* str, int h = 0);
+	void setCustomCursor(char const *path);
+	constexpr unsigned int hash(const char *str, int h = 0);
 
 	ImageSizeDialog imageSizeDialogue;
 
@@ -128,6 +148,6 @@ signals:
 	void remove(int);
 	void save(std::string, std::string);
 	void load(std::string, std::string);
-    void toggleGrid();
+	void toggleGrid();
 };
 #endif // SPRITEEDITORVC_H

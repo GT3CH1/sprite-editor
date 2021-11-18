@@ -25,7 +25,7 @@ public:
 	 * (x coordinate of upper left pixel in 2D array).
 	 * @param yCoord the  displacement of the pixels to be added in the y direction
 	 * (y coordinate of upper left pixel in 2D array).
-	 */	
+	 */
 	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColors;
 
 	/**

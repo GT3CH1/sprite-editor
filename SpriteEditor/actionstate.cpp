@@ -11,5 +11,5 @@
 ActionState::ActionState(const int size, const QColor color, const int x,
 						 const int y, const bool newStroke, QPixmap layer)
 	: TOOL_SIZE(size), TOOL_COLOR(color), MOUSE_X_GRID_COORD(x), MOUSE_Y_GRID_COORD(y), NEW_STROKE(newStroke), ACTIVE_FRAME(layer)
-{	
+{
 }

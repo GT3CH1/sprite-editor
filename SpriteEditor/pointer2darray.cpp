@@ -20,27 +20,26 @@ Pointer2DArray<T>::Pointer2DArray(unsigned int width, unsigned int height)
 {
 	this->width = width;
 	this->height = height;
-
-	array = (T**)malloc(width * sizeof(T*));
+	array = (T **)malloc(width * sizeof(T *));
 
 	for (unsigned int i = 0; i < width; i++)
-		array[i] = (T*)malloc(height * sizeof(T));
+		array[i] = (T *)malloc(height * sizeof(T));
 }
 
 template<typename T>
 /**
  * @brief Creates a deep copy of another 2D array.
  */
-Pointer2DArray<T>::Pointer2DArray(const Pointer2DArray<T>& other)
+Pointer2DArray<T>::Pointer2DArray(const Pointer2DArray<T> &other)
 {
 	width = other.width;
 	height = other.height;
-
-	array = (T**)malloc(width * sizeof(T*));
+	array = (T **)malloc(width * sizeof(T *));
 
 	for (unsigned int i = 0; i < width; i++)
 	{
-		array[i] = (T*) malloc(height * sizeof(T));
+		array[i] = (T *) malloc(height * sizeof(T));
+
 		for (unsigned int j = 0; j < height; j++)
 			array[i][j] = other[i][j];
 	}
@@ -50,10 +49,10 @@ template<typename T>
 /**
  * @brief Creates a deep copy of another 2D array.
  */
-Pointer2DArray<T>& Pointer2DArray<T>::operator=(Pointer2DArray<T> otherCopy)
+Pointer2DArray<T> &Pointer2DArray<T>::operator=(Pointer2DArray<T> otherCopy)
 {
-	std::swap(width,otherCopy.width);
-	std::swap(height,otherCopy.height);
+	std::swap(width, otherCopy.width);
+	std::swap(height, otherCopy.height);
 	std::swap(array, otherCopy.array);
 	return *this;
 }
@@ -66,6 +65,7 @@ Pointer2DArray<T>::~Pointer2DArray()
 {
 	for (unsigned int i = 0; i < width; i++)
 		free(array[i]);
+
 	free(array);
 }
 
@@ -76,7 +76,7 @@ template<typename T>
  * @param index index of the column to get.
  * @return pointer of Ts from 0 to height.
  */
-T* Pointer2DArray<T>::operator[](unsigned int index) const
+T *Pointer2DArray<T>::operator[](unsigned int index) const
 {
 	return array[index];
 }

@@ -12,9 +12,8 @@
  * @brief Creates the RainbowBrush object
  * @param generator Pointer to the stencil needed for the tool
  */
-RainbowBrush::RainbowBrush(IStencilGenerator* generator) : PixelBrush(generator)
+RainbowBrush::RainbowBrush(IStencilGenerator *generator) : PixelBrush(generator)
 {
-
 }
 
 /**
@@ -22,9 +21,8 @@ RainbowBrush::RainbowBrush(IStencilGenerator* generator) : PixelBrush(generator)
  * @param generator Pointer to the stencil needed for the tool
  * @param _incrementPerCall The amount to advance in the rainbow as a percent between 0 and 1.
  */
-RainbowBrush::RainbowBrush(IStencilGenerator* generator, float _incrementPerCall) : PixelBrush(generator), incrementPerCall(_incrementPerCall)
+RainbowBrush::RainbowBrush(IStencilGenerator *generator, float _incrementPerCall) : PixelBrush(generator), incrementPerCall(_incrementPerCall)
 {
-
 }
 
 /**
@@ -32,22 +30,20 @@ RainbowBrush::RainbowBrush(IStencilGenerator* generator, float _incrementPerCall
  * @param canvasState Current ActionState of the frame
  * @param callbacks Current callback information
  */
-void RainbowBrush::apply(ActionState& canvasState, const CallbackOptions& callbacks)
+void RainbowBrush::apply(ActionState &canvasState, const CallbackOptions &callbacks)
 {
 	progress += incrementPerCall;
 
-	while(progress >= 1)
+	while (progress >= 1)
 		progress -= 1;
 
 	QColor rainbowColor;
-	rainbowColor.setHsv(360 * progress,canvasState.TOOL_COLOR.saturation(),canvasState.TOOL_COLOR.value(),canvasState.TOOL_COLOR.alpha());
-
+	rainbowColor.setHsv(360 * progress, canvasState.TOOL_COLOR.saturation(), canvasState.TOOL_COLOR.value(), canvasState.TOOL_COLOR.alpha());
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
-
 	BoundsInformation info;
 	QRect boundedArea = ConstrainStencilBounds(stencil, canvasState.MOUSE_X_GRID_COORD, canvasState.MOUSE_Y_GRID_COORD,
-														  canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
-														  info);
+						canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
+						info);
 	Pointer2DArray<QColor> toAdd(boundedArea.width(), boundedArea.height());
 
 	for (unsigned int i = 0; i < toAdd.getWidth(); i++)

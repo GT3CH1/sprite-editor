@@ -19,6 +19,8 @@ public:
 	 * @param size The size of the stencil to fill.
 	 */
 	virtual Pointer2DArray<float> generate(unsigned int size) = 0;
+	virtual ~IStencilGenerator() = default;
+
 };
 
 #endif // ISTENCILGENERATOR_H

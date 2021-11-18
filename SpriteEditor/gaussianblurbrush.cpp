@@ -7,14 +7,13 @@
 
 #include "gaussianblurbrush.h"
 #include "gaussianstencilgenerator.h"
-#include <iostream>
 
 /**
  * @brief Creates the ColorInverterBrush object
  * @param generator Pointer to the stencil needed for the tool
  */
-GaussianBlurBrush::GaussianBlurBrush(IStencilGenerator* generator) : ColorInverterBrush(generator), gaussianStencil(0,0)
-{	
+GaussianBlurBrush::GaussianBlurBrush(IStencilGenerator *generator) : ColorInverterBrush(generator), gaussianStencil(0, 0)
+{
 	GaussianStencilGenerator gGenerator;
 	gaussianStencil = gGenerator.generate(7);
 }
@@ -25,8 +24,8 @@ GaussianBlurBrush::GaussianBlurBrush(IStencilGenerator* generator) : ColorInvert
  * @param canvasState Current ActionState of the frame
  * @param callbacks Current callback information
  */
-void GaussianBlurBrush::apply(ActionState& canvasState, const CallbackOptions& callbacks)
-{	
+void GaussianBlurBrush::apply(ActionState &canvasState, const CallbackOptions &callbacks)
+{
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
 
 	if (canvasState.NEW_STROKE)
@@ -34,11 +33,9 @@ void GaussianBlurBrush::apply(ActionState& canvasState, const CallbackOptions& c
 
 	BoundsInformation info;
 	QRect boundedArea = ConstrainStencilBounds(stencil, canvasState.MOUSE_X_GRID_COORD, canvasState.MOUSE_Y_GRID_COORD,
-														  canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
-														  info);
-
+						canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
+						info);
 	Pointer2DArray<QColor> toReplace(boundedArea.width(), boundedArea.height());
-
 	QImage pixelColors = canvasState.ACTIVE_FRAME.toImage();
 
 	for (int i = 0; i < (int) toReplace.getWidth(); i++)
@@ -47,26 +44,29 @@ void GaussianBlurBrush::apply(ActionState& canvasState, const CallbackOptions& c
 		{
 			QColor previousColor;
 			float lastAmountBlurred = 0;
+
 			//If we've already blurred this pixel, retrieve its original color and
 			//the amount we've already blurred for accurate blurring.
-			if(coveredArea[i + boundedArea.x()][j + boundedArea.y()].amountAffected > 0)
+			if (coveredArea[i + boundedArea.x()][j + boundedArea.y()].amountAffected > 0)
 			{
 				lastAmountBlurred = coveredArea[i + boundedArea.x()][j + boundedArea.y()].amountAffected;
 				previousColor = coveredArea[i + boundedArea.x()][j + boundedArea.y()].initialColor;
 			}
+
 			else
-			{ //If this is a pixel we haven't blurred yet, we can get its color from the canvas
-			  //(lastAmountBlurred can stay zero since this pixel hasn't been blurred yet).
+			{
+				//If this is a pixel we haven't blurred yet, we can get its color from the canvas
+				//(lastAmountBlurred can stay zero since this pixel hasn't been blurred yet).
 				previousColor = pixelColors.pixelColor(boundedArea.x() + i, boundedArea.y() + j);
 				coveredArea[i + boundedArea.x()][j + boundedArea.y()].initialColor = previousColor;
 			}
 
 			float amountToBlur = std::clamp(stencil[i + info.deltaX][j + info.deltaY] + lastAmountBlurred, 0.0f, 1.0f);
 			QColor mixedColor = collectBlurred(pixelColors, i + boundedArea.x(), j + boundedArea.y());
-			QColor finalBlur(previousColor.red()*(1 - amountToBlur) + mixedColor.red()*amountToBlur,
-							 previousColor.green()*(1 - amountToBlur) + mixedColor.green()*amountToBlur,
-							 previousColor.blue()*(1 - amountToBlur) + mixedColor.blue()*amountToBlur,
-							 previousColor.alpha()*(1 - amountToBlur) + mixedColor.alpha()*amountToBlur);
+			QColor finalBlur(previousColor.red() * (1 - amountToBlur) + mixedColor.red()*amountToBlur,
+							 previousColor.green() * (1 - amountToBlur) + mixedColor.green()*amountToBlur,
+							 previousColor.blue() * (1 - amountToBlur) + mixedColor.blue()*amountToBlur,
+							 previousColor.alpha() * (1 - amountToBlur) + mixedColor.alpha()*amountToBlur);
 			toReplace[i][j] = finalBlur;
 			coveredArea[i + boundedArea.x()][j + boundedArea.y()].amountAffected = amountToBlur;
 		}
@@ -84,15 +84,14 @@ void GaussianBlurBrush::apply(ActionState& canvasState, const CallbackOptions& c
  */
 QColor GaussianBlurBrush::collectBlurred(QImage &canvasColors, int x, int y)
 {
-	int middleX = gaussianStencil.getWidth()/2;
-	int middleY = gaussianStencil.getHeight()/2;
-
+	int middleX = gaussianStencil.getWidth() / 2;
+	int middleY = gaussianStencil.getHeight() / 2;
 	float redSum = 0;
 	float greenSum = 0;
 	float blueSum = 0;
 	float alphaSum = 0;
 
-	for(int gaussX = 0; gaussX < (int) gaussianStencil.getWidth(); gaussX++)
+	for (int gaussX = 0; gaussX < (int) gaussianStencil.getWidth(); gaussX++)
 	{
 		for (int gaussY = 0; gaussY < (int) gaussianStencil.getHeight(); gaussY++)
 		{
@@ -103,19 +102,22 @@ QColor GaussianBlurBrush::collectBlurred(QImage &canvasColors, int x, int y)
 			//The color of this pixel before being blurred itself.
 			QColor toMix;
 
-			if(canvasX >= 0 && canvasX < canvasColors.width() && canvasY >= 0 && canvasY < canvasColors.height())
+			if (canvasX >= 0 && canvasX < canvasColors.width() && canvasY >= 0 && canvasY < canvasColors.height())
 			{
 				//If the pixel has not yet been blurred, we can use its canvas color.
 				if (coveredArea[canvasX][canvasY].amountAffected == 0)
-				{
 					toMix = canvasColors.pixelColor(canvasX, canvasY);
-				} //Otherwise, we have to use the color we stored while blurring.
+
+				//Otherwise, we have to use the color we stored while blurring.
+
 				else
 					toMix = coveredArea[canvasX][canvasY].initialColor;
 			}
+
 			else
-			{ //If we are out of bounds, we use a tranparent white as a default color.
-				QColor transWhite(255,255,255,0);
+			{
+				//If we are out of bounds, we use a tranparent white as a default color.
+				QColor transWhite(255, 255, 255, 0);
 				toMix = transWhite;
 			}
 
@@ -126,6 +128,6 @@ QColor GaussianBlurBrush::collectBlurred(QImage &canvasColors, int x, int y)
 		}
 	}
 
-	QColor mixed(redSum*255, greenSum*255, blueSum*255, alphaSum*255);
+	QColor mixed(redSum * 255, greenSum * 255, blueSum * 255, alphaSum * 255);
 	return mixed;
 }

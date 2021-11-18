@@ -15,8 +15,6 @@
 #include <actionstate.h>
 #include <itool.h>
 #include <pointer2darray.h>
-#include <iostream>
-
 #include <brush.h>
 #include <stencil.h>
 
@@ -25,27 +23,24 @@
  */
 SpriteEditorModel::SpriteEditorModel()
 {
-	imageHeight = 64;
-	imageWidth = 64;
-	toolSize = 4;
-	QPixmap map(imageHeight,imageWidth);
+	QPixmap map(imageHeight, imageWidth);
 	map.fill();
 	frames.push_back(map);
-	Tools.insert(ToolType::Brush,new PixelBrush(new SoftCircleStencilGenerator()));
-	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));
-	Tools.insert(ToolType::HardEraser,new PixelEraser(new SquareStencilGenerator()));
-	Tools.insert(ToolType::InvertBrush,new ColorInverterBrush(new SquareStencilGenerator()));
-	Tools.insert(ToolType::Rainbow,new RainbowBrush(new SquareStencilGenerator()));
-	Tools.insert(ToolType::SprayCan,new SprayCanBrush(new SoftCircleStencilGenerator()));
-	Tools.insert(ToolType::SoftEraser,new PixelEraser(new SoftCircleStencilGenerator()));
-	Tools.insert(ToolType::Gaussian,new GaussianBlurBrush(new SoftCircleStencilGenerator()));
-	QPoint initialPosition(-1,-1);
+	Tools.insert(ToolType::Brush, new PixelBrush(new SoftCircleStencilGenerator()));
+	Tools.insert(ToolType::Pen, new PixelBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::HardEraser, new PixelEraser(new SquareStencilGenerator()));
+	Tools.insert(ToolType::InvertBrush, new ColorInverterBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::Rainbow, new RainbowBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::SprayCan, new SprayCanBrush(new SoftCircleStencilGenerator()));
+	Tools.insert(ToolType::SoftEraser, new PixelEraser(new SoftCircleStencilGenerator()));
+	Tools.insert(ToolType::Gaussian, new GaussianBlurBrush(new SoftCircleStencilGenerator()));
+	QPoint initialPosition(-1, -1);
 	lastPosition = initialPosition;
 }
 
 SpriteEditorModel::~SpriteEditorModel()
 {
-	for(auto toolKeys : Tools)
+	for (auto toolKeys : Tools)
 		delete toolKeys;
 }
 
@@ -83,8 +78,10 @@ void SpriteEditorModel::setActiveColor(QColor newColor)
  */
 void SpriteEditorModel::incrementBrushSize()
 {
-	if(toolSize < imageHeight || toolSize < imageWidth)
+	if (toolSize < imageHeight || toolSize < imageWidth)
 		toolSize++;
+
+	emit brushSizeChanged(toolSize);
 }
 
 /**
@@ -92,8 +89,20 @@ void SpriteEditorModel::incrementBrushSize()
  */
 void SpriteEditorModel::decrementBrushSize()
 {
-	if(toolSize > 1)
+	if (toolSize > 1)
 		toolSize--;
+
+	emit brushSizeChanged(toolSize);
+}
+
+/**
+ * @brief Sets the tool size to the given size.
+ * @param size - The new tool size.
+ */
+void SpriteEditorModel::setToolSize(int size)
+{
+	toolSize = size;
+	emit brushSizeChanged(toolSize);
 }
 
 /**
@@ -112,65 +121,75 @@ void SpriteEditorModel::changeActiveFrame(int newFrameIndex)
  */
 void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 {
-	if(frames.size() == 1)
-	{
+	if (frames.size() == 1)
 		frames[activeFrameIndex].fill();
-	}else{
-	vector<QPixmap>::iterator itr = frames.begin();
-	for(int i = 0; i <= indexOfFrameToDelete; i++)
-		itr++;
-	frames.erase(itr);
-	if(activeFrameIndex > 0)
-		activeFrameIndex--;	
+
+	else
+	{
+		vector<QPixmap>::iterator itr = frames.begin();
+
+		for (int i = 0; i < indexOfFrameToDelete; i++)
+			itr++;
+
+		frames.erase(itr);
+
+		if (activeFrameIndex > 0)
+			activeFrameIndex--;
 	}
+
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
 
 /**
- * @brief SpriteEditorModel::addFrame
+ * @brief Adds a new frame to the sprite editor.
  */
 void SpriteEditorModel::addFrame()
 {
 	activeFrameIndex++;
-	QPixmap blank(imageHeight,imageHeight);
+	QPixmap blank(imageHeight, imageHeight);
 	blank.fill();
-	if(activeFrameIndex == frames.size())
-	{
+
+	if ((uint)activeFrameIndex == frames.size())
 		frames.push_back(blank);
 
-	}else{
+	else
+	{
 		QPixmap temp = frames[activeFrameIndex];
 		frames[activeFrameIndex] = blank;
-		for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
-		{
+
+		for (unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
 			swap(temp, frames[j]);
-		}
+
 		frames.push_back(temp);
 	}
+
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
+
 /**
- * @brief SpriteEditorModel::duplicateFrame
+ * @brief Duplicates a frame to the sprite editor.
  */
 void SpriteEditorModel::duplicateFrame()
 {
-
 	QPixmap copy = frames[activeFrameIndex];
 	activeFrameIndex++;
-	if((uint)activeFrameIndex == frames.size())
-	{
+
+	if ((uint)activeFrameIndex == frames.size())
 		frames.push_back(copy);
-	}else{
-	QPixmap temp = frames[activeFrameIndex];
-	frames[activeFrameIndex] = copy;
-	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
+
+	else
 	{
-		swap(temp, frames[j]);
+		QPixmap temp = frames[activeFrameIndex];
+		frames[activeFrameIndex] = copy;
+
+		for (unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
+			swap(temp, frames[j]);
+
+		frames.push_back(temp);
 	}
-	frames.push_back(temp);
-	}
+
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
@@ -187,7 +206,8 @@ void SpriteEditorModel::save(string filePath, string fileName)
 	QFile saveFile(saveFileName);
 
 	// write the file
-	if (saveFile.open(QIODevice::WriteOnly)) {
+	if (saveFile.open(QIODevice::WriteOnly))
+	{
 		QJsonObject save;
 		write(save);
 		saveFile.write(QJsonDocument(save).toJson());
@@ -206,11 +226,11 @@ void SpriteEditorModel::write(QJsonObject &json) const
 	json["numberOfFrames"] = frameCount;
 	json["frames"] = QJsonObject();
 	QJsonObject frames(json["frames"].toObject());
-	for (int i = 0; i < frameCount; i++){
-		writeFrame(frames, i);
-	}
-	json["frames"] = frames;
 
+	for (int i = 0; i < frameCount; i++)
+		writeFrame(frames, i);
+
+	json["frames"] = frames;
 }
 
 /**
@@ -218,11 +238,10 @@ void SpriteEditorModel::write(QJsonObject &json) const
  * @param json
  * @param frameNumber
  */
-void SpriteEditorModel::writeFrame(QJsonObject& json, int frameNumber) const
+void SpriteEditorModel::writeFrame(QJsonObject &json, int frameNumber) const
 {
 	QString currFrame = QString("frame%1").arg(frameNumber);
 	QImage frame = frames[frameNumber].toImage();
-
 	QJsonArray pixels;
 
 	for (int i = 0; i < imageWidth; i++)
@@ -245,7 +264,6 @@ QJsonArray SpriteEditorModel::writeRows(QImage frame, int row) const
 		rows.append(writeColor(frame, row, i));
 
 	return rows;
-
 }
 
 /**
@@ -258,8 +276,7 @@ QJsonArray SpriteEditorModel::writeRows(QImage frame, int row) const
 QJsonArray SpriteEditorModel::writeColor(QImage frame, int row, int col) const
 {
 	QJsonArray colors;
-
-	QColor pixelColor = frame.pixelColor(row,col);
+	QColor pixelColor = frame.pixelColor(row, col);
 	colors.append(pixelColor.red());
 	colors.append(pixelColor.green());
 	colors.append(pixelColor.blue());
@@ -277,13 +294,16 @@ void SpriteEditorModel::load(string filePath, string fileName)
 	// load the file
 	QString loadFileName = QString::fromStdString(filePath + fileName + ".ssp");
 	QFile loadFile(loadFileName);
+
 	// read the file
-	if (loadFile.open(QIODevice::ReadOnly)) {
+	if (loadFile.open(QIODevice::ReadOnly))
+	{
 		QByteArray saveData = loadFile.readAll();
 		QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
 		frames.clear();
 		read(loadDoc.object());
 	}
+
 	emit sendActiveFrameIndex(0);
 	emit sendFrames(frames);
 	emit sendActiveFrame(frames[0]);
@@ -303,13 +323,15 @@ void SpriteEditorModel::read(const QJsonObject &json)
 		imageWidth = json["width"].toInt();
 
 	int size = 0;
+
 	if (json.contains("numberOfFrames") && json["numberOfFrames"].isDouble())
 		size = json["numberOfFrames"].toInt();
 
-	for (int i = 0; i < size; i++){
+	for (int i = 0; i < size; i++)
+	{
 		QString frameName = QString("frame%1");
 		frameName = frameName.arg(i);
-		char* c = strcpy(new char[frameName.length() + 1], frameName.toStdString().c_str());
+		char *c = strcpy(new char[frameName.length() + 1], frameName.toStdString().c_str());
 		readFrame(json["frames"][c].toArray(), i);
 	}
 }
@@ -321,13 +343,14 @@ void SpriteEditorModel::read(const QJsonObject &json)
  */
 void SpriteEditorModel::readFrame(const QJsonValue &json, int frameNumber)
 {
-		QJsonArray frameRow = json[frameNumber].toArray();
-		QImage newFrame(imageWidth, imageHeight, QImage::Format_RGBA8888);
-		for (int j = 0; j < frameRow.size(); j++)
-			readRow(json.toArray(), newFrame, j);
+	QJsonArray frameRow = json[frameNumber].toArray();
+	QImage newFrame(imageWidth, imageHeight, QImage::Format_RGBA8888);
 
-		QPixmap frame(QPixmap::fromImage(newFrame));
-		frames.push_back(frame);
+	for (int j = 0; j < frameRow.size(); j++)
+		readRow(json.toArray(), newFrame, j);
+
+	QPixmap frame(QPixmap::fromImage(newFrame));
+	frames.push_back(frame);
 }
 
 /**
@@ -340,6 +363,7 @@ void SpriteEditorModel::readFrame(const QJsonValue &json, int frameNumber)
 void SpriteEditorModel::readRow(const QJsonArray &json, QImage &newFrame, int row)
 {
 	QJsonArray rows(json[row].toArray());
+
 	for (int i = 0; i < rows.size(); i++)
 	{
 		QJsonArray currentPixel(rows[i].toArray());
@@ -349,9 +373,11 @@ void SpriteEditorModel::readRow(const QJsonArray &json, QImage &newFrame, int ro
 }
 
 /**
- * @brief SpriteEditorModel::readColor
- * @param newColor
- * @return
+ * @brief Reads a color from a QJsonArray, and sets the color of a pixel at the row and col on the QImage.
+ * @param pixel - A QJsonArray containing a list of colors
+ * @param row - The row to draw at.
+ * @param col - Te column to draw at.
+ * @param newFrame - The QImage to draw on.
  */
 void SpriteEditorModel::readColor(QJsonArray pixel, int row, int col, QImage &newFrame)
 {
@@ -360,27 +386,27 @@ void SpriteEditorModel::readColor(QJsonArray pixel, int row, int col, QImage &ne
 }
 
 /**
- * @brief SpriteEditorModel::setActiveTool
- * @param newTool, new active tool
+ * @brief Sets the active tool to the given tool/
+ * @param newTool - new active tool
  */
 void SpriteEditorModel::setActiveTool(ToolType newTool)
 {
 	activeTool = newTool;
-	//TODO(ALEX): don't think i need to do more, but we see
 }
 
 /**
- * @brief SpriteEditorModel::setColorsOfActiveFrame
- * @param newColors
- * @param xCoord
- * @param yCoord
+ * @brief Sets the colors of the active frame to the given 2d array and the X and Y coordinates.
+ * @param newColors - A Pointer2DArray containing all of the new colors.
+ * @param xCoord - The X coordinate to draw at.
+ * @param yCoord - The Y coordinate to draw at.
  */
 void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord)
 {
 	QPainter painter(&frames[activeFrameIndex]);
-	for(unsigned int i = 0; i < newColors.getWidth(); i++)
+
+	for (unsigned int i = 0; i < newColors.getWidth(); i++)
 	{
-		for(unsigned int j = 0; j < newColors.getHeight(); j++)
+		for (unsigned int j = 0; j < newColors.getHeight(); j++)
 		{
 			QColor pixelColor = newColors[i][j];
 			int xPixel = xCoord + i;
@@ -388,19 +414,18 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
 			painter.fillRect(xPixel, yPixel, 1, 1, pixelColor);
 		}
 	}
+
 	painter.end();
 	emit sendActiveFrame(frames[activeFrameIndex]);
 	emit sendActiveFrameIndex(activeFrameIndex);
-
 }
 
-/** William Erignac
- *
+/**
  * @brief Replaces the pixels of the area defined by newColors and xCoord and yCoord
  * with the colors in newColors.
- * @param newColors The colors of the pixels to be set to.
- * @param xCoord The x coordinate of the upper left corner of the area to replace.
- * @param yCoord The y coordinate of the upper left corner of the area to replace.
+ * @param newColors - The colors of the pixels to be set to.
+ * @param xCoord - The x coordinate of the upper left corner of the area to replace.
+ * @param yCoord - The y coordinate of the upper left corner of the area to replace.
  */
 void SpriteEditorModel::replaceColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord)
 {
@@ -417,14 +442,14 @@ void SpriteEditorModel::replaceColorsOfActiveFrame(Pointer2DArray<QColor> newCol
  */
 void SpriteEditorModel::drawing(float x, float y)
 {
-	int currentX = (int)(x*imageWidth);
-	int currentY = (int)(y*imageHeight);
-
+	int currentX = (int)(x * imageWidth);
+	int currentY = (int)(y * imageHeight);
 	QPoint currentPosition(currentX, currentY);
 
 	if (currentX != lastPosition.x() || currentY != lastPosition.y())
 	{
 		ActionState toolActionState(toolSize, activeColor, currentX, currentY, newStroke, frames[activeFrameIndex]);
+
 		if (newStroke)
 			newStroke = false;
 
@@ -444,22 +469,31 @@ void SpriteEditorModel::drawing(float x, float y)
 
 /**
  * @brief Informs the model that a stroke has ended.
- * @param x The x coordinate of the mouse.
- * @param y The y coordinate of the mouse.
+ * @param x - The x coordinate of the mouse.
+ * @param y - The y coordinate of the mouse.
  */
-void SpriteEditorModel::stopDrawing(float x, float y)
+void SpriteEditorModel::stopDrawing()
 {
 	newStroke = true;
-	QPoint initialPosition(-1,-1);
+	QPoint initialPosition(-1, -1);
 	lastPosition = initialPosition;
 }
 
 
+/**
+ * @brief Sets the frame list to the given vector.
+ * @param map - The list of new frames.
+ */
 void SpriteEditorModel::setFrames(std::vector<QPixmap> map)
 {
 	frames = map;
 }
 
+/**
+ * @brief Sets the size of the image and updates the canvas.
+ * @param width - The width of the image.
+ * @param height - The height of the image.
+ */
 void SpriteEditorModel::setSize(int width, int height)
 {
 	imageWidth = width;

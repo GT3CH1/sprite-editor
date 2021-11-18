@@ -13,20 +13,17 @@ class RenderArea : public QLabel
 
 private:
 	QPixmap toRender;
-    QPixmap gridRender;
-	// How big our canvas size is.
+	QPixmap gridRender;
 	int canvasSize = 0;
-	// Whether or not the grid is going to shown.
 	bool gridShown = false;
 	int getNumColsAndRows();
 	QPoint lastPosition;
 private slots:
-	void mousePressEvent(QMouseEvent* event);
-	void mouseMoveEvent(QMouseEvent* event);
-	void mouseReleaseEvent(QMouseEvent* event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
 public:
-	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 64);
-	int getPixelSize();
+	RenderArea(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 64);
 public slots:
 	void setImage(QPixmap mapToRender);
 	void setImageScaled(QPixmap mapToRender, int scale);

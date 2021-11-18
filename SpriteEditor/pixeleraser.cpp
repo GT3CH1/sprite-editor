@@ -13,9 +13,8 @@
  * @brief Creates the PixelEraser object
  * @param generator Pointer to the stencil needed for the tool
  */
-PixelEraser::PixelEraser(IStencilGenerator* generator) : PixelBrush(generator)
+PixelEraser::PixelEraser(IStencilGenerator *generator) : PixelBrush(generator)
 {
-
 }
 
 /**
@@ -24,16 +23,14 @@ PixelEraser::PixelEraser(IStencilGenerator* generator) : PixelBrush(generator)
  * @param canvasState Current ActionState of the frame
  * @param callbacks Current callback information
  */
-void PixelEraser::apply(ActionState& canvasState, const CallbackOptions& callbacks)
+void PixelEraser::apply(ActionState &canvasState, const CallbackOptions &callbacks)
 {
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
-
 	BoundsInformation info;
 	QRect boundedArea = ConstrainStencilBounds(stencil, canvasState.MOUSE_X_GRID_COORD, canvasState.MOUSE_Y_GRID_COORD,
-														  canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
-														  info);
+						canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
+						info);
 	Pointer2DArray<QColor> toReplace(boundedArea.width(), boundedArea.height());
-
 	QImage pixelColors = canvasState.ACTIVE_FRAME.toImage();
 
 	for (unsigned int i = 0; i < toReplace.getWidth(); i++)
@@ -42,7 +39,7 @@ void PixelEraser::apply(ActionState& canvasState, const CallbackOptions& callbac
 		{
 			float newAlpha =  (1 - stencil[i + info.deltaX][j + info.deltaY]);
 			QColor previousColor = pixelColors.pixelColor(boundedArea.x() + i, boundedArea.y() + j);
-			QColor erasedColor(previousColor.red(), previousColor.green(), previousColor.blue(), newAlpha*previousColor.alpha());
+			QColor erasedColor(previousColor.red(), previousColor.green(), previousColor.blue(), newAlpha * previousColor.alpha());
 			toReplace[i][j] = erasedColor;
 		}
 	}
