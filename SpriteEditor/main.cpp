@@ -1,6 +1,5 @@
 #include "spriteeditorvc.h"
 #include "spriteeditormodel.h"
-#include "JsonTest.cpp"
 #include <QApplication>
 
 int main(int argc, char *argv[])
