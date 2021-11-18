@@ -25,12 +25,13 @@ private slots:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mouseReleaseEvent(QMouseEvent* event);
 public:
-	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 4);
+	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 64);
 	int getPixelSize();
 public slots:
 	void setImage(QPixmap mapToRender);
 	void setImageScaled(QPixmap mapToRender, int scale);
 	void toggleGrid();
+	void setCanvasSize(int size);
 signals:
 	void clicked(float x, float y);
 	void released(float x, float y);

@@ -25,8 +25,8 @@
  */
 SpriteEditorModel::SpriteEditorModel()
 {
-	imageHeight = 4;
-	imageWidth = 4;
+	imageHeight = 64;
+	imageWidth = 64;
 	toolSize = 4;
 	QPixmap map(imageHeight,imageWidth);
 	map.fill();
@@ -44,8 +44,8 @@ SpriteEditorModel::SpriteEditorModel()
 
 SpriteEditorModel::~SpriteEditorModel()
 {
-	for(auto toolKeys : Tools.keys())
-		delete Tools.value(toolKeys);
+	for(auto toolKeys : Tools)
+		delete toolKeys;
 }
 
 /**
@@ -139,13 +139,13 @@ void SpriteEditorModel::addFrame()
 		frames.push_back(blank);
 
 	}else{
-	QPixmap temp = frames[activeFrameIndex];
-	frames[activeFrameIndex] = blank;
-	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
-	{
-		swap(temp, frames[j]);
-	}
-	frames.push_back(temp);
+		QPixmap temp = frames[activeFrameIndex];
+		frames[activeFrameIndex] = blank;
+		for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
+		{
+			swap(temp, frames[j]);
+		}
+		frames.push_back(temp);
 	}
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
@@ -286,6 +286,7 @@ void SpriteEditorModel::load(string filePath, string fileName)
 	emit sendActiveFrameIndex(0);
 	emit sendFrames(frames);
 	emit sendActiveFrame(frames[0]);
+	emit updateCanvasSize(imageHeight);
 }
 
 /**
@@ -303,8 +304,6 @@ void SpriteEditorModel::read(const QJsonObject &json)
 	int size = 0;
 	if (json.contains("numberOfFrames") && json["numberOfFrames"].isDouble())
 		size = json["numberOfFrames"].toInt();
-
-
 
 	for (int i = 0; i < size; i++){
 		QString frameName = QString("frame%1");
@@ -344,7 +343,7 @@ void SpriteEditorModel::readRow(const QJsonArray &json, QImage &newFrame, int ro
 	{
 		QJsonArray currentPixel(rows[i].toArray());
 		QColor color(currentPixel[0].toInt(), currentPixel[1].toInt(), currentPixel[2].toInt(), currentPixel[3].toInt());
-		newFrame.setPixelColor(i, row, color);
+		newFrame.setPixelColor(row, i, color);
 	}
 }
 

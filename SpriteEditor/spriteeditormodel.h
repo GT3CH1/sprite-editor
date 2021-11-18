@@ -55,6 +55,7 @@ signals:
 	void sendActiveFrame(QPixmap activeFrame);
 	void sendActiveFrameIndex(int activeFrameIndex);
 	void sendFrames(vector<QPixmap> allFrames);
+	void updateCanvasSize(int size);
 
 public slots:
 	void setFrames(vector<QPixmap> allFrames);

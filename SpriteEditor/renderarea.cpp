@@ -112,6 +112,10 @@ void RenderArea::toggleGrid(){
 }
 
 int RenderArea::getPixelSize(){
-		qDebug() << "Pixel size: " << (512 / canvasSize);
 		return (512 / canvasSize);
+}
+
+void RenderArea::setCanvasSize(int size){
+	canvasSize = size;
+	setImage(toRender);
 }
