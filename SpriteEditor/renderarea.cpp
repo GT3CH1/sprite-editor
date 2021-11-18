@@ -1,4 +1,5 @@
 #include "renderarea.h"
+#include <iostream>
 
 /**
  * Draws a single frame from the sprite
@@ -28,7 +29,7 @@ RenderArea::RenderArea(QWidget* parent,[[maybe_unused]] Qt::WindowFlags f, int c
  * @brief Gets the maximum number of columns and rows that we can draw on.
  */
 int RenderArea::getNumColsAndRows(){
-	return 512/canvasSize;
+	return 512 / canvasSize;
 }
 
 /**
@@ -37,7 +38,7 @@ int RenderArea::getNumColsAndRows(){
  */
 void RenderArea::setImage(QPixmap newMapToRender)
 {
-	setImageScaled(newMapToRender,512);
+	setImageScaled(newMapToRender, 512);
 }
 
 /**
@@ -52,8 +53,8 @@ void RenderArea::setImageScaled(QPixmap newMapToRender, int scale)
 	QPainter paint(&gridRender);
 	paint.setPen(Qt::gray);
 	for(int loc = 0; loc < canvasSize+2; loc++){
-		paint.drawLine(loc*(512/canvasSize),0,loc*(512/canvasSize),512);
-		paint.drawLine(0,loc*(512/canvasSize),512,loc*(512/canvasSize));
+		paint.drawLine(loc*(512 / canvasSize), 0, loc*(512 / canvasSize), 512);
+		paint.drawLine(0, loc*(512 / canvasSize), 512, loc*(512 / canvasSize));
 	}
 	paint.end();
 	if(gridShown)
@@ -62,7 +63,7 @@ void RenderArea::setImageScaled(QPixmap newMapToRender, int scale)
 		setPixmap(newMap);
 	toRender = newMap;
 	update();
-	toRender = newMap.scaled(canvasSize,canvasSize,Qt::KeepAspectRatioByExpanding);
+	toRender = newMap.scaled(canvasSize, canvasSize, Qt::KeepAspectRatioByExpanding);
 }
 
 /**
@@ -74,7 +75,7 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
 		int x = evt->pos().x();
 		unsigned int y = evt->pos().y();
 		if((x < 512 && x > 0) && (y < 512 && y >= 0))
-			emit clicked((float)x/512.0,(float)y/512.0);
+			emit clicked((float)x / 512.0, (float)y / 512.0);
 }
 
 /**
@@ -88,12 +89,17 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 
 		int x = evt->pos().x();
 		int y = evt->pos().y();
-		if((abs(lastPosition.x() - x) > 20) || (abs(lastPosition.y() - y) > 20)){
-			lastPosition = evt->pos();
-			if((x < 510 && x > 2) && (y < 510 && y > 2))
-				emit clicked((float)x/512.0,(float)y/512.0);
-		}
+		if((x < 510 && x > 2) && (y < 510 && y > 2))
+			emit clicked((float)x / 512.0,(float)y / 512.0);
 	}
+}
+
+void RenderArea::mouseReleaseEvent(QMouseEvent *evt)
+{
+	int x = evt->pos().x();
+	unsigned int y = evt->pos().y();
+	if((x < 512 && x > 0) && (y < 512 && y >= 0))
+		emit released((float)x / 512.0,(float)y / 512.0);
 }
 
 /**
@@ -106,6 +112,6 @@ void RenderArea::toggleGrid(){
 }
 
 int RenderArea::getPixelSize(){
-		qDebug() << "Pixel size: " << (512/canvasSize);
-		return (512/canvasSize);
+		qDebug() << "Pixel size: " << (512 / canvasSize);
+		return (512 / canvasSize);
 }

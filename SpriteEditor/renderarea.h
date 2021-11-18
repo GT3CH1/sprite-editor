@@ -23,6 +23,7 @@ private:
 private slots:
 	void mousePressEvent(QMouseEvent* event);
 	void mouseMoveEvent(QMouseEvent* event);
+	void mouseReleaseEvent(QMouseEvent* event);
 public:
 	RenderArea(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags(), int canvasSize = 4);
 	int getPixelSize();
@@ -32,6 +33,7 @@ public slots:
 	void toggleGrid();
 signals:
 	void clicked(float x, float y);
+	void released(float x, float y);
 };
 
 #endif // RENDERAREA_H

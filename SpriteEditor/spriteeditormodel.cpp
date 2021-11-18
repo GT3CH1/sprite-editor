@@ -17,6 +17,9 @@
 #include <pointer2darray.h>
 #include <iostream>
 
+#include <brush.h>
+#include <stencil.h>
+
 /**
  * @brief SpriteEditorModel::SpriteEditorModel
  */
@@ -31,6 +34,12 @@ SpriteEditorModel::SpriteEditorModel()
 	Tools.insert(ToolType::Brush,new PixelBrush(new SoftCircleStencilGenerator()));
 	Tools.insert(ToolType::Pen,new PixelBrush(new SquareStencilGenerator()));
 	Tools.insert(ToolType::HardEraser,new PixelEraser(new SquareStencilGenerator()));
+	Tools.insert(ToolType::InvertBrush,new ColorInverterBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::Rainbow,new RainbowBrush(new SquareStencilGenerator()));
+	Tools.insert(ToolType::SprayCan,new SprayCanBrush(new SoftCircleStencilGenerator()));
+	Tools.insert(ToolType::SoftEraser,new PixelEraser(new SoftCircleStencilGenerator()));
+	QPoint initialPosition(-1,-1);
+	lastPosition = initialPosition;
 }
 
 SpriteEditorModel::~SpriteEditorModel()
@@ -102,13 +111,19 @@ void SpriteEditorModel::changeActiveFrame(int newFrameIndex)
  */
 void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 {
+	if(frames.size() == 1)
+	{
+		frames[activeFrameIndex].fill();
+	}else{
 	vector<QPixmap>::iterator itr = frames.begin();
 	for(int i = 0; i <= indexOfFrameToDelete; i++)
 		itr++;
 	frames.erase(itr);
 	if(activeFrameIndex > 0)
-		activeFrameIndex--;
+		activeFrameIndex--;	
+	}
 	emit sendActiveFrameIndex(activeFrameIndex);
+	emit sendFrames(frames);
 }
 
 /**
@@ -122,19 +137,19 @@ void SpriteEditorModel::addFrame()
 	if(activeFrameIndex == frames.size())
 	{
 		frames.push_back(blank);
-		emit sendActiveFrame(blank);
-		return;
-	}
+
+	}else{
 	QPixmap temp = frames[activeFrameIndex];
 	frames[activeFrameIndex] = blank;
-	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++){
+	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
+	{
 		swap(temp, frames[j]);
 	}
 	frames.push_back(temp);
+	}
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
-
 /**
  * @brief SpriteEditorModel::duplicateFrame
  */
@@ -146,15 +161,15 @@ void SpriteEditorModel::duplicateFrame()
 	if((uint)activeFrameIndex == frames.size())
 	{
 		frames.push_back(copy);
-		emit sendActiveFrame(copy);
-		return;
-	}
+	}else{
 	QPixmap temp = frames[activeFrameIndex];
 	frames[activeFrameIndex] = copy;
-	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++){
+	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
+	{
 		swap(temp, frames[j]);
 	}
 	frames.push_back(temp);
+	}
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
@@ -259,14 +274,18 @@ QJsonArray SpriteEditorModel::writeColor(QImage frame, int row, int col) const
 void SpriteEditorModel::load(string filePath, string fileName)
 {
 	// load the file
-	QString loadFileName = QString::fromStdString(filePath + fileName);
+	QString loadFileName = QString::fromStdString(filePath + fileName + ".ssp");
 	QFile loadFile(loadFileName);
 	// read the file
 	if (loadFile.open(QIODevice::ReadOnly)) {
 		QByteArray saveData = loadFile.readAll();
 		QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+		frames.clear();
 		read(loadDoc.object());
 	}
+	emit sendActiveFrameIndex(0);
+	emit sendFrames(frames);
+	emit sendActiveFrame(frames[0]);
 }
 
 /**
@@ -293,9 +312,6 @@ void SpriteEditorModel::read(const QJsonObject &json)
 		char* c = strcpy(new char[frameName.length() + 1], frameName.toStdString().c_str());
 		readFrame(json["frames"][c].toArray(), i);
 	}
-	qDebug() << frames.size();
-	emit changeActiveFrame(0);
-	emit sendActiveFrame(frames[0]);
 }
 
 /**
@@ -354,17 +370,6 @@ void SpriteEditorModel::setActiveTool(ToolType newTool)
 }
 
 /**
- * @brief SpriteEditorModel::setColorOfActiveFrame
- * @param newColor
- * @param xCoord
- * @param yCoord
- */
-void SpriteEditorModel::setColorOfActiveFrame(QColor newColor, unsigned int xCoord, unsigned int yCoord)
-{
-	emit sendActiveFrame(frames[activeFrameIndex]);
-}
-
-/**
  * @brief SpriteEditorModel::setColorsOfActiveFrame
  * @param newColors
  * @param xCoord
@@ -412,13 +417,41 @@ void SpriteEditorModel::replaceColorsOfActiveFrame(Pointer2DArray<QColor> newCol
  */
 void SpriteEditorModel::drawing(float x, float y)
 {
-	ActionState toolActionState(toolSize, activeColor, (int)(x*imageWidth), (int)(y*imageHeight), frames[activeFrameIndex]);
+	int currentX = (int)(x*imageWidth);
+	int currentY = (int)(y*imageHeight);
 
-	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->setColorsOfActiveFrame(colors, xCoord, yCoord); };
-	std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> replacePixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord) {this->replaceColorsOfActiveFrame(colors, xCoord, yCoord); };
+	QPoint currentPosition(currentX, currentY);
 
-	CallbackOptions callBack(paintPixelColorsCallback, replacePixelColorsCallback);
-	Tools[activeTool]->apply(toolActionState, callBack);
+	if (currentX != lastPosition.x() || currentY != lastPosition.y())
+	{
+		ActionState toolActionState(toolSize, activeColor, currentX, currentY, newStroke, frames[activeFrameIndex]);
+		if (newStroke)
+			newStroke = false;
+
+		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord)
+		{
+			this->setColorsOfActiveFrame(colors, xCoord, yCoord);
+		};
+		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> replacePixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord)
+		{
+			this->replaceColorsOfActiveFrame(colors, xCoord, yCoord);
+		};
+		CallbackOptions callBack(paintPixelColorsCallback, replacePixelColorsCallback);
+		Tools[activeTool]->apply(toolActionState, callBack);
+		lastPosition = currentPosition;
+	}
+}
+
+/**
+ * @brief Informs the model that a stroke has ended.
+ * @param x The x coordinate of the mouse.
+ * @param y The y coordinate of the mouse.
+ */
+void SpriteEditorModel::stopDrawing(float x, float y)
+{
+	newStroke = true;
+	QPoint initialPosition(-1,-1);
+	lastPosition = initialPosition;
 }
 
 

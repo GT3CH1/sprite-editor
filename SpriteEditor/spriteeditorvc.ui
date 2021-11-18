@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>648</height>
+    <height>677</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>100</x>
       <y>550</y>
-      <width>511</width>
-      <height>51</height>
+      <width>512</width>
+      <height>86</height>
      </rect>
     </property>
     <property name="widgetResizable">
@@ -31,8 +31,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>509</width>
-       <height>49</height>
+       <width>510</width>
+       <height>84</height>
       </rect>
      </property>
     </widget>
@@ -723,6 +723,32 @@
      <string>Delete Frame</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="lastFrameButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>570</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Previous Frame</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="nextFrameButton">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>560</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Next Frame</string>
+    </property>
+   </widget>
    <zorder>mainCanvas</zorder>
    <zorder>frameDisplay</zorder>
    <zorder>layoutWidget1</zorder>
@@ -731,6 +757,8 @@
    <zorder>addFrameButton</zorder>
    <zorder>duplicateFrameButton</zorder>
    <zorder>deleteFrameButton</zorder>
+   <zorder>lastFrameButton</zorder>
+   <zorder>nextFrameButton</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

@@ -5,6 +5,7 @@
 #include <QColorDialog>
 #include <QDir>
 #include <QFileDialog>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMenuBar>
@@ -33,26 +34,51 @@ public slots:
 	void showColorDialog();
 	void updateCustomButtonColors();
 	void colorButtonClicked();
-	void toolChanged();
+	void setInvertBrush();
+	void setRainbowBrush();
+	void setSoftEraser();
+	void setHardPen();
+	void setSoftBrush();
+	void setHardEraser();
+	void setSprayCan();
 
 private slots:
 	void sendActiveFrame();
+	void deleteFrame();
+	void addFrame();
 	void previewFrames(vector<QPixmap>);
-	void updateActivePreviewFrame(int);
 	void updatePlaybackFrame();
 	void on_fpsSlider_valueChanged(int);
 	void keyPressEvent(QKeyEvent*);
 	void savePressed();
 	void loadPressed();
+	void on_nextFrameButton_clicked();
+	void on_lastFrameButton_clicked();
+	void updateActiveFrame(int);
+	void updateActivePreview(int);
 
 private:
 	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
+	// FPS Slider parameters
 	const int FPS_INTERVAL = 10;
 	const int FPS_MAX = 60;
 	const int FPS_STEP = 10;
+	// Frame scaling
 	const int PREVIEW_SIZE = 128;
+	const int FRAME_SIZE = 64;
+	// Default colors
+	const int RED = 9;
+	const int ORANGE = 21;
+	const int YELLOW = 45;
+	const int GREEN = 36;
+	const int PURPLE = 7;
+	const int BLUE = 5;
+	const int BLACK = 0;
+	const int WHITE = 47;
+
 	SpriteEditorModel *model;
 	Ui::SpriteEditorVC *ui;
+	QHBoxLayout *framePreviewLayout;
 	int indexOfActiveFrame = 0;
 	int indexOfPlayback = 0;
 	int fps = 0;
@@ -66,8 +92,16 @@ private:
 	QAction *closeAction;
 	QAction *helpAction;
 	QAction *newFileAction;
+	QAction *rainbowBrushSelected;
+	QAction *softEraserSelected;
+	QAction *invertSelected;
+	QAction *hardPenSelected;
+	QAction *softBrushSelected;
+	QAction *hardEraserSelected;
+	QAction *sprayCanSelected;
 	QMenu *fileMenu;
 	QMenu *helpMenu;
+	QMenu *toolsMenu;
 	void setButtonColor(QPushButton* button, QString hex);
 	void createMenu();
 	void setupButtonColors();
@@ -81,8 +115,8 @@ signals:
 	void setActiveColor(QColor);
 	void changeActiveFrame(int);
 	void changeActiveTool(SpriteEditorModel::ToolType);
-	void addFrame();
-	void deleteFrame(int);
+	void add();
+	void remove(int);
 	void save(std::string, std::string);
 	void load(std::string, std::string);
     void toggleGrid();

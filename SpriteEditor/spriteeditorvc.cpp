@@ -1,5 +1,4 @@
 #include "spriteeditorvc.h"
-#include <iostream>
 
 SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	: QMainWindow(parent)
@@ -10,25 +9,40 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 
 	model = new SpriteEditorModel();
 
-    // Set up FPS slider.
+	// Set up FPS slider.
 	ui->fpsSlider->setTickInterval(FPS_INTERVAL);
 	ui->fpsSlider->setSingleStep(FPS_STEP);
 	ui->fpsSlider->setMaximum(FPS_MAX);
 
 	// Set up frame preview area
-	ui->frameDisplay->setLayout(new QHBoxLayout);
+	framePreviewLayout = new QHBoxLayout;
+	ui->frameDisplay->setLayout(framePreviewLayout);
+	ui->frameDisplay->setWidgetResizable(false);
 
 	colorDialog = new QColorDialog();
+	model = new SpriteEditorModel();
 
 	// Setup Menu bar
 	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
 	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
 	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
 
+	// Set up actions
+	saveAction = new QAction(QIcon(":/res/save.svg"), tr("&Save..."), this);
+	openAction = new QAction(QIcon(":/res/open.svg"), tr("&Open..."), this);
+	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
+	newFileAction = new QAction(QIcon(":/res/new.svg"), tr("&New..."), this);
+	helpAction = new QAction(tr("&Help..."),this);
+	invertSelected = new QAction(tr("&Invert Brush"),this);
+	rainbowBrushSelected = new QAction(tr("&Rainbow Brush"),this);
+	softEraserSelected = new QAction(tr("&Soft Eraser"),this);
+	hardPenSelected = new QAction(tr("&Pen"),this);
+	hardEraserSelected = new QAction(tr("&Eraser"),this);
+	softBrushSelected = new QAction(tr("&Brush"),this);
+	sprayCanSelected = new QAction(tr("&Spray Can"),this);
+
 	createMenu();
 	setupButtonColors();
-
-	//	ui->mainCanvas->setStyleSheet(QString("*{border: 1px solid;}"));
 
 	connect(ui->customColorButtonChange, &QPushButton::released, this, &SpriteEditorVC::showColorDialog);
 	connect(colorDialog, &QColorDialog::colorSelected, this, &SpriteEditorVC::updateCustomButtonColors);
@@ -52,26 +66,46 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->customColorButton6, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton7, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
 	connect(ui->customColorButton8, &QPushButton::pressed, this, &SpriteEditorVC::colorButtonClicked);
-	// Tool Buttons
-	connect(ui->brushToolButton, &QPushButton::pressed,this, &SpriteEditorVC::toolChanged);
-	connect(ui->penToolButton, &QPushButton::pressed,this, &SpriteEditorVC::toolChanged);
-	connect(ui->eraserToolButton, &QPushButton::pressed,this, &SpriteEditorVC::toolChanged);
-	connect(ui->toolButton4, &QPushButton::pressed,this, &SpriteEditorVC::toolChanged);
+
 	// Menu Buttons
 	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::savePressed);
 	connect(openAction, &QAction::triggered, this, &SpriteEditorVC::loadPressed);
+	// Other
+	connect(ui->addFrameButton, &QPushButton::clicked, this, &SpriteEditorVC::addFrame);
+	connect(ui->deleteFrameButton, &QPushButton::clicked, this, &SpriteEditorVC::deleteFrame);
 
 	// UI to Model
-	connect(ui->addFrameButton,&QPushButton::pressed,this->model,&SpriteEditorModel::addFrame);
-	connect(ui->mainCanvas, &RenderArea::clicked, this->model, &SpriteEditorModel::drawing);
+	connect(ui->mainCanvas, &RenderArea::clicked, model, &SpriteEditorModel::drawing);
+	connect(ui->duplicateFrameButton, &QPushButton::clicked, model, &SpriteEditorModel::duplicateFrame);
+	connect(this,&SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
+	connect(this,&SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
+	connect(this,&SpriteEditorVC::updateTool,this->model,&SpriteEditorModel::setActiveTool);
+	connect(this,&SpriteEditorVC::colorChanged,this->model,&SpriteEditorModel::setActiveColor);
+	connect(colorDialog,&QColorDialog::colorSelected, this->model, &SpriteEditorModel::setActiveColor);
+	connect(this,&SpriteEditorVC::toggleGrid,ui->mainCanvas,&RenderArea::toggleGrid);
 
+	// Tool changes
+	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setSoftBrush);
+	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setHardPen);
+	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setHardEraser);
+	connect(ui->mainCanvas,&RenderArea::released,this->model,&SpriteEditorModel::stopDrawing);
+
+	// Extra tools
+	connect(invertSelected,&QAction::triggered,this,&SpriteEditorVC::setInvertBrush);
+	connect(rainbowBrushSelected,&QAction::triggered,this,&SpriteEditorVC::setRainbowBrush);
+	connect(softEraserSelected,&QAction::triggered,this,&SpriteEditorVC::setSoftEraser);
+	connect(hardPenSelected,&QAction::triggered,this, &SpriteEditorVC::setHardPen);
+	connect(softBrushSelected, &QAction::triggered,this,&SpriteEditorVC::setSoftBrush);
+	connect(hardEraserSelected,&QAction::triggered,this,&SpriteEditorVC::setHardEraser);
+	connect(sprayCanSelected,&QAction::triggered,this, &SpriteEditorVC::setSprayCan);
 
 	// Model to UI
 	connect(this->model, &SpriteEditorModel::sendActiveFrame,ui->mainCanvas, &RenderArea::setImage);
 
 	// Model to Control
 	connect(model, &SpriteEditorModel::sendFrames, this, &SpriteEditorVC::previewFrames);
-	connect(model, &SpriteEditorModel::sendActiveFrameIndex, this, &SpriteEditorVC::updateActivePreviewFrame);
+	connect(model, &SpriteEditorModel::sendActiveFrameIndex, this, &SpriteEditorVC::updateActivePreview);
+	connect(model, &SpriteEditorModel::sendActiveFrameIndex, this, &SpriteEditorVC::updateActiveFrame);
 
 	// Internal
 	connect(&playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePlaybackFrame);
@@ -85,9 +119,13 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(this, &SpriteEditorVC::toggleGrid,ui->mainCanvas, &RenderArea::toggleGrid);
 	connect(this, &SpriteEditorVC::save, model, &SpriteEditorModel::save);
 	connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
-	connect(this, &SpriteEditorVC::deleteFrame, model, &SpriteEditorModel::deleteFrame);
-	connect(this, &SpriteEditorVC::addFrame, model, &SpriteEditorModel::addFrame);
+
 	connect(this->model,&SpriteEditorModel::sendFrames, model, &SpriteEditorModel::setFrames);
+	connect(this, &SpriteEditorVC::changeActiveFrame, model, &SpriteEditorModel::changeActiveFrame);
+	connect(this, &SpriteEditorVC::remove, model, &SpriteEditorModel::deleteFrame);
+	connect(this, &SpriteEditorVC::add, model, &SpriteEditorModel::addFrame);
+
+
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -102,29 +140,104 @@ SpriteEditorVC::~SpriteEditorVC()
 	delete newFileAction;
 	delete fileMenu;
 	delete helpMenu;
+	delete invertSelected;
+	delete rainbowBrushSelected;
+	delete softEraserSelected;
+	delete hardEraserSelected;
+	delete softBrushSelected;
+	delete hardPenSelected;
+	delete sprayCanSelected;
 }
 
-void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
+// UI SETUP
+
+/**
+ * @brief Sets the given button color (via background-color) to the given hex value.
+ * @param button - The button to change the color of.
+ * @param hex - The hexadecimal string to change color to.
+ */
+void SpriteEditorVC::setButtonColor(QPushButton *button, QString hex)
 {
-
-	for (int i = 0; i < ui->frameDisplay->layout()->count(); i++)
-	{
-		QWidget *toRemove = ui->frameDisplay->layout()->itemAt(i)->widget();
-		ui->frameDisplay->layout()->removeWidget(toRemove);
-	}
-
-	for (QPixmap toAdd : allFrames)
-	{
-		RenderArea *newWidget = new RenderArea;
-		newWidget->setImageScaled(toAdd, 64);
-		ui->frameDisplay->layout()->addWidget(newWidget);
-	}
+	button->setStyleSheet(QString("QPushButton {background-color:%1;border:1px solid lightgray; border-radius:5px} QPushButton:hover{border: 1px solid gray;}").arg(hex));
 }
 
-void SpriteEditorVC::updateActivePreviewFrame(int activeFrameIndex)
+/**
+ * @brief Creates the top menu bar on the UI.
+ */
+void SpriteEditorVC::createMenu()
 {
-	//TODO(JVielstich): update the preview of the active frame when the drawing is changed
+	saveAction = new QAction(QIcon::fromTheme(":/res/save.svg"), tr("&Save..."), this);
+	openAction = new QAction(QIcon::fromTheme(":/res/open.svg"), tr("&Open..."), this);
+	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
+	newFileAction = new QAction(QIcon(":/res/new.svg"), tr("&New..."), this);
+	helpAction = new QAction(tr("&Help..."),this);
+	helpAction->setStatusTip(tr("Help"));
+	saveAction->setStatusTip(tr("Save this file"));
+	openAction->setStatusTip(tr("Open an existing file"));
+	closeAction->setStatusTip(tr("Close project"));
+	newFileAction->setStatusTip(tr("Create a new file"));
+
+	fileMenu = menuBar()->addMenu(tr("&File"));
+	toolsMenu = menuBar()->addMenu(tr("&Tools"));
+	helpMenu = menuBar()->addMenu(tr("&Help"));
+	fileMenu->addAction(newFileAction);
+	fileMenu->addAction(saveAction);
+	fileMenu->addAction(openAction);
+	fileMenu->addSeparator();
+	fileMenu->addAction(closeAction);
+	helpMenu->addAction(helpAction);
+
+	toolsMenu->addAction(invertSelected);
+	toolsMenu->addAction(rainbowBrushSelected);
+	toolsMenu->addAction(softEraserSelected);
+	toolsMenu->addAction(sprayCanSelected);
 }
+
+
+/**
+ * @brief Sets all the button colors to the colors defined in QColorDialog.
+ */
+void SpriteEditorVC::setupButtonColors()
+{
+	setButtonColor(ui->primaryColorButton1,colorDialog->standardColor(RED).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton2,colorDialog->standardColor(ORANGE).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton3,colorDialog->standardColor(YELLOW).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton4,colorDialog->standardColor(GREEN).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton5,colorDialog->standardColor(PURPLE).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton6,colorDialog->standardColor(BLUE).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton7,colorDialog->standardColor(BLACK).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton8,colorDialog->standardColor(WHITE).name(QColor::HexArgb));
+	updateCustomButtonColors();
+}
+
+/**
+ * @brief Updates all of the custom color slots to match those in QColorDialog.
+ */
+void SpriteEditorVC::updateCustomButtonColors()
+{
+	setButtonColor(ui->customColorButton1,colorDialog->customColor(0).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton2,colorDialog->customColor(1).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton3,colorDialog->customColor(2).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton4,colorDialog->customColor(3).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton5,colorDialog->customColor(4).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton6,colorDialog->customColor(5).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton7,colorDialog->customColor(6).name(QColor::HexArgb));
+	setButtonColor(ui->customColorButton8,colorDialog->customColor(7).name(QColor::HexArgb));
+}
+
+
+/**
+ * @brief Shows the color picker.
+ */
+void SpriteEditorVC::showColorDialog()
+{
+	colorDialog->setOption(QColorDialog::ShowAlphaChannel);
+	colorDialog->show();
+}
+
+// UI CONTROL
+
+// Animation Preview
 
 /**
  * @brief Advances the animation playback frame
@@ -147,7 +260,7 @@ void SpriteEditorVC::updatePlaybackFrame()
  */
 void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 {
-    ui->fpsLabel->setText(QString::number(value));
+	ui->fpsLabel->setText(QString::number(value));
 	setupButtonColors();
 	fps = value;
 
@@ -171,6 +284,52 @@ void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 	}
 }
 
+// Frame Preview
+
+/**
+ * @brief Displays the frames in the frame selection bar below the main canvas
+ * @param allFrames
+ */
+void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
+{
+	if (framePreviewLayout->count() > 0)
+	{
+			QLayoutItem* item;
+			while ((item = framePreviewLayout->takeAt(0)) != NULL)
+			{
+				delete item->widget();
+				delete item;
+			}
+	}
+
+	for (int i = 0; i < model->getFrameCount(); i++)
+	{
+		RenderArea *newWidget = new RenderArea;
+		newWidget->setImageScaled(model->getFramefromIndex(i), FRAME_SIZE);
+		framePreviewLayout->addWidget(newWidget);
+	}
+}
+
+/**
+ * @brief Updates the frame preview of the active frame as the user edits it
+ * @param activeFrameIndex
+ */
+void SpriteEditorVC::updateActivePreview(int activeFrameIndex)
+{
+	RenderArea *newPreview = new RenderArea;
+	newPreview->setImageScaled(model->getFramefromIndex(activeFrameIndex), FRAME_SIZE);
+	QLayoutItem* item;
+	if ((item = framePreviewLayout->takeAt(activeFrameIndex)) != NULL)
+	{
+		delete item->widget();
+		delete item;
+	}
+	framePreviewLayout->insertWidget(activeFrameIndex, newPreview);
+}
+
+/**
+ * @brief Changes the active frame to the one selected
+ */
 void SpriteEditorVC::sendActiveFrame()
 {
 	for (int i = 0; i < model->getFrameCount(); i++)
@@ -187,6 +346,38 @@ void SpriteEditorVC::sendActiveFrame()
 		}
 	}
 }
+
+/**
+ * @brief Sets the main canvas to the active frame
+ * @param activeFrameIndex
+ */
+void SpriteEditorVC::updateActiveFrame(int activeFrameIndex)
+{
+	indexOfActiveFrame = activeFrameIndex;
+	ui->mainCanvas->setImage(model->getFramefromIndex(activeFrameIndex));
+}
+
+// MODEL CONTROL
+
+// Frame Buttons
+
+/**
+ * @brief Tells the Model to delete the current frame
+ */
+void SpriteEditorVC::deleteFrame()
+{
+	emit remove(indexOfActiveFrame);
+}
+
+/**
+ * @brief Tells the Model to add a frame to the end of the sprite
+ */
+void SpriteEditorVC::addFrame()
+{
+	emit add();
+}
+
+// File Menu
 
 /**
  * @brief Launches the "Save File" dialog window and prompts the user
@@ -236,12 +427,54 @@ void SpriteEditorVC::loadPressed()
 			name.erase(j, 4);
 			j = name.find(".ssp");
 		}
-
-		std::cout << path.toStdString() << std::endl;
-		std::cout << name << std::endl;
-		emit load(path.toStdString(), name + ".ssp");
+		emit load(path.toStdString(), name);
 	}
 }
+
+/**
+ * @brief Handles setting the new color when one of the color buttons is clicked.
+ */
+void SpriteEditorVC::colorButtonClicked()
+{
+	// Please, c++. Let us use switch on strings. This is absurd.
+	QColor c;
+	std::string name(sender()->objectName().toStdString());
+	if(name == "primaryColorButton1")
+		c = QColorDialog::standardColor(9);
+	else if(name == "primaryColorButton2")
+		c = QColorDialog::standardColor(21);
+	else if (name == "primaryColorButton3")
+		c = QColorDialog::standardColor(45);
+	else if (name == "primaryColorButton4")
+		c = QColorDialog::standardColor(36);
+	else if (name == "primaryColorButton5")
+		c = QColorDialog::standardColor(7);
+	else if (name == "primaryColorButton6")
+		c = QColorDialog::standardColor(5);
+	else if (name == "primaryColorButton7")
+		c = QColorDialog::standardColor(0);
+	else if (name == "primaryColorButton8")
+		c = QColorDialog::standardColor(47);
+	else if (name == "customColorButton1")
+		c = QColorDialog::customColor(0);
+	else if (name == "customColorButton2")
+		c = QColorDialog::customColor(1);
+	else if (name == "customColorButton3")
+		c = QColorDialog::customColor(2);
+	else if (name == "customColorButton4")
+		c = QColorDialog::customColor(3);
+	else if (name == "customColorButton5")
+		c = QColorDialog::customColor(4);
+	else if (name == "customColorButton6")
+		c = QColorDialog::customColor(5);
+	else if (name == "customColorButton7")
+		c = QColorDialog::customColor(6);
+	else if (name == "customColorButton8")
+		c = QColorDialog::customColor(7);
+	emit colorChanged(c);
+}
+
+// Keyboard Shortcuts
 
 /**
  * @brief Triggers when any key is pressed and emits any
@@ -289,155 +522,63 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 		}
 		break;
 	// Toggles if the grid is shown.
-    case Qt::Key_G:
-        emit toggleGrid();
-        break;
+	case Qt::Key_G:
+		emit toggleGrid();
+		break;
 	default:
 		// do nothing
 		break;
 	}
 }
 
-/**
- * @brief Sets the given button color (via background-color) to the given hex value.
- * @param button - The button to change the color of.
- * @param hex - The hexadecimal string to change color to.
- */
-void SpriteEditorVC::setButtonColor(QPushButton *button, QString hex)
+void SpriteEditorVC::setInvertBrush()
 {
-	button->setStyleSheet(QString("QPushButton {background-color:%1;border:1px solid lightgray; border-radius:5px} QPushButton:hover{border: 1px solid gray;}").arg(hex));
+	emit updateTool(SpriteEditorModel::ToolType::InvertBrush);
 }
 
-
-/**
- * @brief Creates the top menu bar on the UI.
- */
-void SpriteEditorVC::createMenu()
+void SpriteEditorVC::setRainbowBrush()
 {
-	saveAction = new QAction(QIcon::fromTheme(":/res/save.svg"), tr("&Save..."), this);
-	openAction = new QAction(QIcon::fromTheme(":/res/open.svg"), tr("&Open..."), this);
-	closeAction = new QAction(QIcon(":/res/close.svg"), tr("&Close..."), this);
-	newFileAction = new QAction(QIcon(":/res/new.svg"), tr("&New..."), this);
-	helpAction = new QAction(tr("&Help..."),this);
-	helpAction->setStatusTip(tr("Help"));
-	saveAction->setStatusTip(tr("Save this file"));
-	openAction->setStatusTip(tr("Open an existing file"));
-	closeAction->setStatusTip(tr("Close project"));
-	newFileAction->setStatusTip(tr("Create a new file"));
-
-	//TODO(GCPEASE): Attach this to the real signal and slots
-//	connect(saveAction, &QAction::triggered, this, &SpriteEditorVC::savePressed);
-//	connect(openAction, &QAction::triggered, this,  &SpriteEditorVC::open);
-//	connect(closeAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
-//	connect(newFileAction, &QAction::triggered, this,  &SpriteEditorVC::showColorDialog);
-	fileMenu = menuBar()->addMenu(tr("&File"));
-	helpMenu = menuBar()->addMenu(tr("&Help"));
-	helpMenu->addAction(helpAction);
-	fileMenu->addAction(newFileAction);
-	fileMenu->addAction(saveAction);
-	fileMenu->addAction(openAction);
-	fileMenu->addSeparator();
-	fileMenu->addAction(closeAction);
+	emit updateTool(SpriteEditorModel::ToolType::Rainbow);
 }
 
-
-/**
- * @brief Sets all the button colors to the colors defined in QColorDialog.
- */
-void SpriteEditorVC::setupButtonColors()
+void SpriteEditorVC::setSoftEraser()
 {
-	setButtonColor(ui->primaryColorButton1,colorDialog->standardColor(9).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton2,colorDialog->standardColor(21).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton3,colorDialog->standardColor(45).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton4,colorDialog->standardColor(36).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton5,colorDialog->standardColor(7).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton6,colorDialog->standardColor(5).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton7,colorDialog->standardColor(0).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton8,colorDialog->standardColor(47).name(QColor::HexArgb));
-	updateCustomButtonColors();
+	emit updateTool(SpriteEditorModel::ToolType::SoftEraser);
 }
 
-/**
- * @brief Updates all of the custom color slots to match those in QColorDialog.
- */
-void SpriteEditorVC::updateCustomButtonColors()
+void SpriteEditorVC::setHardPen()
 {
-	setButtonColor(ui->customColorButton1,colorDialog->customColor(0).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton2,colorDialog->customColor(1).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton3,colorDialog->customColor(2).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton4,colorDialog->customColor(3).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton5,colorDialog->customColor(4).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton6,colorDialog->customColor(5).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton7,colorDialog->customColor(6).name(QColor::HexArgb));
-	setButtonColor(ui->customColorButton8,colorDialog->customColor(7).name(QColor::HexArgb));
+	emit updateTool(SpriteEditorModel::ToolType::Pen);
 }
 
-
-/**
- * @brief Shows the color picker.
- */
-void SpriteEditorVC::showColorDialog()
+void SpriteEditorVC::setSoftBrush()
 {
-	colorDialog->setOption(QColorDialog::ShowAlphaChannel);
-	colorDialog->show();
+	emit updateTool(SpriteEditorModel::ToolType::Brush);
 }
 
-/**
- * @brief Handles setting the new color when one of the color buttons is clicked.
- */
-void SpriteEditorVC::colorButtonClicked(){
-	// Please, c++. Let us use switch on strings. This is absurd.
-	QColor c;
-	std::string name(sender()->objectName().toStdString());
-	if(name == "primaryColorButton1")
-		c = QColorDialog::standardColor(9);
-	else if(name == "primaryColorButton2")
-		c = QColorDialog::standardColor(21);
-	else if (name == "primaryColorButton3")
-		c = QColorDialog::standardColor(45);
-	else if (name == "primaryColorButton4")
-		c = QColorDialog::standardColor(36);
-	else if (name == "primaryColorButton5")
-		c = QColorDialog::standardColor(7);
-	else if (name == "primaryColorButton6")
-		c = QColorDialog::standardColor(5);
-	else if (name == "primaryColorButton7")
-		c = QColorDialog::standardColor(0);
-	else if (name == "primaryColorButton8")
-		c = QColorDialog::standardColor(47);
-	else if (name == "customColorButton1")
-		c = QColorDialog::customColor(0);
-	else if (name == "customColorButton2")
-		c = QColorDialog::customColor(1);
-	else if (name == "customColorButton3")
-		c = QColorDialog::customColor(2);
-	else if (name == "customColorButton4")
-		c = QColorDialog::customColor(3);
-	else if (name == "customColorButton5")
-		c = QColorDialog::customColor(4);
-	else if (name == "customColorButton6")
-		c = QColorDialog::customColor(5);
-	else if (name == "customColorButton7")
-		c = QColorDialog::customColor(6);
-	else if (name == "customColorButton8")
-		c = QColorDialog::customColor(7);
-	emit colorChanged(c);
+void SpriteEditorVC::setHardEraser()
+{
+	emit updateTool(SpriteEditorModel::ToolType::HardEraser);
 }
 
-/**
- * @brief Changes the current tool based on what was clicked.
- */
-void SpriteEditorVC::toolChanged()
+void SpriteEditorVC::setSprayCan()
 {
-	SpriteEditorModel::ToolType tool = SpriteEditorModel::ToolType::Brush;
-	std::string name(sender()->objectName().toStdString());
-	if(name == "penToolButton")
-		tool = SpriteEditorModel::ToolType::Pen;
-	else if(name == "brushToolButton")
-		tool = SpriteEditorModel::ToolType::Brush;
-	//TODO(GCPEASE): Implement rest of tool buttons
-	else if(name == "eraserToolButton")
-		tool = SpriteEditorModel::ToolType::HardEraser;
-	emit updateTool(tool);
+	emit updateTool(SpriteEditorModel::ToolType::SprayCan);
+}
+
+void SpriteEditorVC::on_nextFrameButton_clicked()
+{
+	if (indexOfActiveFrame < model->getFrameCount() - 1)
+	{
+		emit changeActiveFrame(indexOfActiveFrame + 1);
+	}
+}
+
+void SpriteEditorVC::on_lastFrameButton_clicked()
+{
+	if (indexOfActiveFrame > 0)
+	{
+		emit changeActiveFrame(indexOfActiveFrame - 1);
+	}
 }
 

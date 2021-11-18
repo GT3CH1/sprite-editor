@@ -6,14 +6,14 @@
  */
 
 #include "colorinverterbrush.h"
+#include <iostream>
 
 /**
  * @brief Creates the ColorInverterBrush object
  * @param generator Pointer to the stencil needed for the tool
  */
-ColorInverterBrush::ColorInverterBrush(IStencilGenerator* generator) : PixelBrush(generator)
+ColorInverterBrush::ColorInverterBrush(IStencilGenerator* generator) : PixelBrush(generator), coveredArea(0,0)
 {
-
 }
 
 /**
@@ -23,8 +23,22 @@ ColorInverterBrush::ColorInverterBrush(IStencilGenerator* generator) : PixelBrus
  * @param callbacks Current callback information
  */
 void ColorInverterBrush::apply(ActionState& canvasState, const CallbackOptions& callbacks)
-{
+{	
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
+
+	if (canvasState.NEW_STROKE)
+	{
+		Pointer2DArray<StrokeCovered> clearedArea(canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height());
+		coveredArea = clearedArea;
+		StrokeCovered defaultStrokeCovered;
+		defaultStrokeCovered.amountAffected = 0;
+		QColor defaultColor;
+		defaultStrokeCovered.initialColor = defaultColor;
+
+		for(int  i = 0; i < (int)coveredArea.getWidth(); i++)
+			for(int j = 0; j < (int)coveredArea.getHeight(); j++)
+				coveredArea[i][j] = defaultStrokeCovered;
+	}
 
 	BoundsInformation info;
 	QRect boundedArea = ConstrainStencilBounds(stencil, canvasState.MOUSE_X_GRID_COORD, canvasState.MOUSE_Y_GRID_COORD,
@@ -38,8 +52,21 @@ void ColorInverterBrush::apply(ActionState& canvasState, const CallbackOptions& 
 	{
 		for (unsigned int j = 0; j < toReplace.getHeight(); j++)
 		{
-			float amountToInvert = stencil[i + info.deltaX][j + info.deltaY];
-			QColor previousColor = pixelColors.pixelColor(boundedArea.x() + i, boundedArea.y() + j);
+			QColor previousColor;
+			float lastAmountInverted = 0;
+
+			if(coveredArea[i + boundedArea.x()][j + boundedArea.y()].amountAffected > 0)
+			{
+				lastAmountInverted = coveredArea[i + boundedArea.x()][j + boundedArea.y()].amountAffected;
+				previousColor = coveredArea[i + boundedArea.x()][j + boundedArea.y()].initialColor;
+			}
+			else
+			{
+				previousColor = pixelColors.pixelColor(boundedArea.x() + i, boundedArea.y() + j);
+				coveredArea[i + boundedArea.x()][j + boundedArea.y()].initialColor = previousColor;
+			}
+
+			float amountToInvert = std::clamp(stencil[i + info.deltaX][j + info.deltaY] + lastAmountInverted, 0.0f, 1.0f);
 
 			int invertedRedDifference = (255 - previousColor.red()) - previousColor.red();
 			int invertedGreenDifference = 255 - previousColor.green() - previousColor.green();
@@ -51,6 +78,8 @@ void ColorInverterBrush::apply(ActionState& canvasState, const CallbackOptions& 
 										 , previousColor.alpha());
 
 			toReplace[i][j] = weightedInvertedColor;
+
+			coveredArea[i + boundedArea.x()][j + boundedArea.y()].amountAffected = amountToInvert;
 		}
 	}
 

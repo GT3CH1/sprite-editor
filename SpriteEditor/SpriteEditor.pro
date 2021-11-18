@@ -16,7 +16,7 @@ SOURCES += \
     hardcirclestencilgenerator.cpp \
     main.cpp \
     rainbowbrush.cpp \
-    spraycan.cpp \
+    spraycanbrush.cpp \
     spriteeditormodel.cpp \
     pixelbrush.cpp \
     pixeleraser.cpp \
@@ -27,12 +27,13 @@ SOURCES += \
     renderarea.cpp
 
 HEADERS += \
+    brush.h \
     colorinverterbrush.h \
     hardcirclestencilgenerator.h \
     istencilgenerator.h \
     rainbowbrush.h \
     softcirclestencilgenerator.h \
-    spraycan.h \
+    spraycanbrush.h \
     spriteeditorvc.h \
     squarestencilgenerator.h \
     renderarea.h \
@@ -44,7 +45,8 @@ HEADERS += \
     pixelbrush.h \
     pixeleraser.h \
     pointer2darray.h \
-    stencils.h
+    stencil.h
+
 
 FORMS += \
     spriteeditorvc.ui
