@@ -23,11 +23,11 @@ public:
 	SprayCanBrush(const SprayCanBrush &other);
 	SprayCanBrush &operator=(SprayCanBrush otherCopy);
 	virtual ~SprayCanBrush();
-	virtual void apply(ActionState &canvasState, const CallbackOptions &callbacks);
-	static QRect ConstrainStencilBounds(Pointer2DArray<float> stencil, int stencilCenterX, int stencilCenterY, int areaWidth, int areaHeight,  BoundsInformation &outInfo);
-private:
-	IStencilGenerator *stencilGenerator;
+	virtual void apply(ActionState& canvasState, const CallbackOptions& callbacks);
+	static QRect ConstrainStencilBounds(Pointer2DArray<float> stencil, int stencilCenterX, int stencilCenterY, int areaWidth, int areaHeight,  BoundsInformation& outInfo);
+
 protected:
+	IStencilGenerator* stencilGenerator;
 	Pointer2DArray<float> stencil;
 	void setStencilOnSizeChange(unsigned int newSize);
 };

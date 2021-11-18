@@ -46,6 +46,7 @@ public slots:
 	void setHardEraser();
 	void setSprayCan();
 	void setGaussian();
+	void setRainbowSpraycan();
 	void setBrushSizeLabel(int size);
 
 private slots:
@@ -97,7 +98,6 @@ private:
 	const char* OPEN_SVG_PATH = ":/res/open.svg";
 	const char* CLOSE_SVG_PATH = ":/res/close.svg";
 	const char* NEW_SVG_PATH = ":/res/new.svg";
-	const char* HELP_SVG_PATH = ":/res/help.svg";
 
 	SpriteEditorModel *model;
 	Ui::SpriteEditorVC *ui;
@@ -113,7 +113,6 @@ private:
 
 	QAction *saveAction;
 	QAction *openAction;
-	QAction *helpAction;
 	QAction *newFileAction;
 	QAction *rainbowBrushSelected;
 	QAction *softEraserSelected;
@@ -124,9 +123,9 @@ private:
 	QAction *sprayCanSelected;
 	QAction *gaussianSelected;
 	QAction *gridSelected;
+	QAction *rainbowSpraycanSelected;
 
 	QMenu *fileMenu;
-	QMenu *helpMenu;
 	QMenu *toolsMenu;
 	void setButtonColor(QPushButton *button, QString hex);
 	void createMenu();

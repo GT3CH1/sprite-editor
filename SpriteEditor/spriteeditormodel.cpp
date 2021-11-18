@@ -34,6 +34,7 @@ SpriteEditorModel::SpriteEditorModel()
 	Tools.insert(ToolType::SprayCan, new SprayCanBrush(new SoftCircleStencilGenerator()));
 	Tools.insert(ToolType::SoftEraser, new PixelEraser(new SoftCircleStencilGenerator()));
 	Tools.insert(ToolType::Gaussian, new GaussianBlurBrush(new SoftCircleStencilGenerator()));
+	Tools.insert(ToolType::RainbowSprayCan, new RainBowSprayCanBrush(new SoftCircleStencilGenerator()));
 	QPoint initialPosition(-1, -1);
 	lastPosition = initialPosition;
 }

@@ -16,6 +16,7 @@ SOURCES += \
     imagesizedialog.cpp \
     main.cpp \
     rainbowbrush.cpp \
+    rainbowspraycanbrush.cpp \
     spraycanbrush.cpp \
     spriteeditormodel.cpp \
     pixelbrush.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     imagesizedialog.h \
     istencilgenerator.h \
     rainbowbrush.h \
+    rainbowspraycanbrush.h \
     softcirclestencilgenerator.h \
     spraycanbrush.h \
     spriteeditorvc.h \

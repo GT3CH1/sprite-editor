@@ -18,7 +18,7 @@ class SpriteEditorModel : public QObject
 	Q_OBJECT
 
 public:
-	enum ToolType {Pen, Brush, SoftEraser, HardEraser, Gaussian, InvertBrush, Rainbow, SprayCan};
+	enum ToolType {Pen, Brush, SoftEraser, HardEraser, Gaussian, InvertBrush, Rainbow, SprayCan, RainbowSprayCan};
 
 private:
 	int imageWidth = 64;

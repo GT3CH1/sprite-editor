@@ -87,6 +87,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(softBrushSelected, &QAction::triggered, this, &SpriteEditorVC::setSoftBrush);
 	connect(hardEraserSelected, &QAction::triggered, this, &SpriteEditorVC::setHardEraser);
 	connect(sprayCanSelected, &QAction::triggered, this, &SpriteEditorVC::setSprayCan);
+	connect(rainbowSpraycanSelected, &QAction::triggered, this, &SpriteEditorVC::setRainbowSpraycan);
 	connect(gaussianSelected, &QAction::triggered, this, &SpriteEditorVC::setGaussian);
 	connect(gridSelected, &QAction::triggered, ui->mainCanvas, &RenderArea::toggleGrid);
 	connect(newFileAction, &QAction::triggered, this, &SpriteEditorVC::startSizeDialogue);
@@ -127,10 +128,8 @@ SpriteEditorVC::~SpriteEditorVC()
 	delete colorDialog;
 	delete saveAction;
 	delete openAction;
-	delete helpAction;
 	delete newFileAction;
 	delete fileMenu;
-	delete helpMenu;
 	delete invertSelected;
 	delete rainbowBrushSelected;
 	delete softEraserSelected;
@@ -138,6 +137,7 @@ SpriteEditorVC::~SpriteEditorVC()
 	delete softBrushSelected;
 	delete hardPenSelected;
 	delete sprayCanSelected;
+	delete rainbowSpraycanSelected;
 }
 
 // UI SETUP
@@ -170,18 +170,16 @@ void SpriteEditorVC::createMenu()
 	saveAction = new QAction(QIcon(SAVE_SVG_PATH), tr("&Save..."), this);
 	openAction = new QAction(QIcon(OPEN_SVG_PATH), tr("&Open..."), this);
 	newFileAction = new QAction(QIcon(NEW_SVG_PATH), tr("&New..."), this);
-	helpAction = new QAction(QIcon(HELP_SVG_PATH), tr("&Help..."), this);
-	helpAction->setStatusTip(tr("Help"));
+	rainbowSpraycanSelected = new QAction(QIcon(SPRAY_CAN_SVG_PATH), tr("R&ainbow Spraycan"),this);
+
 	saveAction->setStatusTip(tr("Save this file"));
 	openAction->setStatusTip(tr("Open an existing file"));
 	newFileAction->setStatusTip(tr("Create a new file"));
 	fileMenu = menuBar()->addMenu(tr("&File"));
 	toolsMenu = menuBar()->addMenu(tr("&Tools"));
-	helpMenu = menuBar()->addMenu(tr("&Help"));
 	fileMenu->addAction(newFileAction);
 	fileMenu->addAction(saveAction);
 	fileMenu->addAction(openAction);
-	helpMenu->addAction(helpAction);
 	toolsMenu->addAction(invertSelected);
 	toolsMenu->addAction(rainbowBrushSelected);
 	toolsMenu->addAction(hardPenSelected);
@@ -189,6 +187,7 @@ void SpriteEditorVC::createMenu()
 	toolsMenu->addAction(hardEraserSelected);
 	toolsMenu->addAction(softBrushSelected);
 	toolsMenu->addAction(sprayCanSelected);
+	toolsMenu->addAction(rainbowSpraycanSelected);
 	toolsMenu->addAction(gaussianSelected);
 	toolsMenu->addAction(gridSelected);
 }
@@ -539,6 +538,9 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 		case Qt::Key_U:
 			gaussianSelected->trigger();
 			break;
+		case Qt::Key_A:
+			rainbowSpraycanSelected->trigger();
+			break;
 		default:
 			// do nothing
 			break;
@@ -615,6 +617,12 @@ void SpriteEditorVC::setGaussian()
 {
 	emit updateTool(SpriteEditorModel::ToolType::Gaussian);
 	setCustomCursor(BLUR_SVG_PATH);
+}
+
+void SpriteEditorVC::setRainbowSpraycan()
+{
+	emit updateTool(SpriteEditorModel::ToolType::RainbowSprayCan);
+	setCustomCursor(SPRAY_CAN_SVG_PATH);
 }
 
 /**
