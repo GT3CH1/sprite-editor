@@ -1,5 +1,4 @@
 #include "spriteeditorvc.h"
-#include <iostream>
 
 SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	: QMainWindow(parent)
@@ -16,7 +15,9 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	ui->fpsSlider->setMaximum(FPS_MAX);
 
 	// Set up frame preview area
-	ui->frameDisplay->setLayout(new QHBoxLayout);
+	framePreviewLayout = new QHBoxLayout;
+	ui->frameDisplay->setLayout(framePreviewLayout);
+	ui->frameDisplay->setWidgetResizable(false);
 
 	colorDialog = new QColorDialog();
 	model = new SpriteEditorModel();
@@ -71,8 +72,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 
 	// UI to Model
 	connect(ui->mainCanvas, &RenderArea::clicked, model, &SpriteEditorModel::drawing);
-
-
+	connect(ui->duplicateFrameButton, &QPushButton::clicked, model, &SpriteEditorModel::duplicateFrame);
 	connect(this,&SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
 	connect(this,&SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
 	connect(this,&SpriteEditorVC::updateTool,this->model,&SpriteEditorModel::setActiveTool);
@@ -80,7 +80,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(colorDialog,&QColorDialog::colorSelected, this->model, &SpriteEditorModel::setActiveColor);
 	connect(this,&SpriteEditorVC::toggleGrid,ui->mainCanvas,&RenderArea::toggleGrid);
 
-	// Tool changes`
+	// Tool changes
 	connect(ui->brushToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setSoftBrush);
 	connect(ui->penToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setHardPen);
 	connect(ui->eraserToolButton,&QPushButton::pressed,this,&SpriteEditorVC::setHardEraser);
@@ -100,7 +100,8 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 
 	// Model to Control
 	connect(model, &SpriteEditorModel::sendFrames, this, &SpriteEditorVC::previewFrames);
-	connect(model, &SpriteEditorModel::sendActiveFrameIndex, this, &SpriteEditorVC::updateActivePreviewFrame);
+	connect(model, &SpriteEditorModel::sendActiveFrameIndex, this, &SpriteEditorVC::updateActivePreview);
+	connect(model, &SpriteEditorModel::sendActiveFrameIndex, this, &SpriteEditorVC::updateActiveFrame);
 
 	// Internal
 	connect(&playbackUpdater, &QTimer::timeout, this, &SpriteEditorVC::updatePlaybackFrame);
@@ -114,7 +115,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(this, &SpriteEditorVC::toggleGrid,ui->mainCanvas, &RenderArea::toggleGrid);
 	connect(this, &SpriteEditorVC::save, model, &SpriteEditorModel::save);
 	connect(this, &SpriteEditorVC::load, model, &SpriteEditorModel::load);
-
+	connect(this, &SpriteEditorVC::changeActiveFrame, model, &SpriteEditorModel::changeActiveFrame);
 	connect(this, &SpriteEditorVC::remove, model, &SpriteEditorModel::deleteFrame);
 	connect(this, &SpriteEditorVC::add, model, &SpriteEditorModel::addFrame);
 
@@ -195,14 +196,14 @@ void SpriteEditorVC::createMenu()
  */
 void SpriteEditorVC::setupButtonColors()
 {
-	setButtonColor(ui->primaryColorButton1,colorDialog->standardColor(9).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton2,colorDialog->standardColor(21).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton3,colorDialog->standardColor(45).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton4,colorDialog->standardColor(36).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton5,colorDialog->standardColor(7).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton6,colorDialog->standardColor(5).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton7,colorDialog->standardColor(0).name(QColor::HexArgb));
-	setButtonColor(ui->primaryColorButton8,colorDialog->standardColor(47).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton1,colorDialog->standardColor(RED).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton2,colorDialog->standardColor(ORANGE).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton3,colorDialog->standardColor(YELLOW).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton4,colorDialog->standardColor(GREEN).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton5,colorDialog->standardColor(PURPLE).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton6,colorDialog->standardColor(BLUE).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton7,colorDialog->standardColor(BLACK).name(QColor::HexArgb));
+	setButtonColor(ui->primaryColorButton8,colorDialog->standardColor(WHITE).name(QColor::HexArgb));
 	updateCustomButtonColors();
 }
 
@@ -288,24 +289,39 @@ void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
  */
 void SpriteEditorVC::previewFrames(vector<QPixmap> allFrames)
 {
-	if (ui->frameDisplay->layout()->count() > 0)
+	if (framePreviewLayout->count() > 0)
 	{
-		for (int i = 0; i < ui->frameDisplay->layout()->count(); i++)
-		{
-			QWidget *toRemove = ui->frameDisplay->layout()->itemAt(i)->widget();
-			ui->frameDisplay->layout()->removeWidget(toRemove);
-			std::cout << "Removing frame " << i << " from preview" << std::endl;
-		}
+			QLayoutItem* item;
+			while ((item = framePreviewLayout->takeAt(0)) != NULL)
+			{
+				delete item->widget();
+				delete item;
+			}
 	}
 
-	for (const QPixmap &toAdd : qAsConst(allFrames))
+	for (int i = 0; i < model->getFrameCount(); i++)
 	{
 		RenderArea *newWidget = new RenderArea;
-		newWidget->setImageScaled(toAdd, 64);
-		connect(newWidget, &RenderArea::clicked, this, &SpriteEditorVC::sendActiveFrame);
-		ui->frameDisplay->layout()->addWidget(newWidget);
-		std::cout << "Adding frame to preview" << std::endl;
+		newWidget->setImageScaled(model->getFramefromIndex(i), FRAME_SIZE);
+		framePreviewLayout->addWidget(newWidget);
 	}
+}
+
+/**
+ * @brief Updates the frame preview of the active frame as the user edits it
+ * @param activeFrameIndex
+ */
+void SpriteEditorVC::updateActivePreview(int activeFrameIndex)
+{
+	RenderArea *newPreview = new RenderArea;
+	newPreview->setImageScaled(model->getFramefromIndex(activeFrameIndex), FRAME_SIZE);
+	QLayoutItem* item;
+	if ((item = framePreviewLayout->takeAt(activeFrameIndex)) != NULL)
+	{
+		delete item->widget();
+		delete item;
+	}
+	framePreviewLayout->insertWidget(activeFrameIndex, newPreview);
 }
 
 /**
@@ -328,9 +344,14 @@ void SpriteEditorVC::sendActiveFrame()
 	}
 }
 
-void SpriteEditorVC::updateActivePreviewFrame(int activeFrameIndex)
+/**
+ * @brief Sets the main canvas to the active frame
+ * @param activeFrameIndex
+ */
+void SpriteEditorVC::updateActiveFrame(int activeFrameIndex)
 {
-	//TODO(JVielstich): update the preview of the active frame when the drawing is changed
+	indexOfActiveFrame = activeFrameIndex;
+	ui->mainCanvas->setImage(model->getFramefromIndex(activeFrameIndex));
 }
 
 // MODEL CONTROL
@@ -541,3 +562,20 @@ void SpriteEditorVC::setSprayCan()
 {
 	emit updateTool(SpriteEditorModel::ToolType::SprayCan);
 }
+
+void SpriteEditorVC::on_nextFrameButton_clicked()
+{
+	if (indexOfActiveFrame < model->getFrameCount() - 1)
+	{
+		emit changeActiveFrame(indexOfActiveFrame + 1);
+	}
+}
+
+void SpriteEditorVC::on_lastFrameButton_clicked()
+{
+	if (indexOfActiveFrame > 0)
+	{
+		emit changeActiveFrame(indexOfActiveFrame - 1);
+	}
+}
+

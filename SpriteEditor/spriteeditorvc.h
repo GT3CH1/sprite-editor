@@ -5,6 +5,7 @@
 #include <QColorDialog>
 #include <QDir>
 #include <QFileDialog>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMenuBar>
@@ -46,20 +47,38 @@ private slots:
 	void deleteFrame();
 	void addFrame();
 	void previewFrames(vector<QPixmap>);
-	void updateActivePreviewFrame(int);
 	void updatePlaybackFrame();
 	void on_fpsSlider_valueChanged(int);
 	void keyPressEvent(QKeyEvent*);
 	void savePressed();
 	void loadPressed();
+	void on_nextFrameButton_clicked();
+	void on_lastFrameButton_clicked();
+	void updateActiveFrame(int);
+	void updateActivePreview(int);
+
 private:
 	const char* FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
+	// FPS Slider parameters
 	const int FPS_INTERVAL = 10;
 	const int FPS_MAX = 60;
 	const int FPS_STEP = 10;
+	// Frame scaling
 	const int PREVIEW_SIZE = 128;
+	const int FRAME_SIZE = 64;
+	// Default colors
+	const int RED = 9;
+	const int ORANGE = 21;
+	const int YELLOW = 45;
+	const int GREEN = 36;
+	const int PURPLE = 7;
+	const int BLUE = 5;
+	const int BLACK = 0;
+	const int WHITE = 47;
+
 	SpriteEditorModel *model;
 	Ui::SpriteEditorVC *ui;
+	QHBoxLayout *framePreviewLayout;
 	int indexOfActiveFrame = 0;
 	int indexOfPlayback = 0;
 	int fps = 0;
@@ -73,7 +92,6 @@ private:
 	QAction *closeAction;
 	QAction *helpAction;
 	QAction *newFileAction;
-
 	QAction *rainbowBrushSelected;
 	QAction *softEraserSelected;
 	QAction *invertSelected;
@@ -81,7 +99,6 @@ private:
 	QAction *softBrushSelected;
 	QAction *hardEraserSelected;
 	QAction *sprayCanSelected;
-
 	QMenu *fileMenu;
 	QMenu *helpMenu;
 	QMenu *toolsMenu;

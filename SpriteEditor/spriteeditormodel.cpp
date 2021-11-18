@@ -106,16 +106,14 @@ void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 	if(frames.size() == 1)
 	{
 		frames[activeFrameIndex].fill();
-		emit sendActiveFrameIndex(activeFrameIndex);
-		emit sendFrames(frames);
-		return;
-	}
+	}else{
 	vector<QPixmap>::iterator itr = frames.begin();
 	for(int i = 0; i <= indexOfFrameToDelete; i++)
 		itr++;
 	frames.erase(itr);
 	if(activeFrameIndex > 0)
-		activeFrameIndex--;
+		activeFrameIndex--;	
+	}
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
@@ -131,10 +129,8 @@ void SpriteEditorModel::addFrame()
 	if(activeFrameIndex == frames.size())
 	{
 		frames.push_back(blank);
-		emit sendActiveFrameIndex(activeFrameIndex);
-		emit sendFrames(frames);
-		return;
-	}
+
+	}else{
 	QPixmap temp = frames[activeFrameIndex];
 	frames[activeFrameIndex] = blank;
 	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
@@ -142,10 +138,10 @@ void SpriteEditorModel::addFrame()
 		swap(temp, frames[j]);
 	}
 	frames.push_back(temp);
+	}
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
-
 /**
  * @brief SpriteEditorModel::duplicateFrame
  */
@@ -157,10 +153,7 @@ void SpriteEditorModel::duplicateFrame()
 	if(activeFrameIndex == frames.size())
 	{
 		frames.push_back(copy);
-		emit sendActiveFrameIndex(activeFrameIndex);
-		emit sendFrames(frames);
-		return;
-	}
+	}else{
 	QPixmap temp = frames[activeFrameIndex];
 	frames[activeFrameIndex] = copy;
 	for(unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
@@ -168,6 +161,7 @@ void SpriteEditorModel::duplicateFrame()
 		swap(temp, frames[j]);
 	}
 	frames.push_back(temp);
+	}
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
