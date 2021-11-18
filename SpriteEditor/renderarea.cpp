@@ -82,7 +82,10 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
 	unsigned int y = evt->pos().y();
 
 	if (x < 512 && y < 512)
+	{
 		emit clicked((float)x / 512.0, (float)y / 512.0);
+		emit pressed();
+	}
 }
 
 /**
@@ -97,7 +100,10 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 		int y = evt->pos().y();
 
 		if ((x < 510 && x > 2) && (y < 510 && y > 2))
+		{
 			emit clicked((float)x / 512.0, (float)y / 512.0);
+			emit pressed();
+		}
 	}
 }
 

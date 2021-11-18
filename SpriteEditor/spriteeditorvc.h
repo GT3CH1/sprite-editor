@@ -65,7 +65,7 @@ private slots:
 	void updateActivePreview(int);
 	void startSizeDialogue();
 	void finishSizeDialogue(int size);
-
+	void changeFocus();
 private:
 	const char *FILE_FILTER = "Sprite Files (*.ssp);;All Files (*.*)";
 	// FPS Slider parameters

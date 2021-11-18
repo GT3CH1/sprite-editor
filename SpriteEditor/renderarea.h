@@ -32,6 +32,7 @@ public slots:
 signals:
 	void clicked(float x, float y);
 	void released(float x, float y);
+	void pressed();
 };
 
 #endif // RENDERAREA_H

@@ -63,6 +63,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(ui->clearFrameButton,&QPushButton::clicked,this->model, &SpriteEditorModel::clearFrame);
 	// UI to Model
 	connect(ui->mainCanvas, &RenderArea::clicked, model, &SpriteEditorModel::drawing);
+	connect(ui->mainCanvas, &RenderArea::pressed, this, &SpriteEditorVC::changeFocus);
 	connect(ui->duplicateFrameButton, &QPushButton::clicked, model, &SpriteEditorModel::duplicateFrame);
 	connect(this, &SpriteEditorVC::duplicateFrame, model, &SpriteEditorModel::duplicateFrame);
 	connect(this, &SpriteEditorVC::clearFrame, model, &SpriteEditorModel::clearFrame);
@@ -513,14 +514,15 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 
 		// Move to previous frame (if it exists)
 		case Qt::Key_Left:
-			if (indexOfActiveFrame > 0)
+			if (indexOfActiveFrame > 0 && event->modifiers() == Qt::ControlModifier)
 				emit changeActiveFrame(indexOfActiveFrame - 1);
 
 			break;
 
 		// Move to next frame (if it exists)
 		case Qt::Key_Right:
-			if (indexOfActiveFrame < model->getFrameCount() - 1)
+
+			if (indexOfActiveFrame < model->getFrameCount() - 1 && event->modifiers() == Qt::ControlModifier)
 				emit changeActiveFrame(indexOfActiveFrame + 1);
 
 			break;
@@ -701,4 +703,9 @@ void SpriteEditorVC::setCustomCursor(char const *path)
 {
 	QPixmap cursor = QPixmap(path).scaled(16,16);
 	ui->mainCanvas->setCursor(QCursor(cursor,0,16));
+}
+
+void SpriteEditorVC::changeFocus()
+{
+	this->setFocus();
 }
