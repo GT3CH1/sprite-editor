@@ -8,6 +8,7 @@
  *  @brief Pointer2DArray is a class acts like a 2D array, but that
  *  can be dynamically allocated (you don't need to know the width
  *  / height adhead of time).
+ *  Adapted from https://www.techiedelight.com/pass-2d-array-function-parameter/
  */
 
 template<typename T>
