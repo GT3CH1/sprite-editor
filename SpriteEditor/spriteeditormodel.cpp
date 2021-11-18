@@ -509,3 +509,10 @@ void SpriteEditorModel::setSize(int width, int height)
 	emit sendActiveFrame(firstFrame);
 	emit updateCanvasSize(imageHeight);
 }
+
+void SpriteEditorModel::clearFrame()
+{
+	frames[activeFrameIndex].fill();
+	emit sendActiveFrame(frames[activeFrameIndex]);
+	emit sendActiveFrameIndex(activeFrameIndex);
+}

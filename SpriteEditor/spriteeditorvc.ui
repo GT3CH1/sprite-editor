@@ -7,18 +7,34 @@
     <x>0</x>
     <y>0</y>
     <width>842</width>
-    <height>705</height>
+    <height>695</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>842</width>
+    <height>695</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>842</width>
+    <height>695</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>SpriteEditorVC</string>
+   <string>Ghanoush Sprite Editor</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/res/ghanoush.png</normaloff>:/res/ghanoush.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="layoutWidget1">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>20</y>
+      <y>10</y>
       <width>71</width>
       <height>511</height>
      </rect>
@@ -567,28 +583,6 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
-      <widget class="QPushButton" name="customColorButton16">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>30</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
      <item row="13" column="0" colspan="2">
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
@@ -597,7 +591,7 @@
        <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
-         <height>20</height>
+         <height>10</height>
         </size>
        </property>
       </spacer>
@@ -621,13 +615,35 @@
        </property>
       </widget>
      </item>
+     <item row="12" column="1">
+      <widget class="QPushButton" name="customColorButton16">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>670</x>
-      <y>20</y>
+      <y>10</y>
       <width>141</width>
       <height>161</height>
      </rect>
@@ -635,6 +651,12 @@
     <layout class="QGridLayout" name="playbackLayout">
      <item row="1" column="0">
       <widget class="QSlider" name="fpsSlider">
+       <property name="toolTip">
+        <string>Changes the frame rate of the preview (0 is off)</string>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -690,7 +712,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>20</y>
+      <y>10</y>
       <width>512</width>
       <height>512</height>
      </rect>
@@ -734,10 +756,13 @@
     <property name="geometry">
      <rect>
       <x>39</x>
-      <y>580</y>
+      <y>570</y>
       <width>91</width>
       <height>51</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Goes back to the last frame ( Left arrow )</string>
     </property>
     <property name="text">
      <string>Previous Frame</string>
@@ -747,10 +772,13 @@
     <property name="geometry">
      <rect>
       <x>660</x>
-      <y>580</y>
+      <y>570</y>
       <width>91</width>
       <height>51</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Goes to the next frame ( Right Arrow )</string>
     </property>
     <property name="text">
      <string>Next Frame</string>
@@ -760,9 +788,9 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>530</y>
+      <y>520</y>
       <width>511</width>
-      <height>16</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -779,7 +807,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>560</y>
+      <y>550</y>
       <width>511</width>
       <height>101</height>
      </rect>
@@ -833,9 +861,9 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>190</y>
+      <y>180</y>
       <width>121</width>
-      <height>111</height>
+      <height>166</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -846,6 +874,9 @@
          <width>0</width>
          <height>30</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Adds a frame (Ctrl+A)</string>
        </property>
        <property name="text">
         <string>Add Frame</string>
@@ -860,10 +891,42 @@
          <height>30</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Duplicate this frame (Ctrl+D)</string>
+       </property>
        <property name="text">
         <string>Duplicate Frame</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="clearFrameButton">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Clears the frame (Ctrl+C)</string>
+       </property>
+       <property name="text">
+        <string>Clear Frame</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>10</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
       <widget class="QPushButton" name="deleteFrameButton">
@@ -872,6 +935,9 @@
          <width>0</width>
          <height>30</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Deletes this frame (Delete key)</string>
        </property>
        <property name="text">
         <string>Delete Frame</string>
@@ -884,7 +950,7 @@
     <property name="geometry">
      <rect>
       <x>679</x>
-      <y>379</y>
+      <y>450</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -898,6 +964,9 @@
      </property>
      <item row="0" column="0" colspan="2">
       <widget class="QSlider" name="toolSizeSlider">
+       <property name="toolTip">
+        <string>Changes the stroke size up ( [ )  or down ( ] )</string>
+       </property>
        <property name="minimum">
         <number>1</number>
        </property>
@@ -925,7 +994,7 @@
     <property name="geometry">
      <rect>
       <x>670</x>
-      <y>310</y>
+      <y>370</y>
       <width>144</width>
       <height>70</height>
      </rect>
@@ -955,6 +1024,9 @@
            <width>30</width>
            <height>30</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activates the &lt;span style=&quot; text-decoration: underline;&quot;&gt;P&lt;/span&gt;en tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string/>
@@ -988,6 +1060,9 @@
            <height>30</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activates the &lt;span style=&quot; text-decoration: underline;&quot;&gt;B&lt;/span&gt;rush tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -1020,6 +1095,9 @@
            <height>30</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activates the Hard &lt;span style=&quot; text-decoration: underline;&quot;&gt;E&lt;/span&gt;raser tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -1051,6 +1129,9 @@
            <width>30</width>
            <height>30</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activates the S&lt;span style=&quot; text-decoration: underline;&quot;&gt;o&lt;/span&gt;ft Eraser tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string/>
@@ -1088,6 +1169,9 @@
            <height>30</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activates the &lt;span style=&quot; text-decoration: underline;&quot;&gt;S&lt;/span&gt;pray Can tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -1119,6 +1203,9 @@
            <width>30</width>
            <height>30</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activates the &lt;span style=&quot; text-decoration: underline;&quot;&gt;R&lt;/span&gt;ainbow Brush tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string/>
@@ -1152,6 +1239,9 @@
            <height>30</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activates the Ga&lt;span style=&quot; text-decoration: underline;&quot;&gt;u&lt;/span&gt;ssian Blur tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -1183,6 +1273,9 @@
            <width>30</width>
            <height>30</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activates the &lt;span style=&quot; text-decoration: underline;&quot;&gt;I&lt;/span&gt;nvert Brush tool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string/>

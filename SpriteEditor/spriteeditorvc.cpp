@@ -60,9 +60,14 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	// Other
 	connect(ui->addFrameButton, &QPushButton::clicked, this->model, &SpriteEditorModel::addFrame);
 	connect(ui->deleteFrameButton, &QPushButton::clicked, this, &SpriteEditorVC::deleteFrame);
+	connect(ui->clearFrameButton,&QPushButton::clicked,this->model, &SpriteEditorModel::clearFrame);
 	// UI to Model
 	connect(ui->mainCanvas, &RenderArea::clicked, model, &SpriteEditorModel::drawing);
 	connect(ui->duplicateFrameButton, &QPushButton::clicked, model, &SpriteEditorModel::duplicateFrame);
+	connect(this, &SpriteEditorVC::duplicateFrame, model, &SpriteEditorModel::duplicateFrame);
+	connect(this, &SpriteEditorVC::clearFrame, model, &SpriteEditorModel::clearFrame);
+	connect(this, &SpriteEditorVC::addNewFrame, model, &SpriteEditorModel::addFrame);
+	connect(this, &SpriteEditorVC::deleteActiveFrame, model, &SpriteEditorModel::deleteFrame);
 	connect(this, &SpriteEditorVC::incrementToolSize, model, &SpriteEditorModel::incrementBrushSize);
 	connect(this, &SpriteEditorVC::decrementToolSize, model, &SpriteEditorModel::decrementBrushSize);
 	connect(this, &SpriteEditorVC::updateTool, this->model, &SpriteEditorModel::setActiveTool);
@@ -500,6 +505,12 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 				softEraserSelected->trigger();
 			break;
 
+		// Open a file
+		case Qt::Key_N:
+			if (event->modifiers() == Qt::ControlModifier)
+				newFileAction->trigger();
+		break;
+
 		// Move to previous frame (if it exists)
 		case Qt::Key_Left:
 			if (indexOfActiveFrame > 0)
@@ -517,6 +528,27 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 		// Toggles if the grid is shown.
 		case Qt::Key_G:
 			emit toggleGrid();
+			break;
+
+		case Qt::Key_A:
+			if (event->modifiers() == Qt::ControlModifier)
+				emit addNewFrame();
+			else
+				rainbowSpraycanSelected->trigger();
+		break;
+
+		case Qt::Key_Delete:
+			emit deleteActiveFrame(indexOfActiveFrame);
+			break;
+
+		case Qt::Key_D:
+			if (event->modifiers() == Qt::ControlModifier)
+				emit duplicateFrame();
+			break;
+
+		case Qt::Key_C:
+			if (event->modifiers() == Qt::ControlModifier)
+				emit clearFrame();
 			break;
 
 		case Qt::Key_I:
@@ -537,9 +569,6 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 			break;
 		case Qt::Key_U:
 			gaussianSelected->trigger();
-			break;
-		case Qt::Key_A:
-			rainbowSpraycanSelected->trigger();
 			break;
 		default:
 			// do nothing

@@ -148,5 +148,9 @@ signals:
 	void save(std::string, std::string);
 	void load(std::string, std::string);
 	void toggleGrid();
+	void duplicateFrame();
+	void clearFrame();
+	void addNewFrame();
+	void deleteActiveFrame(int);
 };
 #endif // SPRITEEDITORVC_H
