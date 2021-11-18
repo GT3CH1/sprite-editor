@@ -32,7 +32,6 @@ void PixelEraser::apply(ActionState &canvasState, const CallbackOptions &callbac
 						info);
 	Pointer2DArray<QColor> toReplace(boundedArea.width(), boundedArea.height());
 	QImage pixelColors = canvasState.ACTIVE_FRAME.toImage();
-
 	for (unsigned int i = 0; i < toReplace.getWidth(); i++)
 	{
 		for (unsigned int j = 0; j < toReplace.getHeight(); j++)
@@ -43,6 +42,5 @@ void PixelEraser::apply(ActionState &canvasState, const CallbackOptions &callbac
 			toReplace[i][j] = erasedColor;
 		}
 	}
-
 	callbacks.replacePixelColors(toReplace, boundedArea.x(), boundedArea.y());
 }

@@ -16,7 +16,6 @@ Pointer2DArray<float> HardCircleStencilGenerator::generate(unsigned int size)
 {
 	Pointer2DArray<float> stencil(size, size);
 	float radius = (float)size / 2;
-
 	for (int i = 0; i < (int)size; i++)
 	{
 		for (int j = 0; j < (int)size; j++)
@@ -25,6 +24,5 @@ Pointer2DArray<float> HardCircleStencilGenerator::generate(unsigned int size)
 			stencil[i][j] = (distance <= radius);
 		}
 	}
-
 	return stencil;
 }

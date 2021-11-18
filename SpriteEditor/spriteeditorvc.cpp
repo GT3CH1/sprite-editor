@@ -177,7 +177,6 @@ void SpriteEditorVC::createMenu()
 	openAction = new QAction(QIcon(OPEN_SVG_PATH), tr("&Open..."), this);
 	newFileAction = new QAction(QIcon(NEW_SVG_PATH), tr("&New..."), this);
 	rainbowSpraycanSelected = new QAction(QIcon(SPRAY_CAN_SVG_PATH), tr("R&ainbow Spraycan"),this);
-
 	saveAction->setStatusTip(tr("Save this file"));
 	openAction->setStatusTip(tr("Open an existing file"));
 	newFileAction->setStatusTip(tr("Create a new file"));
@@ -255,7 +254,6 @@ void SpriteEditorVC::updatePlaybackFrame()
 {
 	if (indexOfPlayback + 1 > model->getFrameCount())
 		indexOfPlayback = 0;
-
 	QPixmap currentFrame(model->getFramefromIndex(indexOfPlayback++).scaled(PREVIEW_SIZE, PREVIEW_SIZE));
 	ui->playbackCanvas->setImageScaled(currentFrame, PREVIEW_SIZE);
 }
@@ -272,15 +270,12 @@ void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 	fps = value;
 	// Return focus to main window
 	this->setFocus();
-
 	if (fps == 0 && playbackUpdater.isActive())
 		playbackUpdater.stop();
-
 	else if (fps != 0)
 	{
 		if (!playbackUpdater.isActive())
 			playbackUpdater.start(1000 / fps);
-
 		else
 			playbackUpdater.setInterval(1000 / fps);
 	}
@@ -295,14 +290,13 @@ void SpriteEditorVC::previewFrames()
 {
 	if (framePreviewLayout->count() > 0)
 	{
-			QLayoutItem* item;
-			while ((item = framePreviewLayout->takeAt(0)) != NULL)
-			{
-				delete item->widget();
-				delete item;
-			}
+		QLayoutItem* item;
+		while ((item = framePreviewLayout->takeAt(0)) != NULL)
+		{
+			delete item->widget();
+			delete item;
+		}
 	}
-
 	for (int i = 0; i < model->getFrameCount(); i++)
 	{
 		RenderArea *newWidget = new RenderArea;
@@ -337,12 +331,10 @@ void SpriteEditorVC::sendActiveFrame()
 	{
 		std::string frameName(framePreviews.at(i)->objectName().toStdString());
 		std::string senderName(sender()->objectName().toStdString());
-
 		if (frameName == senderName)
 		{
 			if (i != indexOfActiveFrame)
 				emit changeActiveFrame(i);
-
 			break;
 		}
 	}
@@ -387,7 +379,6 @@ void SpriteEditorVC::savePressed()
 	std::string pathAsString(path.toStdString());
 	// Find the index of the last "/" character
 	auto i(pathAsString.find_last_of("/"));
-
 	// Separate the path and file name
 	if (i != std::string::npos)
 	{
@@ -408,7 +399,6 @@ void SpriteEditorVC::loadPressed()
 	std::string pathAsString(path.toStdString());
 	// Find the index of the last "/" character
 	auto i(pathAsString.find_last_of("/"));
-
 	// Separate the path and file name
 	if (i != std::string::npos)
 	{
@@ -416,13 +406,11 @@ void SpriteEditorVC::loadPressed()
 		std::string name(pathAsString.substr(i + 1));
 		// Remove any instances of .ssp from the file name
 		auto j = name.find(".ssp");
-
 		while (j != std::string::npos)
 		{
 			name.erase(j, 4);
 			j = name.find(".ssp");
 		}
-
 		emit load(path.toStdString(), name);
 	}
 }
@@ -435,39 +423,28 @@ void SpriteEditorVC::colorButtonClicked()
 	// Please, c++. Let us use switch on strings. This is absurd.
 	QColor c;
 	std::string name(sender()->objectName().toStdString());
-
 	if (name == "primaryColorButton1")
 		c = QColorDialog::standardColor(RED);
-
 	else if (name == "primaryColorButton2")
 		c = QColorDialog::standardColor(ORANGE);
-
 	else if (name == "primaryColorButton3")
 		c = QColorDialog::standardColor(YELLOW);
-
 	else if (name == "primaryColorButton4")
 		c = QColorDialog::standardColor(GREEN);
-
 	else if (name == "primaryColorButton5")
 		c = QColorDialog::standardColor(PURPLE);
-
 	else if (name == "primaryColorButton6")
 		c = QColorDialog::standardColor(BLUE);
-
 	else if (name == "primaryColorButton7")
 		c = QColorDialog::standardColor(BLACK);
-
 	else if (name == "primaryColorButton8")
 		c = QColorDialog::standardColor(WHITE);
-
 	for (int i = 0 ; i < 16; i++)
 	{
 		QString buttonName = QString("customColorButton%1").arg(i + 1);
-
 		if (name == buttonName.toStdString())
 			c = QColorDialog::customColor(i);
 	}
-
 	emit colorChanged(c);
 }
 
@@ -484,12 +461,10 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 		case Qt::Key_BracketLeft:
 			emit decrementToolSize();
 			break;
-
 		// Increase tool size
 		case Qt::Key_BracketRight:
 			emit incrementToolSize();
 			break;
-
 		// Save the file
 		case Qt::Key_S:
 			if (event->modifiers() == Qt::ControlModifier)
@@ -497,7 +472,6 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 			else
 				sprayCanSelected->trigger();
 			break;
-
 		// Open a file
 		case Qt::Key_O:
 			if (event->modifiers() == Qt::ControlModifier)
@@ -505,58 +479,45 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 			else
 				softEraserSelected->trigger();
 			break;
-
 		// Open a file
 		case Qt::Key_N:
 			if (event->modifiers() == Qt::ControlModifier)
 				newFileAction->trigger();
-		break;
-
+			break;
 		// Move to previous frame (if it exists)
 		case Qt::Key_Left:
 			if (indexOfActiveFrame > 0 && event->modifiers() == Qt::ControlModifier)
 				emit changeActiveFrame(indexOfActiveFrame - 1);
-
 			break;
-
 		// Move to next frame (if it exists)
 		case Qt::Key_Right:
-
 			if (indexOfActiveFrame < model->getFrameCount() - 1 && event->modifiers() == Qt::ControlModifier)
 				emit changeActiveFrame(indexOfActiveFrame + 1);
-
 			break;
-
 		// Toggles if the grid is shown.
 		case Qt::Key_G:
 			emit toggleGrid();
 			break;
-
 		case Qt::Key_A:
 			if (event->modifiers() == Qt::ControlModifier)
 				emit addNewFrame();
 			else
 				rainbowSpraycanSelected->trigger();
-		break;
-
+			break;
 		case Qt::Key_Delete:
 			emit deleteActiveFrame(indexOfActiveFrame);
 			break;
-
 		case Qt::Key_D:
 			if (event->modifiers() == Qt::ControlModifier)
 				emit duplicateFrame();
 			break;
-
 		case Qt::Key_C:
 			if (event->modifiers() == Qt::ControlModifier)
 				emit clearFrame();
 			break;
-
 		case Qt::Key_I:
 			invertSelected->trigger();
 			break;
-
 		case Qt::Key_R:
 			rainbowBrushSelected->trigger();
 			break;

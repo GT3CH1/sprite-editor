@@ -72,13 +72,10 @@ QRect SprayCanBrush::ConstrainStencilBounds(Pointer2DArray<float> stencil, int s
 	unsigned int boundedAreaY = 0;
 	unsigned int boundedAreaWidth = 0;
 	unsigned int boundedAreaHeight = 0;
-
 	if (upperLeftX > 0)
 		boundedAreaX = upperLeftX;
-
 	if (upperLeftY > 0)
 		boundedAreaY = upperLeftY;
-
 	boundedAreaWidth = bottomRightX - boundedAreaX + (stencil.getWidth() % 2);
 	boundedAreaHeight = bottomRightY - boundedAreaY + (stencil.getHeight() % 2);
 	int deltaX = boundedAreaX - upperLeftX;
@@ -103,7 +100,6 @@ void SprayCanBrush::apply(ActionState &canvasState, const CallbackOptions &callb
 						canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
 						info);
 	Pointer2DArray<QColor> toAdd(boundedArea.width(), boundedArea.height());
-
 	for (unsigned int i = 0; i < toAdd.getWidth(); i++)
 	{
 		for (unsigned int j = 0; j < toAdd.getHeight(); j++)
@@ -111,16 +107,12 @@ void SprayCanBrush::apply(ActionState &canvasState, const CallbackOptions &callb
 			float stencilAlpha = stencil[i + info.deltaX][j + info.deltaY];
 			QColor newStencilColor(0, 0, 0, 0);
 			int rndInt = rand();
-
 			if (rndInt % 10 == 0)
 				newStencilColor = QColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), canvasState.TOOL_COLOR.alpha() * stencilAlpha);
-
 			else if (rndInt % 5 == 1)
 				newStencilColor = QColor(canvasState.TOOL_COLOR.red(), canvasState.TOOL_COLOR.green(), canvasState.TOOL_COLOR.blue(), canvasState.TOOL_COLOR.alpha() * stencilAlpha / (rand() % 4 + 1));
-
 			toAdd[i][j] = newStencilColor;
 		}
 	}
-
 	callbacks.paintPixelColors(toAdd, boundedArea.x(), boundedArea.y());
 }

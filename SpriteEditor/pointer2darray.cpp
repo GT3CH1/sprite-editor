@@ -21,7 +21,6 @@ Pointer2DArray<T>::Pointer2DArray(unsigned int width, unsigned int height)
 	this->width = width;
 	this->height = height;
 	array = (T **)malloc(width * sizeof(T *));
-
 	for (unsigned int i = 0; i < width; i++)
 		array[i] = (T *)malloc(height * sizeof(T));
 }
@@ -35,11 +34,9 @@ Pointer2DArray<T>::Pointer2DArray(const Pointer2DArray<T> &other)
 	width = other.width;
 	height = other.height;
 	array = (T **)malloc(width * sizeof(T *));
-
 	for (unsigned int i = 0; i < width; i++)
 	{
 		array[i] = (T *) malloc(height * sizeof(T));
-
 		for (unsigned int j = 0; j < height; j++)
 			array[i][j] = other[i][j];
 	}
@@ -65,7 +62,6 @@ Pointer2DArray<T>::~Pointer2DArray()
 {
 	for (unsigned int i = 0; i < width; i++)
 		free(array[i]);
-
 	free(array);
 }
 

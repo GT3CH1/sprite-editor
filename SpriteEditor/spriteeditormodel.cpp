@@ -81,7 +81,6 @@ void SpriteEditorModel::incrementBrushSize()
 {
 	if (toolSize < imageHeight || toolSize < imageWidth)
 		toolSize++;
-
 	emit brushSizeChanged(toolSize);
 }
 
@@ -92,7 +91,6 @@ void SpriteEditorModel::decrementBrushSize()
 {
 	if (toolSize > 1)
 		toolSize--;
-
 	emit brushSizeChanged(toolSize);
 }
 
@@ -124,20 +122,15 @@ void SpriteEditorModel::deleteFrame(int indexOfFrameToDelete)
 {
 	if (frames.size() == 1)
 		frames[activeFrameIndex].fill();
-
 	else
 	{
 		vector<QPixmap>::iterator itr = frames.begin();
-
 		for (int i = 0; i < indexOfFrameToDelete; i++)
 			itr++;
-
 		frames.erase(itr);
-
 		if (activeFrameIndex > 0)
 			activeFrameIndex--;
 	}
-
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
@@ -150,21 +143,16 @@ void SpriteEditorModel::addFrame()
 	activeFrameIndex++;
 	QPixmap blank(imageHeight, imageHeight);
 	blank.fill();
-
 	if ((uint)activeFrameIndex == frames.size())
 		frames.push_back(blank);
-
 	else
 	{
 		QPixmap temp = frames[activeFrameIndex];
 		frames[activeFrameIndex] = blank;
-
 		for (unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
 			swap(temp, frames[j]);
-
 		frames.push_back(temp);
 	}
-
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
@@ -176,21 +164,16 @@ void SpriteEditorModel::duplicateFrame()
 {
 	QPixmap copy = frames[activeFrameIndex];
 	activeFrameIndex++;
-
 	if ((uint)activeFrameIndex == frames.size())
 		frames.push_back(copy);
-
 	else
 	{
 		QPixmap temp = frames[activeFrameIndex];
 		frames[activeFrameIndex] = copy;
-
 		for (unsigned int j = activeFrameIndex + 1; j < frames.size(); j++)
 			swap(temp, frames[j]);
-
 		frames.push_back(temp);
 	}
-
 	emit sendActiveFrameIndex(activeFrameIndex);
 	emit sendFrames(frames);
 }
@@ -205,7 +188,6 @@ void SpriteEditorModel::save(string filePath, string fileName)
 	// create the file
 	QString saveFileName = QString::fromStdString(filePath + fileName);
 	QFile saveFile(saveFileName);
-
 	// write the file
 	if (saveFile.open(QIODevice::WriteOnly))
 	{
@@ -227,10 +209,8 @@ void SpriteEditorModel::write(QJsonObject &json) const
 	json["numberOfFrames"] = frameCount;
 	json["frames"] = QJsonObject();
 	QJsonObject frames(json["frames"].toObject());
-
 	for (int i = 0; i < frameCount; i++)
 		writeFrame(frames, i);
-
 	json["frames"] = frames;
 }
 
@@ -244,10 +224,8 @@ void SpriteEditorModel::writeFrame(QJsonObject &json, int frameNumber) const
 	QString currFrame = QString("frame%1").arg(frameNumber);
 	QImage frame = frames[frameNumber].toImage();
 	QJsonArray pixels;
-
 	for (int i = 0; i < imageWidth; i++)
 		pixels.append(writeRows(frame, i));
-
 	json.insert(currFrame, pixels);
 }
 
@@ -260,10 +238,8 @@ void SpriteEditorModel::writeFrame(QJsonObject &json, int frameNumber) const
 QJsonArray SpriteEditorModel::writeRows(QImage frame, int row) const
 {
 	QJsonArray rows;
-
 	for (int i = 0; i < imageHeight; i++)
 		rows.append(writeColor(frame, row, i));
-
 	return rows;
 }
 
@@ -295,7 +271,6 @@ void SpriteEditorModel::load(string filePath, string fileName)
 	// load the file
 	QString loadFileName = QString::fromStdString(filePath + fileName + ".ssp");
 	QFile loadFile(loadFileName);
-
 	// read the file
 	if (loadFile.open(QIODevice::ReadOnly))
 	{
@@ -304,7 +279,6 @@ void SpriteEditorModel::load(string filePath, string fileName)
 		frames.clear();
 		read(loadDoc.object());
 	}
-
 	emit sendActiveFrameIndex(0);
 	emit sendFrames(frames);
 	emit sendActiveFrame(frames[0]);
@@ -319,15 +293,11 @@ void SpriteEditorModel::read(const QJsonObject &json)
 {
 	if (json.contains("height") && json["height"].isDouble())
 		imageHeight = json["height"].toInt();
-
 	if (json.contains("width") && json["width"].isDouble())
 		imageWidth = json["width"].toInt();
-
 	int size = 0;
-
 	if (json.contains("numberOfFrames") && json["numberOfFrames"].isDouble())
 		size = json["numberOfFrames"].toInt();
-
 	for (int i = 0; i < size; i++)
 	{
 		QString frameName = QString("frame%1");
@@ -346,10 +316,8 @@ void SpriteEditorModel::readFrame(const QJsonValue &json, int frameNumber)
 {
 	QJsonArray frameRow = json[frameNumber].toArray();
 	QImage newFrame(imageWidth, imageHeight, QImage::Format_RGBA8888);
-
 	for (int j = 0; j < frameRow.size(); j++)
 		readRow(json.toArray(), newFrame, j);
-
 	QPixmap frame(QPixmap::fromImage(newFrame));
 	frames.push_back(frame);
 }
@@ -364,7 +332,6 @@ void SpriteEditorModel::readFrame(const QJsonValue &json, int frameNumber)
 void SpriteEditorModel::readRow(const QJsonArray &json, QImage &newFrame, int row)
 {
 	QJsonArray rows(json[row].toArray());
-
 	for (int i = 0; i < rows.size(); i++)
 	{
 		QJsonArray currentPixel(rows[i].toArray());
@@ -404,7 +371,6 @@ void SpriteEditorModel::setActiveTool(ToolType newTool)
 void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors, unsigned int xCoord, unsigned int yCoord)
 {
 	QPainter painter(&frames[activeFrameIndex]);
-
 	for (unsigned int i = 0; i < newColors.getWidth(); i++)
 	{
 		for (unsigned int j = 0; j < newColors.getHeight(); j++)
@@ -415,7 +381,6 @@ void SpriteEditorModel::setColorsOfActiveFrame(Pointer2DArray<QColor> newColors,
 			painter.fillRect(xPixel, yPixel, 1, 1, pixelColor);
 		}
 	}
-
 	painter.end();
 	emit sendActiveFrame(frames[activeFrameIndex]);
 	emit sendActiveFrameIndex(activeFrameIndex);
@@ -446,14 +411,11 @@ void SpriteEditorModel::drawing(float x, float y)
 	int currentX = (int)(x * imageWidth);
 	int currentY = (int)(y * imageHeight);
 	QPoint currentPosition(currentX, currentY);
-
 	if (currentX != lastPosition.x() || currentY != lastPosition.y())
 	{
 		ActionState toolActionState(toolSize, activeColor, currentX, currentY, newStroke, frames[activeFrameIndex]);
-
 		if (newStroke)
 			newStroke = false;
-
 		std::function<void(Pointer2DArray<QColor>, unsigned int, unsigned int)> paintPixelColorsCallback = [&](Pointer2DArray<QColor> colors, unsigned int xCoord, unsigned int yCoord)
 		{
 			this->setColorsOfActiveFrame(colors, xCoord, yCoord);

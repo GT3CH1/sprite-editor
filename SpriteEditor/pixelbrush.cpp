@@ -70,13 +70,10 @@ QRect PixelBrush::ConstrainStencilBounds(Pointer2DArray<float> stencil, int sten
 	unsigned int boundedAreaY = 0;
 	unsigned int boundedAreaWidth = 0;
 	unsigned int boundedAreaHeight = 0;
-
 	if (upperLeftX > 0)
 		boundedAreaX = upperLeftX;
-
 	if (upperLeftY > 0)
 		boundedAreaY = upperLeftY;
-
 	boundedAreaWidth = bottomRightX - boundedAreaX + (stencil.getWidth() % 2);
 	boundedAreaHeight = bottomRightY - boundedAreaY + (stencil.getHeight() % 2);
 	int deltaX = boundedAreaX - upperLeftX;
@@ -101,7 +98,6 @@ void PixelBrush::apply(ActionState &canvasState, const CallbackOptions &callback
 						canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
 						info);
 	Pointer2DArray<QColor> toAdd(boundedArea.width(), boundedArea.height());
-
 	for (unsigned int i = 0; i < toAdd.getWidth(); i++)
 	{
 		for (unsigned int j = 0; j < toAdd.getHeight(); j++)
@@ -111,7 +107,6 @@ void PixelBrush::apply(ActionState &canvasState, const CallbackOptions &callback
 			toAdd[i][j] = newStencilColor;
 		}
 	}
-
 	callbacks.paintPixelColors(toAdd, boundedArea.x(), boundedArea.y());
 }
 

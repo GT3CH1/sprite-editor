@@ -52,21 +52,16 @@ void RenderArea::setImageScaled(QPixmap newMapToRender, int scale)
 	gridRender = newMap;
 	QPainter paint(&gridRender);
 	paint.setPen(Qt::gray);
-
 	for (int loc = 1; loc < canvasSize + 2; loc++)
 	{
 		paint.drawLine(loc * (512 / canvasSize), 0, loc * (512 / canvasSize), 512);
 		paint.drawLine(0, loc * (512 / canvasSize), 512, loc * (512 / canvasSize));
 	}
-
 	paint.end();
-
 	if (gridShown)
 		setPixmap(gridRender);
-
 	else
 		setPixmap(newMap);
-
 	toRender = newMap;
 	update();
 	toRender = newMap.scaled(canvasSize, canvasSize, Qt::KeepAspectRatioByExpanding);
@@ -80,7 +75,6 @@ void RenderArea::mousePressEvent(QMouseEvent *evt)
 {
 	int x = evt->pos().x();
 	unsigned int y = evt->pos().y();
-
 	if (x < 512 && y < 512)
 	{
 		emit clicked((float)x / 512.0, (float)y / 512.0);
@@ -98,7 +92,6 @@ void RenderArea::mouseMoveEvent(QMouseEvent *evt)
 	{
 		int x = evt->pos().x();
 		int y = evt->pos().y();
-
 		if ((x < 510 && x > 2) && (y < 510 && y > 2))
 		{
 			emit clicked((float)x / 512.0, (float)y / 512.0);
@@ -115,7 +108,6 @@ void RenderArea::mouseReleaseEvent(QMouseEvent *evt)
 {
 	int x = evt->pos().x();
 	unsigned int y = evt->pos().y();
-
 	if (x < 512 && y < 512)
 		emit released((float)x / 512.0, (float)y / 512.0);
 }

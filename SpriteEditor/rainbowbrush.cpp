@@ -33,10 +33,8 @@ RainbowBrush::RainbowBrush(IStencilGenerator *generator, float _incrementPerCall
 void RainbowBrush::apply(ActionState &canvasState, const CallbackOptions &callbacks)
 {
 	progress += incrementPerCall;
-
 	while (progress >= 1)
 		progress -= 1;
-
 	QColor rainbowColor;
 	rainbowColor.setHsv(360 * progress, canvasState.TOOL_COLOR.saturation(), canvasState.TOOL_COLOR.value(), canvasState.TOOL_COLOR.alpha());
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
@@ -45,7 +43,6 @@ void RainbowBrush::apply(ActionState &canvasState, const CallbackOptions &callba
 						canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height(),
 						info);
 	Pointer2DArray<QColor> toAdd(boundedArea.width(), boundedArea.height());
-
 	for (unsigned int i = 0; i < toAdd.getWidth(); i++)
 	{
 		for (unsigned int j = 0; j < toAdd.getHeight(); j++)
@@ -55,6 +52,5 @@ void RainbowBrush::apply(ActionState &canvasState, const CallbackOptions &callba
 			toAdd[i][j] = newStencilColor;
 		}
 	}
-
 	callbacks.paintPixelColors(toAdd, boundedArea.x(), boundedArea.y());
 }
