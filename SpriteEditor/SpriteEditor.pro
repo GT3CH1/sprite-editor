@@ -23,7 +23,9 @@ SOURCES += \
     spriteeditorvc.cpp \
     softcirclestencilgenerator.cpp \
     squarestencilgenerator.cpp \
-    renderarea.cpp
+				renderarea.cpp \
+				gaussianblurbrush.cpp \
+				gaussianstencilgenerator.cpp
 
 HEADERS += \
     brush.h \
@@ -44,7 +46,9 @@ HEADERS += \
     pixelbrush.h \
     pixeleraser.h \
     pointer2darray.h \
-    stencil.h
+				stencil.h \
+				gaussianblurbrush.h \
+				gaussianstencilgenerator.h
 
 
 FORMS += \

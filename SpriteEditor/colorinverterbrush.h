@@ -14,6 +14,8 @@ protected:
 
 	Pointer2DArray<StrokeCovered> coveredArea;
 
+	void resetStroke(const ActionState& canvasState);
+
 public:
 	ColorInverterBrush(IStencilGenerator* generate);
 	virtual void apply(ActionState& canvasState, const CallbackOptions& callbacks);

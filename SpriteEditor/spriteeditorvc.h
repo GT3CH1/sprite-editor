@@ -41,6 +41,7 @@ public slots:
 	void setSoftBrush();
 	void setHardEraser();
 	void setSprayCan();
+	void setGaussian();
 
 private slots:
 	void sendActiveFrame();
@@ -99,6 +100,8 @@ private:
 	QAction *softBrushSelected;
 	QAction *hardEraserSelected;
 	QAction *sprayCanSelected;
+	QAction *gaussianSelected;
+
 	QMenu *fileMenu;
 	QMenu *helpMenu;
 	QMenu *toolsMenu;

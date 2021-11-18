@@ -40,6 +40,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	hardEraserSelected = new QAction(tr("&Eraser"),this);
 	softBrushSelected = new QAction(tr("&Brush"),this);
 	sprayCanSelected = new QAction(tr("&Spray Can"),this);
+	gaussianSelected = new QAction(tr("&Gaussian Blur"),this);
 
 	createMenu();
 	setupButtonColors();
@@ -98,6 +99,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(softBrushSelected, &QAction::triggered,this,&SpriteEditorVC::setSoftBrush);
 	connect(hardEraserSelected,&QAction::triggered,this,&SpriteEditorVC::setHardEraser);
 	connect(sprayCanSelected,&QAction::triggered,this, &SpriteEditorVC::setSprayCan);
+	connect(gaussianSelected,&QAction::triggered,this,&SpriteEditorVC::setGaussian);
 
 	// Model to UI
 	connect(this->model, &SpriteEditorModel::sendActiveFrame,ui->mainCanvas, &RenderArea::setImage);
@@ -124,8 +126,6 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	connect(this, &SpriteEditorVC::changeActiveFrame, model, &SpriteEditorModel::changeActiveFrame);
 	connect(this, &SpriteEditorVC::remove, model, &SpriteEditorModel::deleteFrame);
 	connect(this, &SpriteEditorVC::add, model, &SpriteEditorModel::addFrame);
-
-
 }
 
 SpriteEditorVC::~SpriteEditorVC()
@@ -191,6 +191,7 @@ void SpriteEditorVC::createMenu()
 	toolsMenu->addAction(rainbowBrushSelected);
 	toolsMenu->addAction(softEraserSelected);
 	toolsMenu->addAction(sprayCanSelected);
+	toolsMenu->addAction(gaussianSelected);
 }
 
 
@@ -566,6 +567,11 @@ void SpriteEditorVC::setSprayCan()
 	emit updateTool(SpriteEditorModel::ToolType::SprayCan);
 }
 
+void SpriteEditorVC::setGaussian()
+{
+	emit updateTool(SpriteEditorModel::ToolType::Gaussian);
+}
+
 void SpriteEditorVC::on_nextFrameButton_clicked()
 {
 	if (indexOfActiveFrame < model->getFrameCount() - 1)
@@ -581,4 +587,3 @@ void SpriteEditorVC::on_lastFrameButton_clicked()
 		emit changeActiveFrame(indexOfActiveFrame - 1);
 	}
 }
-

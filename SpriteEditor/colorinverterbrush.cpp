@@ -27,18 +27,7 @@ void ColorInverterBrush::apply(ActionState& canvasState, const CallbackOptions& 
 	setStencilOnSizeChange(canvasState.TOOL_SIZE);
 
 	if (canvasState.NEW_STROKE)
-	{
-		Pointer2DArray<StrokeCovered> clearedArea(canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height());
-		coveredArea = clearedArea;
-		StrokeCovered defaultStrokeCovered;
-		defaultStrokeCovered.amountAffected = 0;
-		QColor defaultColor;
-		defaultStrokeCovered.initialColor = defaultColor;
-
-		for(int  i = 0; i < (int)coveredArea.getWidth(); i++)
-			for(int j = 0; j < (int)coveredArea.getHeight(); j++)
-				coveredArea[i][j] = defaultStrokeCovered;
-	}
+		resetStroke(canvasState);
 
 	BoundsInformation info;
 	QRect boundedArea = ConstrainStencilBounds(stencil, canvasState.MOUSE_X_GRID_COORD, canvasState.MOUSE_Y_GRID_COORD,
@@ -84,4 +73,18 @@ void ColorInverterBrush::apply(ActionState& canvasState, const CallbackOptions& 
 	}
 
 	callbacks.replacePixelColors(toReplace, boundedArea.x(), boundedArea.y());
+}
+
+void ColorInverterBrush::resetStroke(const ActionState &canvasState)
+{
+	Pointer2DArray<StrokeCovered> clearedArea(canvasState.ACTIVE_FRAME.width(), canvasState.ACTIVE_FRAME.height());
+	coveredArea = clearedArea;
+	StrokeCovered defaultStrokeCovered;
+	defaultStrokeCovered.amountAffected = 0;
+	QColor defaultColor;
+	defaultStrokeCovered.initialColor = defaultColor;
+
+	for(int  i = 0; i < (int)coveredArea.getWidth(); i++)
+		for(int j = 0; j < (int)coveredArea.getHeight(); j++)
+			coveredArea[i][j] = defaultStrokeCovered;
 }

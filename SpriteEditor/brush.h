@@ -3,3 +3,4 @@
 #include <rainbowbrush.h>
 #include <colorinverterbrush.h>
 #include <spraycanbrush.h>
+#include <gaussianblurbrush.h>
