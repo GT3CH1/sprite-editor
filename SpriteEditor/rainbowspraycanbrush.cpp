@@ -30,7 +30,7 @@ void RainBowSprayCanBrush::apply(ActionState& canvasState, const CallbackOptions
 	while(progress >= 1)
 		progress -= 1;
 	QColor rainbowColor;
-	rainbowColor.setHsv(360 * progress,canvasState.TOOL_COLOR.saturation(),canvasState.TOOL_COLOR.value(),canvasState.TOOL_COLOR.alpha());
+	rainbowColor.setHsv(360 * progress, canvasState.TOOL_COLOR.saturation(), canvasState.TOOL_COLOR.value(), canvasState.TOOL_COLOR.alpha());
 	stencil = stencilGenerator->generate(canvasState.TOOL_SIZE);
 	BoundsInformation info;
 	QRect boundedArea = ConstrainStencilBounds(stencil, canvasState.MOUSE_X_GRID_COORD, canvasState.MOUSE_Y_GRID_COORD,

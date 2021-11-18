@@ -60,7 +60,7 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	// Other
 	connect(ui->addFrameButton, &QPushButton::clicked, this->model, &SpriteEditorModel::addFrame);
 	connect(ui->deleteFrameButton, &QPushButton::clicked, this, &SpriteEditorVC::deleteFrame);
-	connect(ui->clearFrameButton,&QPushButton::clicked,this->model, &SpriteEditorModel::clearFrame);
+	connect(ui->clearFrameButton, &QPushButton::clicked, this->model, &SpriteEditorModel::clearFrame);
 	// UI to Model
 	connect(ui->mainCanvas, &RenderArea::clicked, model, &SpriteEditorModel::drawing);
 	connect(ui->mainCanvas, &RenderArea::pressed, this, &SpriteEditorVC::changeFocus);
@@ -176,7 +176,7 @@ void SpriteEditorVC::createMenu()
 	saveAction = new QAction(QIcon(SAVE_SVG_PATH), tr("&Save..."), this);
 	openAction = new QAction(QIcon(OPEN_SVG_PATH), tr("&Open..."), this);
 	newFileAction = new QAction(QIcon(NEW_SVG_PATH), tr("&New..."), this);
-	rainbowSpraycanSelected = new QAction(QIcon(SPRAY_CAN_SVG_PATH), tr("R&ainbow Spraycan"),this);
+	rainbowSpraycanSelected = new QAction(QIcon(SPRAY_CAN_SVG_PATH), tr("R&ainbow Spraycan"), this);
 	saveAction->setStatusTip(tr("Save this file"));
 	openAction->setStatusTip(tr("Open an existing file"));
 	newFileAction->setStatusTip(tr("Create a new file"));
@@ -662,8 +662,8 @@ void SpriteEditorVC::setBrushSizeLabel(int size)
 
 void SpriteEditorVC::setCustomCursor(char const *path)
 {
-	QPixmap cursor = QPixmap(path).scaled(16,16);
-	ui->mainCanvas->setCursor(QCursor(cursor,0,16));
+	QPixmap cursor = QPixmap(path).scaled(16, 16);
+	ui->mainCanvas->setCursor(QCursor(cursor, 0, 16));
 }
 
 void SpriteEditorVC::changeFocus()
