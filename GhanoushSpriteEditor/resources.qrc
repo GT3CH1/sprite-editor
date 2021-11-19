@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/paint-brush.svg</file>
+        <file>res/pen.svg</file>
+        <file>res/eraser.svg</file>
+        <file>res/close.svg</file>
+        <file>res/open.svg</file>
+        <file>res/save.svg</file>
+        <file>res/new.svg</file>
+        <file>res/rainbow.svg</file>
+        <file>res/spray-can.svg</file>
+        <file>res/soft-brush.svg</file>
+        <file>res/invert.svg</file>
+        <file>res/blur.svg</file>
+        <file>res/grid.svg</file>
+        <file>res/soft-eraser.svg</file>
+        <file>res/ghanoush.png</file>
+    </qresource>
+</RCC>
