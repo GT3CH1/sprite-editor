@@ -1,5 +1,21 @@
 #include "spriteeditorvc.h"
 
+/**
+ * Launches the main window and sets up a new sprite
+ * Jonathan Vielstich
+ * Gavin Pease
+ * 11/10/2021
+ *
+ * @brief Launches the main UI window and creates a new sprite
+ * editor Model to edit the sprite. Connects the model to the UI
+ * and controls both based on the signals it receives.
+ */
+
+
+/**
+ * @brief Constructs a new SpriteEditorVC object
+ * @param parent
+ */
 SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::SpriteEditorVC)
@@ -127,6 +143,9 @@ SpriteEditorVC::SpriteEditorVC(QWidget *parent)
 	emit colorChanged(QColorDialog::standardColor(RED));
 }
 
+/**
+ * @brief Deconstructor for a SpriteEditorVC object
+ */
 SpriteEditorVC::~SpriteEditorVC()
 {
 	delete ui;
@@ -252,8 +271,10 @@ void SpriteEditorVC::showColorDialog()
  */
 void SpriteEditorVC::updatePlaybackFrame()
 {
+	// Loop to the beginning when necessary
 	if (indexOfPlayback + 1 > model->getFrameCount())
 		indexOfPlayback = 0;
+	// Display the new animation frame
 	QPixmap currentFrame(model->getFramefromIndex(indexOfPlayback++).scaled(PREVIEW_SIZE, PREVIEW_SIZE));
 	ui->playbackCanvas->setImageScaled(currentFrame, PREVIEW_SIZE);
 }
@@ -266,10 +287,8 @@ void SpriteEditorVC::updatePlaybackFrame()
 void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
 {
 	ui->fpsLabel->setText(QString::number(value));
-	setupButtonColors();
 	fps = value;
-	// Return focus to main window
-	this->setFocus();
+	changeFocus();
 	if (fps == 0 && playbackUpdater.isActive())
 		playbackUpdater.stop();
 	else if (fps != 0)
@@ -288,6 +307,7 @@ void SpriteEditorVC::on_fpsSlider_valueChanged(int value)
  */
 void SpriteEditorVC::previewFrames()
 {
+	// Remove existing frames
 	if (framePreviewLayout->count() > 0)
 	{
 		QLayoutItem* item;
@@ -297,6 +317,8 @@ void SpriteEditorVC::previewFrames()
 			delete item;
 		}
 	}
+
+	// Draw update frames
 	for (int i = 0; i < model->getFrameCount(); i++)
 	{
 		RenderArea *newWidget = new RenderArea;
@@ -313,8 +335,8 @@ void SpriteEditorVC::updateActivePreview(int activeFrameIndex)
 {
 	RenderArea *newPreview = new RenderArea;
 	newPreview->setImageScaled(model->getFramefromIndex(activeFrameIndex), FRAME_SIZE);
-	QLayoutItem* item;
-	if ((item = framePreviewLayout->takeAt(activeFrameIndex)) != NULL)
+	QLayoutItem *item = framePreviewLayout->takeAt(activeFrameIndex);
+	if (item != NULL)
 	{
 		delete item->widget();
 		delete item;
@@ -323,31 +345,15 @@ void SpriteEditorVC::updateActivePreview(int activeFrameIndex)
 }
 
 /**
- * @brief Changes the active frame to the one selected
- */
-void SpriteEditorVC::sendActiveFrame()
-{
-	for (int i = 0; i < model->getFrameCount(); i++)
-	{
-		std::string frameName(framePreviews.at(i)->objectName().toStdString());
-		std::string senderName(sender()->objectName().toStdString());
-		if (frameName == senderName)
-		{
-			if (i != indexOfActiveFrame)
-				emit changeActiveFrame(i);
-			break;
-		}
-	}
-}
-
-/**
  * @brief Sets the main canvas to the active frame
  * @param activeFrameIndex
  */
 void SpriteEditorVC::updateActiveFrame(int activeFrameIndex)
 {
+	// Update the frame count label
 	QString labelString = QString("Frame %1/%2").arg(activeFrameIndex + 1).arg(model->getFrameCount());
 	ui->frameLabel->setText(labelString);
+	// Update the display
 	indexOfActiveFrame = activeFrameIndex;
 	ui->mainCanvas->setImage(model->getFramefromIndex(activeFrameIndex));
 }
@@ -375,15 +381,21 @@ void SpriteEditorVC::addFrame()
  */
 void SpriteEditorVC::savePressed()
 {
+	// Update path to save directory
 	path = QFileDialog::getSaveFileName(this, tr("Save File"), path, tr(FILE_FILTER));
+
+
 	std::string pathAsString(path.toStdString());
+
 	// Find the index of the last "/" character
 	auto i(pathAsString.find_last_of("/"));
-	// Separate the path and file name
+
+	// Separate the path and file name, if a / character is present
 	if (i != std::string::npos)
 	{
 		path = QString::fromStdString(pathAsString.substr(0, i + 1));
 		std::string name(pathAsString.substr(i + 1));
+
 		emit save(path.toStdString(), name);
 	}
 }
@@ -395,15 +407,20 @@ void SpriteEditorVC::savePressed()
  */
 void SpriteEditorVC::loadPressed()
 {
+	// Update path to load directory
 	path = QFileDialog::getOpenFileName(this, tr("Open File"), path, tr(FILE_FILTER));
+
 	std::string pathAsString(path.toStdString());
+
 	// Find the index of the last "/" character
 	auto i(pathAsString.find_last_of("/"));
-	// Separate the path and file name
+
+	// Separate the path and file name, if a / character is present
 	if (i != std::string::npos)
 	{
 		path = QString::fromStdString(pathAsString.substr(0, i + 1));
 		std::string name(pathAsString.substr(i + 1));
+
 		// Remove any instances of .ssp from the file name
 		auto j = name.find(".ssp");
 		while (j != std::string::npos)
@@ -411,6 +428,7 @@ void SpriteEditorVC::loadPressed()
 			name.erase(j, 4);
 			j = name.find(".ssp");
 		}
+
 		emit load(path.toStdString(), name);
 	}
 }
@@ -457,79 +475,89 @@ void SpriteEditorVC::keyPressEvent(QKeyEvent *event)
 {
 	switch (event->key())
 	{
-		// Decrease tool size
+		// [ - Decreases tool size
 		case Qt::Key_BracketLeft:
 			emit decrementToolSize();
 			break;
-		// Increase tool size
+		// ] - Increases tool size
 		case Qt::Key_BracketRight:
 			emit incrementToolSize();
 			break;
-		// Save the file
+		// Ctrl-S - Saves the file; S - Activates the spray can tool
 		case Qt::Key_S:
 			if (event->modifiers() == Qt::ControlModifier)
 				savePressed();
 			else
 				sprayCanSelected->trigger();
 			break;
-		// Open a file
+		// Ctrl-O - Opens a file; O - Activates the soft eraser tool
 		case Qt::Key_O:
 			if (event->modifiers() == Qt::ControlModifier)
 				loadPressed();
 			else
 				softEraserSelected->trigger();
 			break;
-		// Open a file
+		// Ctrl-N - Creates a new file
 		case Qt::Key_N:
 			if (event->modifiers() == Qt::ControlModifier)
 				newFileAction->trigger();
 			break;
-		// Move to previous frame (if it exists)
+		// <- - Move to previous frame (if it exists)
 		case Qt::Key_Left:
 			if (indexOfActiveFrame > 0 && event->modifiers() == Qt::ControlModifier)
 				emit changeActiveFrame(indexOfActiveFrame - 1);
 			break;
-		// Move to next frame (if it exists)
+		// -> - Move to next frame (if it exists)
 		case Qt::Key_Right:
 			if (indexOfActiveFrame < model->getFrameCount() - 1 && event->modifiers() == Qt::ControlModifier)
 				emit changeActiveFrame(indexOfActiveFrame + 1);
 			break;
-		// Toggles if the grid is shown.
+		// G - Toggles if the grid is shown.
 		case Qt::Key_G:
 			emit toggleGrid();
 			break;
+		// Ctrl-A adds a new frame; A - Activates the rainbow spray can tool
 		case Qt::Key_A:
 			if (event->modifiers() == Qt::ControlModifier)
 				emit addNewFrame();
 			else
 				rainbowSpraycanSelected->trigger();
 			break;
+		// Del - Deletes the active frame
 		case Qt::Key_Delete:
 			emit deleteActiveFrame(indexOfActiveFrame);
 			break;
+		// Ctrl-D - duplicates the active frame
 		case Qt::Key_D:
 			if (event->modifiers() == Qt::ControlModifier)
 				emit duplicateFrame();
 			break;
+		// Ctrl-C - Clears the active frame
 		case Qt::Key_C:
 			if (event->modifiers() == Qt::ControlModifier)
 				emit clearFrame();
 			break;
+		// I - Activates the inverter tool
 		case Qt::Key_I:
 			invertSelected->trigger();
 			break;
+		// R - Activates the rainbow brush tool
 		case Qt::Key_R:
 			rainbowBrushSelected->trigger();
 			break;
+		// P - Activates the pen tool
 		case Qt::Key_P:
 			hardPenSelected->trigger();
 			break;
+		// E - Activates the hard eraser
 		case Qt::Key_E:
 			hardEraserSelected->trigger();
 			break;
+		// B - Activates the brush
 		case Qt::Key_B:
 			softBrushSelected->trigger();
 			break;
+		// U - Activates the Gaussian blur
 		case Qt::Key_U:
 			gaussianSelected->trigger();
 			break;
@@ -611,6 +639,9 @@ void SpriteEditorVC::setGaussian()
 	setCustomCursor(BLUR_SVG_PATH);
 }
 
+/**
+ * @brief Sets the current tool to the rainbow spraycan tool
+ */
 void SpriteEditorVC::setRainbowSpraycan()
 {
 	emit updateTool(SpriteEditorModel::ToolType::RainbowSprayCan);
@@ -653,6 +684,10 @@ void SpriteEditorVC::finishSizeDialogue(int size)
 	model->setSize(size, size);
 }
 
+/**
+ * @brief Sets the brush size label in the UI
+ * @param size
+ */
 void SpriteEditorVC::setBrushSizeLabel(int size)
 {
 	ui->toolSizeSlider->setValue(size);
@@ -660,12 +695,19 @@ void SpriteEditorVC::setBrushSizeLabel(int size)
 	ui->strokeSizeLabel->setText(labelString);
 }
 
+/**
+ * @brief Changes the cursor
+ * @param path
+ */
 void SpriteEditorVC::setCustomCursor(char const *path)
 {
 	QPixmap cursor = QPixmap(path).scaled(16, 16);
 	ui->mainCanvas->setCursor(QCursor(cursor, 0, 16));
 }
 
+/**
+ * @brief Resets focus to the main window
+ */
 void SpriteEditorVC::changeFocus()
 {
 	this->setFocus();

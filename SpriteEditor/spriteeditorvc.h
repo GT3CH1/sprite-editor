@@ -50,7 +50,6 @@ public slots:
 	void setBrushSizeLabel(int size);
 
 private slots:
-	void sendActiveFrame();
 	void deleteFrame();
 	void addFrame();
 	void previewFrames();
@@ -73,8 +72,8 @@ private:
 	const int FPS_MAX = 60;
 	const int FPS_STEP = 10;
 	// Frame scaling
-	const int PREVIEW_SIZE = 128;
-	const int FRAME_SIZE = 64;
+	const int PREVIEW_SIZE = 128;	// Animation playback
+	const int FRAME_SIZE = 64;		// Frame display
 	// Default colors
 	const int RED = 9;
 	const int ORANGE = 21;
@@ -84,7 +83,7 @@ private:
 	const int BLUE = 5;
 	const int BLACK = 0;
 	const int WHITE = 47;
-
+	// Icon file paths
 	const char* INVERT_SVG_PATH = ":/res/invert.svg";
 	const char* RAINBOW_SVG_PATH = ":/res/rainbow.svg";
 	const char* SOFT_ERASER_PATH = ":/res/soft-eraser.svg";
@@ -99,18 +98,16 @@ private:
 	const char* CLOSE_SVG_PATH = ":/res/close.svg";
 	const char* NEW_SVG_PATH = ":/res/new.svg";
 
-	SpriteEditorModel *model;
-	Ui::SpriteEditorVC *ui;
-	QHBoxLayout *framePreviewLayout;
-	int indexOfActiveFrame = 0;
-	int indexOfPlayback = 0;
-	int fps = 0;
-	QTimer playbackUpdater;
-	QString path = QDir::homePath();
-	void changeActiveColor(QPushButton *);
-	std::vector<RenderArea *> framePreviews;
-	QColorDialog *colorDialog;
-
+	SpriteEditorModel *model;	// Drawing model
+	Ui::SpriteEditorVC *ui;		// UI
+	QHBoxLayout *framePreviewLayout;	// Horizontal layout for frame previews
+	int indexOfActiveFrame = 0;	// Tracks the active frame
+	int indexOfPlayback = 0;	// Tracks the current animation frame
+	int fps = 0;				// Tracks the FPS of the animation
+	QTimer playbackUpdater;		// Triggers a frame change in the animation
+	QString path = QDir::homePath();	// Path to the directory of the last file accessed, defaults to user's home directory
+	std::vector<RenderArea *> framePreviews; // Tracks the frames displayed in the scroll area
+	// UI button actions
 	QAction *saveAction;
 	QAction *openAction;
 	QAction *newFileAction;
@@ -124,16 +121,19 @@ private:
 	QAction *gaussianSelected;
 	QAction *gridSelected;
 	QAction *rainbowSpraycanSelected;
-
+	// UI Elements
+	ImageSizeDialog imageSizeDialogue;
+	QColorDialog *colorDialog;
 	QMenu *fileMenu;
 	QMenu *toolsMenu;
+
 	void setButtonColor(QPushButton *button, QString hex);
 	void createMenu();
 	void setupButtonColors();
 	void setCustomCursor(char const *path);
+	void changeActiveColor(QPushButton *);
 	constexpr unsigned int hash(const char *str, int h = 0);
 
-	ImageSizeDialog imageSizeDialogue;
 
 signals:
 	void colorChanged(QColor color);
